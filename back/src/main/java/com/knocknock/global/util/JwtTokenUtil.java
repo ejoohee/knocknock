@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -32,6 +33,19 @@ public class JwtTokenUtil {
 
 
     /**
+     * SecretKey를 사용해 Token parsing
+     * @param token
+     * @return
+     */
+    public Claims extractClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey(SECRET_KEY))
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    /**
      * JWT Token을 발급합니다.
      * @param email
      * @param expireTimeMs
@@ -49,18 +63,44 @@ public class JwtTokenUtil {
                 .signWith(getSigningKey(SECRET_KEY), SignatureAlgorithm.HS256)
                 .compact();
     }
+    
+    public String generateAccessToken(String email) {
+        return createToken(email, accessExpirationMs); // 확인해바야함
+    }
+
+    public String generateRefreshToken(String email) {
+        return createToken(email, refreshExpirationMs);
+    }
 
     /**
-     * SecretKey를 사용해 Token parsing
+     * 발급된 토큰이 만료되었는지 체크
      * @param token
      * @return
      */
-    public Claims extractClaims(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(getSigningKey(SECRET_KEY))
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+    public boolean isTokenExpired(String token) {
+        Date expiredDate = extractClaims(token).getExpiration();
+
+        // 토큰의 만료 날짜가 현재보다 이전인지 체크
+        return expiredDate.before(new Date());
+    }
+
+    public Boolean validateToken(String token, UserDetails userDetails) {
+        String email = getLoginEmail(token);
+
+        return email.equals(userDetails.getUsername())
+                && !isTokenExpired(token);
+    }
+
+    /**
+     * 토큰 남은 시간 반환
+     * @param token
+     * @return
+     */
+    public long getRemainMilliSeconds(String token) {
+        Date expiration = extractClaims(token).getExpiration();
+        Date now = new Date();
+        
+        return expiration.getTime() - now.getTime();
     }
 
     /**
@@ -71,17 +111,9 @@ public class JwtTokenUtil {
     }
 
     /**
-     * 발급된 토큰이 만료되었는지 체크
-     * @param token
-     * @param secretKey
-     * @return
+     * userId 추출(기본키)
      */
-    public static boolean isExpired(String token, String secretKey) {
-        Date expiredDate = extractClaims(token, secretKey).getExpiration();
-        
-        // 토큰의 만료 날짜가 현재보다 이전인지 체크
-        return expiredDate.before(new Date());
-    }
+
 
 
 
