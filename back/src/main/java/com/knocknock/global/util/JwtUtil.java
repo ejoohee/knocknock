@@ -63,6 +63,7 @@ public class JwtUtil {
         Claims claims = Jwts.claims();
         claims.put("email", email); // loginEmail을 넣어주어 나중에 꺼내 쓸 수 있음
         claims.put("userNo", principal.getUserId()); // 테스트
+        claims.put("userType", principal.getAuthority()); // 테스트
     
         return Jwts.builder()
                 .setClaims(claims)
@@ -123,6 +124,17 @@ public class JwtUtil {
      */
     public Long getUserNo(String token) {
         return (Long) extractClaims(token).get("userNo");
+    }
+
+    /**
+     * 관리자 유저인지 체크
+     */
+    public Boolean checkAdmin(String token) {
+        String userType = extractClaims(token).get("userType").toString();
+        if(userType.equals("ROLE_ADMIN"))
+            return true;
+
+        return false;
     }
 
     private Key getSigningKey(String secretKey) {
