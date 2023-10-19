@@ -16,7 +16,6 @@ import com.knocknock.domain.user.dto.response.UserResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
-import com.knocknock.global.dto.MessageDto;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -62,7 +61,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public MessageDto signUp(UserReqDto userReqDto) {
+    public void signUp(UserReqDto userReqDto) {
         // 회원가입 정보 유효성 확인
         if(!checkSignupInfo(userReqDto)) {
             log.error("[유저 회원가입] 회원가입 정보 유효성 불일치.");
@@ -85,8 +84,6 @@ public class UserServiceImpl implements UserService {
 
         Users user = userRepository.save(userReqDto.dtoToEntity());
         log.info("[유저 회원가입] 유저 생성 완료!!! 회원가입이 완료되었습니다!");
-
-
     }
 
     @Transactional
@@ -127,13 +124,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageDto logout(String email, String token) {
-        return null;
+    public void logout(String email, String token) {
+
     }
 
     @Override
-    public MessageDto findPassword(FindPasswordReqDto findPasswordReqDto, String token) {
-        return null;
+    public void findPassword(FindPasswordReqDto findPasswordReqDto, String token) {
+
     }
 
     @Override
@@ -142,18 +139,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageDto updatePassword(UpdatePasswordRepDto updatePasswordRepDto, String token) {
+    public void updatePassword(UpdatePasswordRepDto updatePasswordRepDto, String token) {
+
+    }
+
+    @Override
+    public UserResDto updateUser(UpdateUserReqDto updateUserReqDto, String token) {
         return null;
     }
 
     @Override
-    public MessageDto updateUser(UpdateUserReqDto updateUserReqDto, String token) {
-        return null;
-    }
+    public void withdraw(Boolean checkPassword, String token) {
 
-    @Override
-    public MessageDto withdraw(Boolean checkPassword, String token) {
-        return null;
     }
 
     @Override
@@ -167,8 +164,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageDto deleteUser(Long userId, String token) {
-        return null;
+    public void deleteUser(Long userId, String token) {
+
     }
 
     @Override
@@ -180,6 +177,7 @@ public class UserServiceImpl implements UserService {
     public AdminUserResDto findUser(Long userId, String token) {
         return null;
     }
+
 
     /**
      * 아이디(이메일) 중복 체크
@@ -209,8 +207,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public MessageDto addJiroCode(JiroCodeRepDto jiroCodeRepDto, String token) {
-        return null;
+    public void addJiroCode(JiroCodeRepDto jiroCodeRepDto, String token) {
+
     }
 
 
