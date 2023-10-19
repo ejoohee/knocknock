@@ -40,7 +40,6 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
-//    private final AuthenticationManager authenticationManager;
     private final JavaMailSender javaMailSender;
     private final RedisTemplate<String, Object> redisTemplate;
 
@@ -50,9 +49,8 @@ public class UserServiceImpl implements UserService {
      */
     public Boolean checkSignupInfo(UserReqDto userReqDto) {
         if(userReqDto.getEmail() == null || userReqDto.getEmail().equals("") ||
-                userReqDto.getPassword() == null || userReqDto.getPassword().equals("") ||
-                userReqDto.getNickname() == null || userReqDto.getNickname().equals("")) {
-
+           userReqDto.getPassword() == null || userReqDto.getPassword().equals("") ||
+           userReqDto.getNickname() == null || userReqDto.getNickname().equals("")) {
             return false;
         }
 
@@ -165,16 +163,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long userId, String token) {
+        // 관리자 체크
 
     }
 
     @Override
     public List<AdminUserResDto> findUserList(String token) {
+
+        // 관리자 체크
+
         return null;
     }
 
     @Override
     public AdminUserResDto findUser(Long userId, String token) {
+
+        // 관리자 체크
+        
         return null;
     }
 
@@ -210,6 +215,15 @@ public class UserServiceImpl implements UserService {
     public void addJiroCode(JiroCodeRepDto jiroCodeRepDto, String token) {
 
     }
+
+//    /**
+//     * 로그인 유저가 관리자 회원인지 확인합니다.
+//     * @param token
+//     * @return
+//     */
+//    public Boolean checkAdmin(String token) {
+//
+//    }
 
 
 }
