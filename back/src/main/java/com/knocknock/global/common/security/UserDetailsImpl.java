@@ -2,6 +2,7 @@ package com.knocknock.global.common.security;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.knocknock.domain.user.domain.UserType;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -21,6 +22,7 @@ public class UserDetailsImpl implements UserDetails {
     private String password; // getPassword 오버라이드 안해도됨
     private String authority;
 
+    @Builder
     public UserDetailsImpl(Long userId, String email, String password, String authority) {
         this.userId = userId;
         this.email = email;

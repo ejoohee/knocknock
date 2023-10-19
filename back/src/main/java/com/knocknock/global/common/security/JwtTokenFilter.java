@@ -1,8 +1,11 @@
-package com.knocknock.global.common.jwt;
+package com.knocknock.global.common.security;
 
+import com.knocknock.domain.user.dao.LogoutAccessTokenRedisRepository;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.service.UserService;
-import com.knocknock.global.util.JwtTokenUtil;
+import com.knocknock.global.common.jwt.JwtHeaderUtilEnum;
+import com.knocknock.global.common.security.UserDetailsServiceImpl;
+import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -10,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -25,12 +30,22 @@ import java.util.List;
 실패하면 권한부여 없이 다음 필터로 진행시킴
  */
 @RequiredArgsConstructor
+@Component
 @Slf4j
 public class JwtTokenFilter extends OncePerRequestFilter {
 
-    private final UserService userService;
-    private final String secretKey;
-    private final JwtTokenUtil jwtTokenUtil;
+//    private final UserService userService;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final LogoutAccessTokenRedisRepository
+
+    /**
+     * refresh token을 이용한 access token 재발급시 필터를 거치지 않도록 합니다.
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest req) throws ServletException {
+        return req.getRequestURI().contains("/reissue-token");
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
@@ -52,13 +67,13 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         String token = authorizationHeader.split(" ")[1];
 
         // 전송받은 Jwt token이 만료되었으면 => 다음 필터 진행(인증 X)
-        if(JwtTokenUtil.isExpired(token, secretKey)) {
+        if(jwtUtil.isTokenExpired(token)) {
             filterChain.doFilter(req, res);
             return;
         }
 
         // Jwt token에서 loginId 추출
-        String loginId = JwtTokenUtil.getLoginId(token, secretKey);
+        Long loginUserNo = jwtUtil.getUserNo(token);
 
         // loginId로 User 찾기
         Users loginUser = userService.getLoginUserByLoginId(loginId);
@@ -72,4 +87,16 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(req, res);
     }
+
+    private String getAccessToken(HttpServletRequest req) {
+        String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue());
+
+        if(StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
+            return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
+        }
+
+        return null;
+    }
+
+
 }

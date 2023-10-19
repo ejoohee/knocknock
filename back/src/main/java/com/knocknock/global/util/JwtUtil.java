@@ -1,11 +1,14 @@
 package com.knocknock.global.util;
 
+import com.knocknock.global.common.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +20,7 @@ import java.util.Date;
 @Component
 // Jwt Token 방식을 사용할 때 필요한 기능들을 정리해놓은 클래스
 // 새로운 Jwt Token 발급, Jwt Token의 Claim에서 "loginId" 꺼내기, 만료기간 체크 기능 수행
-public class JwtTokenUtil {
+public class JwtUtil {
 
     @Value("${jwt.secret_key}")
     private String SECRET_KEY;
@@ -52,9 +55,14 @@ public class JwtTokenUtil {
      * @return
      */
     private String createToken(String email, long expireTimeMs) {
+        // 테스트용
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+        
         // Claim = Jwt Token에 들어갈 정보
         Claims claims = Jwts.claims();
         claims.put("email", email); // loginEmail을 넣어주어 나중에 꺼내 쓸 수 있음
+        claims.put("userNo", principal.getUserId()); // 테스트
     
         return Jwts.builder()
                 .setClaims(claims)
@@ -77,7 +85,7 @@ public class JwtTokenUtil {
      * @param token
      * @return
      */
-    public boolean isTokenExpired(String token) {
+    public Boolean isTokenExpired(String token) {
         Date expiredDate = extractClaims(token).getExpiration();
 
         // 토큰의 만료 날짜가 현재보다 이전인지 체크
@@ -113,9 +121,9 @@ public class JwtTokenUtil {
     /**
      * userId 추출(기본키)
      */
-
-
-
+    public Long getUserNo(String token) {
+        return (Long) extractClaims(token).get("userNo");
+    }
 
     private Key getSigningKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);

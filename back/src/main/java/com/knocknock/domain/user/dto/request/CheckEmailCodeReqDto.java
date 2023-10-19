@@ -1,4 +1,4 @@
-package com.knocknock.domain.user.dto;
+package com.knocknock.domain.user.dto.request;
 
 import lombok.Data;
 

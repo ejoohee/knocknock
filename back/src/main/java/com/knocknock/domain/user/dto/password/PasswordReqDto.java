@@ -1,4 +1,4 @@
-package com.knocknock.domain.user.dto;
+package com.knocknock.domain.user.dto.password;
 
 import lombok.Builder;
 import lombok.Data;
