@@ -53,4 +53,9 @@ public class Users {
         this.userType = UserType.getUserType(userType);
     }
 
+    // 비밀번호 변경
+    public void updatePassword(String encodingPassword) {
+        this.password = encodingPassword;
+    }
+
 }
