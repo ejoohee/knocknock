@@ -50,45 +50,43 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getAccessToken(req);
 
-        if(accessToken == null || accessToken.equals("undefined")){
-            log.error("[토큰 필터]토큰을 찾을 수 없습니다.");
-            throw new TokenException("accessToken이 null이거나 undefined입니다.");
+        if (accessToken != null && !accessToken.equals("undefined")) {
+
+            // 로그아웃 여부 확인
+            // 로그아웃한 상태면 해당 accessToken은 만료되지 않았어도 무효함
+            checkLogout(accessToken);
+
+            String email = null;
+            try {
+                email = jwtUtil.getLoginEmail(accessToken);
+                log.info("[토큰 필터] email : {}", email);
+            } catch (ExpiredJwtException e) {
+                // 토큰 만료
+                log.info("[토큰 필터] 토큰 만료.");
+                setResponse(res, HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
+            } catch (SignatureException e) { // 체크(쓰면안대)
+                log.info("[토큰 필터] 유효하지 않은 토큰");
+                setResponse(res, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
+            }
+
+            log.info("[토큰 필터] 토큰 검사 완료!");
+
+            if(email == null) {
+                log.error("[토큰 필터] 유저 정보를 반환하지 못했습니다.");
+                throw new TokenException("토큰으로 유저 정보를 반환하지 못했습니다.");
+            }
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(email);
+
+            // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
+            equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), email);
+            // 액세스 토큰의 유효성 검증
+            validateAccessToken(accessToken, userDetails);
+            // securityContextHolder에 인증된 회원의 정보를 저장
+            processSecurity(req, userDetails);
+
+
         }
-
-        // 로그아웃 여부 확인
-        // 로그아웃한 상태면 해당 accessToken은 만료되지 않았어도 무효함
-        checkLogout(accessToken);
-
-        String email = null;
-        try {
-            email = jwtUtil.getLoginEmail(accessToken);
-            log.info("[토큰 필터] email : {}", email);
-        } catch (ExpiredJwtException e) {
-            // 토큰 만료
-            log.info("[토큰 필터] 토큰 만료.");
-            setResponse(res, HttpStatus.UNAUTHORIZED, "만료된 토큰입니다.");
-        } catch (SignatureException e) { // 체크(쓰면안대)
-            log.info("[토큰 필터] 유효하지 않은 토큰");
-            setResponse(res, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
-        }
-
-        log.info("[토큰 필터] 토큰 검사 완료!");
-
-        if(email == null) {
-            log.error("[토큰 필터] 유저 정보를 반환하지 못했습니다.");
-            throw new TokenException("토큰으로 유저 정보를 반환하지 못했습니다.");
-        }
-
-        UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-
-        // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
-        equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), email);
-        // 액세스 토큰의 유효성 검증
-        validateAccessToken(accessToken, userDetails);
-        // securityContextHolder에 인증된 회원의 정보를 저장
-        processSecurity(req, userDetails);
-
-
 
 
 //        String authorizationHeader = req.getHeader(HttpHeaders.AUTHORIZATION);
