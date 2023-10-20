@@ -5,8 +5,7 @@ import lombok.Data;
 @Data
 public class FindPasswordReqDto {
 
+    private String nickname; // 먼가 하나 인증할게 필요해서 닉네임
     private String email;
-    private String userName; // 먼가 하나 인증할게 필요한데 머로하지.
-
 
 }
