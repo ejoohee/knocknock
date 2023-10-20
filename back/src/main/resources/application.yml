@@ -25,6 +25,10 @@ spring:
       sql: debug
       type.descriptor.sql: trace # sql의 데이터까지 다 보이게
 
+  redis:
+    host: localhost
+    port: 6379
+
 server:
   error:
     include-exception: false     # Response 에 Exception 을 표시할지
@@ -35,7 +39,7 @@ server:
 
 jwt:
   issuer: knocknockservice
-  secret_key: ${JWT_SECRET}
+  secret_key: +Oijz4jS1qr6TEmDaEBkwUBKTFZz7UvFyAzUElZOlZ+nPskEZyx/EsLFNhdz1kjBmjw=
   access_expiration_ms: 10000000
   refresh_expiration_ms: 2592000000
 
