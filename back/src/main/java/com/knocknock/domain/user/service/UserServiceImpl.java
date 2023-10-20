@@ -60,6 +60,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void signUp(UserReqDto userReqDto) {
+        log.info("[유저 회원가입] 회원가입 요청. email : {}", userReqDto.getEmail());
+
         // 회원가입 정보 유효성 확인
         if(!checkSignupInfo(userReqDto)) {
             log.error("[유저 회원가입] 회원가입 정보 유효성 불일치.");
