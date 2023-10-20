@@ -1,5 +1,6 @@
 package com.knocknock.domain.email.api;
 
+import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
 import com.knocknock.domain.email.service.EmailService;
@@ -32,8 +33,18 @@ public class EmailController {
             description = "비밀번호 찾기를 위한 임시 비밀번호 발급입니다."
     )
     @PostMapping("/password")
-    public ResponseEntity<EmailCodeResDto> findPasswordMail(@RequestBody EmailPostDto emailPostDto) {
+    public ResponseEntity<EmailCodeResDto> sendPasswordMail(@RequestBody EmailPostDto emailPostDto) {
         return ResponseEntity.ok(emailService.sendEmail(emailPostDto, "password"));
     }
+
+    @Operation(
+            summary = "이메일 인증 코드 유효 검사",
+            description = "인증 코드가 일치하는지 체크합니다."
+    )
+    @PostMapping("/check")
+    public ResponseEntity<Boolean> checkEmailCode(@RequestBody EmailCodeReqDto emailCodeReqDto) {
+        return ResponseEntity.ok(emailService.checkEmailCode(emailCodeReqDto));
+    }
+
 
 }
