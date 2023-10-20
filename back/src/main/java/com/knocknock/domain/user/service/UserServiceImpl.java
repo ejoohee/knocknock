@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
-    private final JavaMailSender javaMailSender;
+//    private final JavaMailSender javaMailSender;
     private final RedisTemplate<String, Object> redisTemplate;
 
     /**
