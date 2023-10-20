@@ -55,16 +55,10 @@ public class JwtUtil {
      * @return
      */
     private String createToken(String email, long expireTimeMs) {
-        // 테스트용
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-        
         // Claim = Jwt Token에 들어갈 정보
         Claims claims = Jwts.claims();
         claims.put("email", email); // loginEmail을 넣어주어 나중에 꺼내 쓸 수 있음
-        claims.put("userNo", principal.getUserId()); // 테스트
-        claims.put("userType", principal.getAuthority()); // 테스트
-    
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
@@ -119,18 +113,26 @@ public class JwtUtil {
         return extractClaims(token).get("email").toString();
     }
 
+
     /**
      * userId 추출(기본키)
      */
-    public Long getUserNo(String token) {
-        return (Long) extractClaims(token).get("userNo");
+    public Long getUserNo() {
+        return getPrincipal().getUserId();
+    }
+
+    private UserDetailsImpl getPrincipal() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+
+        return principal;
     }
 
     /**
      * 관리자 유저인지 체크
      */
-    public Boolean checkAdmin(String token) {
-        String userType = extractClaims(token).get("userType").toString();
+    public Boolean checkAdmin() {
+        String userType = getPrincipal().getAuthority();
         if(userType.equals("ROLE_ADMIN"))
             return true;
 
