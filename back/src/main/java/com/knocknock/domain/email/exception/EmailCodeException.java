@@ -1,6 +1,7 @@
-package com.knocknock.domain.email;
+package com.knocknock.domain.email.exception;
 
-import javax.mail.MessagingException;
+
+import com.knocknock.global.exception.exception.MessagingException;
 
 public class EmailCodeException extends MessagingException {
 
