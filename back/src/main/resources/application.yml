@@ -35,6 +35,21 @@ spring:
     host: localhost
     port: 6379
 
+  mail:
+    host: smtp.gmail.com # SMTP 서버 호스트
+    port: 587           # SMTP 서버 포트
+    username: knocknock.welcome@gmail.com # SMTP 서버 로그인 아이디(이메일의 앞부분)
+    password: 'hgxzaslvrpbkfphz'
+    properties:
+      mail:
+        smtp:
+          auth: true # 사용자 인증 시도 여부(기본값: FALSE)
+          starttls:
+            enable: true
+            trust: smtp.gmail.com
+
+
+
 server:
   error:
     include-exception: false     # Response 에 Exception 을 표시할지
