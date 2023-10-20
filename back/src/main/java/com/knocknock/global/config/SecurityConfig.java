@@ -6,11 +6,8 @@ import com.knocknock.global.common.security.AuthenticationJwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.RequestCacheConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -32,11 +29,22 @@ public class SecurityConfig  {
         return new BCryptPasswordEncoder();
     }
 
+    private static final String[] PERMIT_URL_ARRAY = {
+        // swagger
+            "/favicon.ico",
+            "/error",
+            "/swagger-ui/**",
+            "/swagger-resources/**",
+            "/v3/api-docs/**",
 
-//    @Bean
-//    public WebSecurityCustomizer webSecurityCustomizer() {
-//        return web -> web.ignoring().antMatchers("/resources/**");
-//    }
+        // user
+            "/api/user/**",
+
+        // model
+
+
+
+    };
 
     /*
 antMatchers("/test")는 정확한 /test URL만 일치.
@@ -50,45 +58,29 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.cors().and().csrf().disable()
+        // h2-console local 연결
+        http.authorizeRequests()
+                .antMatchers("/h2-console/**").permitAll()
+                .and()
+                .headers()
+                .frameOptions()
+                .disable()
+                .and()
+                .csrf()
+                .ignoringAntMatchers("/h2-console/**").disable();
+
+        return http.authorizeRequests()
+                .antMatchers(PERMIT_URL_ARRAY).permitAll()
+                .anyRequest().authenticated()
+                .and()
+                .httpBasic().and().formLogin().disable()
+                .cors().and().csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(authenticationJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler)
-                .and()
-                .authorizeRequests()
-                .antMatchers("/h2-console/**").permitAll()
-                .anyRequest().authenticated()
-                .and()
-                .httpBasic().and().formLogin().disable();
-
-
-
-
-//        http.formLogin()
-//                .loginPage("/login")
-//                .permitAll();
-//
-//        http.logout()
-//                .logoutSuccessUrl("/");
-
-        return http.build();
-    }
-
-    /**
-     * Resource용 SecurityFilterChain 적용
-     * resources의 경우 securityContext 등에 대한 조회가 불필요하므로 disable
-     */
-    @Bean
-    @Order(0) // 먼저 FilterChain을 타도록 지정
-    public SecurityFilterChain resources(HttpSecurity http) throws Exception {
-        return http.requestMatchers(matchers -> matchers.antMatchers( "/resources/**"))
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
-                .requestCache(RequestCacheConfigurer::disable)
-                .securityContext(AbstractHttpConfigurer::disable)
-                .sessionManagement(AbstractHttpConfigurer::disable).build();
+                .accessDeniedHandler(accessDeniedHandler).and().build();
     }
 
 
