@@ -1,4 +1,9 @@
 spring:
+  web:
+    resources:
+      static-locations: classpath:/dist/
+      add-mappings: "false"
+
   jpa:
     properties:
       hibernate:
@@ -12,6 +17,7 @@ spring:
 
   h2:
     console:
+      path: /h2-console
       enabled: true
 
   datasource:
@@ -46,8 +52,8 @@ jwt:
 cors:
   front_url: "*"
 
-springdoc:
-  api-docs:
-    path: /spring/api-docs/json
-  swagger-ui:
-    path: /spring/api-docs
+# swagger 관련
+springfox:
+  documentation:
+    swagger:
+      use-model-v3: false
