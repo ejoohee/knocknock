@@ -1,4 +1,4 @@
-package com.knocknock.domain.email;
+package com.knocknock.domain.email.domain;
 
 import lombok.Builder;
 import lombok.Data;

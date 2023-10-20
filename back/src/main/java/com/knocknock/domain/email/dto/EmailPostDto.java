@@ -1,4 +1,4 @@
-package com.knocknock.domain.email;
+package com.knocknock.domain.email.dto;
 
 import lombok.Getter;
 
