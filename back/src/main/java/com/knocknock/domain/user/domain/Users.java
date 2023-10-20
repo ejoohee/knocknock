@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
@@ -19,18 +20,27 @@ public class Users {
     @Column(name = "user_id")
     private Long userId;
 
+    @Column(unique = true, nullable = false)
     private String email; // 아이디
 
-    private String nickname;
-
+    @Column(nullable = false)
     private String password;
 
+    @Column(length = 20, nullable = false)
+    private String nickname;
+
+    @Column(nullable = false, columnDefinition = "varchar(50)")
+    @ColumnDefault("'ROLE_USER'")
+    @Enumerated(EnumType.STRING)
     private UserType userType;
 
+    @Column(length = 10)
     private Integer giroCode;
 
+    @Column(nullable = false)
     private String address;
 
+    @ColumnDefault("false")
     private Boolean isSocial;
 
     @Builder
