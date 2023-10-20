@@ -8,7 +8,7 @@ import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
 import com.knocknock.domain.user.dto.password.PasswordReqDto;
-import com.knocknock.domain.user.dto.password.UpdatePasswordRepDto;
+import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.response.AdminUserResDto;
 import com.knocknock.domain.user.dto.response.LoginResDto;
@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +29,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
-    private final JavaMailSender javaMailSender;
     private final RedisTemplate<String, Object> redisTemplate;
-
-    private Random random;
 
     /**
      * 회원가입 정보의 유효성을 확인합니다.
@@ -64,7 +59,14 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void signUp(UserReqDto userReqDto) {
-        log.info("[유저 회원가입] 회원가입 요청. email : {}", userReqDto.getEmail());
+        String email = userReqDto.getEmail();
+        log.info("[유저 회원가입] 회원가입 요청. email : {}", email);
+
+        // 중복 이메일 체크
+        if(!checkEmail(email)) {
+            log.error("[유저 회원가입] 이미 존재하는 이메일입니다.");
+            throw new UserNotFoundException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
+        }
 
         // 회원가입 정보 유효성 확인
         if(!checkSignupInfo(userReqDto)) {
@@ -72,12 +74,12 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         }
 
-        log.info("[유저 회원가입] 회원가입 정보 유효성 일치. 다음 로직 실행");
+        log.info("[유저 회원가입] 이메일 인증 코드 발송 요청.");
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(userReqDto.getEmail());
-        if(checkResult == null || !checkResult.equals("이메일 인증 완료"))
+        if(checkResult == null || !checkResult.equals("인증완료"))
             throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
 
         log.info("[유저 회원가입] 이메일 인증 완료!");
@@ -106,7 +108,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
         }
 
-        log.info("[유저 로그인] 로그인 성공! email : {}", email);
+        log.info("[유저 로그인] 로그인 요청. email : {}", email);
 
         // 토큰 생성
         String accessToken = jwtUtil.generateAccessToken(email);
@@ -125,6 +127,21 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .nickname(user.getNickname())
                 .build();
+    }
+
+    /**
+     * 로그인 유저를 반환
+     */
+    private Users getLoginUser(String token) {
+        String email = jwtUtil.getLoginEmail(token);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        return loginUser;
     }
 
     @Override
@@ -153,7 +170,25 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void findPassword(FindPasswordReqDto findPasswordReqDto) {
+        String email = findPasswordReqDto.getEmail();
+        log.info("[비밀번호 찾기] 찾기 요청. email : {}", email);
 
+        Users findUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[비밀번호 찾기] 존재하지 않는 회원입니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        // 유저 닉네임 일치 확인
+        if(!findUser.getNickname().equals(findPasswordReqDto.getNickname())) {
+            log.error("[비밀번호 찾기] 정보가 일치하지 않습니다.");
+            throw new UserNotFoundException(UserExceptionMessage.INFO_NOT_VALID.getMessage());
+        }
+
+        // 일치하면 메일 발송 요청 ---> 프론트
+
+        // 코드 일치 확인할 필요없음
+        // 받은 비번으로 지들이 로그인 할거니까
     }
 
     /**
@@ -161,7 +196,16 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public void updateTempPassword(String email, String tempPassword) {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[임시 비밀번호 발급] 존재하지 않는 회원입니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
 
+        // 임시 패스워드 암호화
+        String encodingPassword = passwordEncoder.encode(tempPassword);
+        user.updatePassword(encodingPassword);
+        userRepository.save(user);
     }
 
     @Override
@@ -170,8 +214,38 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updatePassword(UpdatePasswordRepDto updatePasswordRepDto, String token) {
+    public void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token) {
 
+        // 유저
+        Users loginUser = getLoginUser(token);
+        log.info("[비밀번호 변경] 변경 요청. 로그인 유저 : {}", loginUser.getEmail());
+
+        String originPassword = loginUser.getPassword();
+        // 패스워드 일치 확인
+        if(!passwordEncoder.matches(updatePasswordRepDto.getPassword(), originPassword)) {
+            log.error("[비밀번호 변경] 비밀번호 불일치! 변경 불가.");
+            throw new UserNotFoundException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
+        }
+
+        // 패스워드 일치하면 변경 가능
+        // 이전이랑 달라야함 ---> 프론트에서 거를건가?
+        if(passwordEncoder.matches(updatePasswordRepDto.getNewPassword(), originPassword)) {
+            log.error("[비밀번호 변경] 이전 비밀번호와 다른 비밀번호를 입력해야 합니다.");
+            throw new UserNotFoundException(UserExceptionMessage.UPDATE_SAME_PASSWORD_ERROR.getMessage());
+        }
+
+        // 확인한 비밀번호와 일치하지 않음
+        if(!updatePasswordRepDto.getNewPassword().equals(updatePasswordRepDto.getNewPasswordCheck())) {
+            log.error("[비밀번호 변경] 입력한 비밀번호가 일치하지 않습니다.");
+            throw new UserNotFoundException(UserExceptionMessage.UPDATE_PASSWORD_ERROR.getMessage());
+        }
+
+        log.info("[비밀번호 변경] 패스워드 변경 완료.");
+
+        // 패스워드 암호화
+        String encodingPassword = passwordEncoder.encode(updatePasswordRepDto.getNewPassword());
+        loginUser.updatePassword(encodingPassword);
+        userRepository.save(loginUser);
     }
 
     @Override
@@ -232,31 +306,18 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+
     @Override
-    public void sendEmailCode(String email) {
-        log.info("[회원가입을 위한 이메일 코드 발신] 이메일 코드 발신 요청. email : {}", email);
-
-        // 임의의 authKey 생성
-            random = this.random == null ? new Random() : random;
-        String authKey = String.valueOf(random.nextInt(888888) + 111111);
-
-        String subject = "녹녹(knocknock) 회원가입 인증번호";
-        String text = "회원가입을 위한 인증번호는 <" + authKey + ">입니다. <br/>";
-
-
-
+    public void addJiroCode(JiroCodeReqDto jiroCodeRepDto, String token) {
 
     }
 
-    @Override
-    public Boolean checkEmailCode(CheckEmailCodeReqDto checkEmailCodeReqDto) {
-        return null;
-    }
 
-    @Override
-    public void addJiroCode(JiroCodeRepDto jiroCodeRepDto, String token) {
+//    @Override
+//    public Boolean checkEmailCode(EmailCodeReqDto checkEmailCodeReqDto) {
+//        return null;
+//    }
 
-    }
 
 //    /**
 //     * 로그인 유저가 관리자 회원인지 확인합니다.
