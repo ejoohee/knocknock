@@ -1,5 +1,6 @@
 package com.knocknock.domain.user.api;
 
+import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.LoginReqDto;
 import com.knocknock.domain.user.dto.request.UserReqDto;
@@ -54,6 +55,12 @@ public class UserController {
         return ResponseEntity.ok(MessageDto.message("UPDATE PASSWORD SUCCESS"));
     }
 
+    @PostMapping("/password")
+    public ResponseEntity<MessageDto> findPassword(@RequestBody FindPasswordReqDto reqDto) {
+        userService.findPassword(reqDto);
+
+        return ResponseEntity.ok(MessageDto.message("PASSWORD-MAIL SENT SUCCESS"));
+    }
 
 
 }
