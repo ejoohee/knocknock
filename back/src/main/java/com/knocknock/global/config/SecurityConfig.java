@@ -40,6 +40,9 @@ public class SecurityConfig  {
         // user
             "/api/user/**",
 
+
+        // email
+            "/api/email/**",
         // model
 
 
