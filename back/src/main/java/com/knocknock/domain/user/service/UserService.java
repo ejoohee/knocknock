@@ -21,9 +21,10 @@ public interface UserService {
     void addJiroCode(JiroCodeRepDto jiroCodeRepDto, String token); // 지로 코드 등록
 
     LoginResDto login(LoginReqDto loginReqDto);
-    void logout(String email, String token);
+    void logout(String token);
 
-    void findPassword(FindPasswordReqDto findPasswordReqDto, String token); // 비밀번호 찾아 이메일 전송하기
+    void findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
+    void updateTempPassword(String email, String tempPassword);
     Boolean checkPassword(PasswordReqDto passwordReqDto, String token);  // 서비스전 비밀번호 체크
     void updatePassword(UpdatePasswordRepDto updatePasswordRepDto, String token); // 비밀번호 변경
 
@@ -33,6 +34,7 @@ public interface UserService {
 
     UserResDto findMyInfo(String token); // 내정보 조회
 
+    // 토큰 재발급
     ReissueTokenResDto reissueToken(String accessToken, String refreshToken);
 
 

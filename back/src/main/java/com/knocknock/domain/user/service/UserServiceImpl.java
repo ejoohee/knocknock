@@ -3,6 +3,7 @@ package com.knocknock.domain.user.service;
 import com.knocknock.domain.user.dao.LogoutAccessTokenRedisRepository;
 import com.knocknock.domain.user.dao.RefreshTokenRedisRepository;
 import com.knocknock.domain.user.dao.UserRepository;
+import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +42,10 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
-//    private final JavaMailSender javaMailSender;
+    private final JavaMailSender javaMailSender;
     private final RedisTemplate<String, Object> redisTemplate;
+
+    private Random random;
 
     /**
      * 회원가입 정보의 유효성을 확인합니다.
@@ -124,12 +128,39 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void logout(String email, String token) {
+    public void logout(String token) {
+        log.info("[로그아웃] 로그아웃 요청! 유저 조회 실시.");
+
+        // 로그아웃 여부를 redis에 넣어서 accessToken이 유효한지 체크
+        String email = jwtUtil.getLoginEmail(token);
+        log.info("[로그아웃] 로그아웃 요청 email : {}", email);
+
+        long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(token);
+        refreshTokenRepository.deleteById(email);
+        logoutAccessTokenRepository.save(LogoutAccessToken.builder()
+                .email(email)
+                .accessToken(token)
+                .expiration(remainMilliSeconds / 1000)
+                .build());
+
+        log.info("[로그아웃] 로그아웃 처리 완료!");
+    }
+
+    /**
+     * 비밀번호 찾기를 요청하면
+     * 이메일로 임시 비밀번호가 발급됩니다.
+     * @param findPasswordReqDto
+     */
+    @Override
+    public void findPassword(FindPasswordReqDto findPasswordReqDto) {
 
     }
 
+    /**
+     * 임시 비밀번호를 발급합니다.
+     */
     @Override
-    public void findPassword(FindPasswordReqDto findPasswordReqDto, String token) {
+    public void updateTempPassword(String email, String tempPassword) {
 
     }
 
@@ -188,8 +219,6 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 아이디(이메일) 중복 체크
-     * @param email
-     * @return
      */
     @Transactional(readOnly = true)
     @Override
@@ -205,6 +234,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void sendEmailCode(String email) {
+        log.info("[회원가입을 위한 이메일 코드 발신] 이메일 코드 발신 요청. email : {}", email);
+
+        // 임의의 authKey 생성
+            random = this.random == null ? new Random() : random;
+        String authKey = String.valueOf(random.nextInt(888888) + 111111);
+
+        String subject = "녹녹(knocknock) 회원가입 인증번호";
+        String text = "회원가입을 위한 인증번호는 <" + authKey + ">입니다. <br/>";
+
+
+
 
     }
 
