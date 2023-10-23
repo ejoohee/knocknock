@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class FindModelListReqDto {
+public class FindModelListResDto {
 
     Long modelId;
 
