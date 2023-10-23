@@ -24,7 +24,7 @@ public interface UserService {
     LoginResDto login(LoginReqDto loginReqDto);
     void logout(String token);
 
-    void findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
+    Boolean findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
     void updateTempPassword(String email, String tempPassword);
     Boolean checkPassword(PasswordReqDto passwordReqDto, String token);  // 서비스전 비밀번호 체크
     void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token); // 비밀번호 변경
