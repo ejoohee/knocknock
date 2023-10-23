@@ -38,7 +38,10 @@ public class SecurityConfig  {
             "/v3/api-docs/**",
 
         // user
-            "/api/user/**",
+//            "/api/user/**",
+            "/api/user/login",
+            "/api/user/sign-up",
+//            "/api/user/password" // 얘는 Post만
 
 
         // email
