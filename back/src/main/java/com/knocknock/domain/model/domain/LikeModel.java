@@ -2,6 +2,7 @@ package com.knocknock.domain.model.domain;
 
 import com.knocknock.domain.user.domain.Users;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import javax.persistence.*;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "likemodel")
 public class LikeModel {
 
     @Id
@@ -18,11 +20,17 @@ public class LikeModel {
     Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @Column(name = "model_id")
+    @JoinColumn(name = "model_id")
     Model model;
+
+    @Builder
+    public LikeModel(Users user, Model model) {
+        this.user = user;
+        this.model = model;
+    }
 
 }

@@ -1,8 +1,14 @@
 package com.knocknock.domain.category.domain;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Category {
 
     @Id
@@ -10,7 +16,7 @@ public class Category {
     Long id;
 
     @Column(length = 40, name = "category_name", nullable = false)
-    String categoryName;
+    String name;
 
     @Column(length = 40, name = "usage")
     String usage;

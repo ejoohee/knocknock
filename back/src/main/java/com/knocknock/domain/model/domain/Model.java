@@ -1,9 +1,7 @@
 package com.knocknock.domain.model.domain;
 
 import com.knocknock.domain.category.domain.Category;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import javax.persistence.*;
@@ -12,6 +10,7 @@ import java.util.Date;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "Model")
 public class Model {
 
     @Id
@@ -59,6 +58,22 @@ public class Model {
 
     @Column(name = "released_date")
     Date releasedDate;
+
+    @Builder
+    public Model(Category category, String name, String brand, Integer grade, String img, String url, Integer usage, Integer usage2, Integer usage3, Integer co2, Integer cost, Date releasedDate) {
+        this.category = category;
+        this.name = name;
+        this.brand = brand;
+        this.grade = grade;
+        this.img = img;
+        this.url = url;
+        this.usage = usage;
+        this.usage2 = usage2;
+        this.usage3 = usage3;
+        this.co2 = co2;
+        this.cost = cost;
+        this.releasedDate = releasedDate;
+    }
 
     // 비즈니스 메서드
 
