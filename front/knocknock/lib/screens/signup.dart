@@ -16,6 +16,7 @@ TextEditingController passwordController = TextEditingController();
 TextEditingController passwordConfirmController = TextEditingController();
 TextEditingController nicknameController = TextEditingController();
 TextEditingController addressController = TextEditingController();
+String enteredCode = "";
 final _formKey = GlobalKey<FormState>();
 Map<String, String> formData = {};
 final emailRegex = RegExp(
@@ -39,6 +40,156 @@ void searchAddress(BuildContext context) async {
 }
 
 class _SignupState extends State<Signup> {
+  bool isLoading = false;
+  bool isEmailVerified = false;
+
+  onCheckCodeTap() async {
+    enteredCode = verificationController.text;
+    final email = emailController.text;
+    final response = await userService.checkCode(email, enteredCode);
+
+    if (response == "true") {
+      setState(() {
+        isEmailVerified = true; // 인증 성공 시 변수를 true로 설정
+      });
+      if (!context.mounted) return;
+      Navigator.of(context).pop();
+    } else {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('인증 번호를 다시 확인해주세요.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  showVerificationDialog() async {
+    String email = emailController.text;
+    setState(() {
+      isLoading = true; // 로딩 시작
+    });
+    final response = await userService.sendCheckEmailCode(email);
+    setState(() {
+      isLoading = false; // 로딩 완료
+    });
+    if (response == "true") {
+      if (!mounted) return;
+      await showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text('이메일 인증'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('이메일로 발송된 인증번호를 입력하세요.'),
+                TextFormField(
+                  controller: verificationController,
+                  decoration: const InputDecoration(
+                    labelText: '인증번호',
+                  ),
+                  keyboardType: TextInputType.number,
+                ),
+              ],
+            ),
+            actions: <Widget>[
+              TextButton(
+                onPressed: onCheckCodeTap,
+                child: const Text('확인'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(dialogContext).pop(); // 대화상자 닫기
+                },
+                child: const Text('취소'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('다시 시도해주세요.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  // 이메일 인증 버튼 클릭 시 실행되는 함수
+  onCertificationButtonTap() async {
+    String email = emailController.text;
+    if (emailRegex.hasMatch(email)) {
+      final check = await userService.checkEmail(email);
+      if (check == "true") {
+        await showVerificationDialog();
+      } else {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('이미 가입된 이메일입니다.'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('유효한 이메일을 입력하세요.'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,10 +199,10 @@ class _SignupState extends State<Signup> {
         child: Column(
           children: [
             Container(
-              height: MediaQuery.of(context).size.height * 0.05,
+              height: MediaQuery.of(context).size.height * 0.1,
             ),
             Container(
-              height: MediaQuery.of(context).size.height * 0.2,
+              height: MediaQuery.of(context).size.height * 0.15,
               alignment: Alignment.center,
               child: const Text(
                 '회원가입',
@@ -93,7 +244,7 @@ class _SignupState extends State<Signup> {
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 15),
+                                vertical: 15, horizontal: 15),
                             labelText: '이메일',
                             fillColor: Colors.grey[200],
                             filled: true,
@@ -128,7 +279,7 @@ class _SignupState extends State<Signup> {
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 15),
+                            vertical: 15, horizontal: 15),
                         labelText: '비밀번호',
                         fillColor: Colors.grey[200],
                         filled: true,
@@ -185,7 +336,7 @@ class _SignupState extends State<Signup> {
                           borderRadius: BorderRadius.circular(15.0),
                         ),
                         contentPadding: const EdgeInsets.symmetric(
-                            vertical: 20, horizontal: 15),
+                            vertical: 15, horizontal: 15),
                         labelText: '닉네임',
                         fillColor: Colors.grey[200],
                         filled: true,
@@ -216,7 +367,7 @@ class _SignupState extends State<Signup> {
                               borderRadius: BorderRadius.circular(15.0),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 20, horizontal: 15),
+                                vertical: 15, horizontal: 15),
                             labelText: '주소',
                             fillColor: Colors.grey[200],
                             filled: true,

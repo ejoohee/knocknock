@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knocknock/screens/mainpage.dart';
 import 'package:knocknock/screens/signup.dart';
 import 'package:knocknock/services/user_service.dart';
 
@@ -18,6 +19,67 @@ final emailRegex = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
 class _LoginState extends State<Login> {
+  bool isLoading = false;
+
+  // 로그인 버튼 누르면 실행되는 함수
+  onLoginTap() async {
+    String email = emailController.text;
+    String password = passwordController.text;
+
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        isLoading = true;
+      });
+      final loginSuccess = await userService.login(email, password);
+      setState(() {
+        isLoading = false;
+      });
+      if (loginSuccess == 201) {
+        if (!mounted) return;
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => const MainPage()));
+      } else if (loginSuccess == 400) {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('이메일 혹은 비밀번호를 확인해주세요'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      } else {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('서버 연결 오류입니다'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +122,7 @@ class _LoginState extends State<Login> {
                         return null;
                       },
                       decoration: InputDecoration(
+                        hintText: "회원가입된 이메일을 입력해주세요",
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.green),
                           borderRadius: BorderRadius.circular(15.0),
@@ -88,6 +151,7 @@ class _LoginState extends State<Login> {
                         return null;
                       },
                       decoration: InputDecoration(
+                        hintText: "8~16자리 사이로 입력해주세요",
                         focusedBorder: OutlineInputBorder(
                           borderSide: const BorderSide(color: Colors.green),
                           borderRadius: BorderRadius.circular(15.0),
@@ -105,6 +169,7 @@ class _LoginState extends State<Login> {
                     ),
                     const SizedBox(height: 30),
                     GestureDetector(
+                      onTap: onLoginTap,
                       child: Container(
                         alignment: Alignment.center,
                         width: 300,

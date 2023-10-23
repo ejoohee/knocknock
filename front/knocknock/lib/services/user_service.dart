@@ -38,12 +38,12 @@ class UserService {
         await storage.write(key: "refreshToken", value: refreshToken);
         await storage.write(key: "nickname", value: nickname);
         await storage.write(key: "address", value: address);
-        return 201;
+        return 201; // 로그인 성공 및 토큰 생성 성공
       }
     } else if (response.statusCode == 400) {
-      return 400;
+      return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
     }
-    return 500;
+    return 500; // 서버 연결 오류
   }
 
   // 2. 로그아웃
@@ -59,10 +59,12 @@ class UserService {
 
     if (response.statusCode == 200) {
       await storage.deleteAll();
-      return 200;
+      return 200; // 로그아웃 성공
     } else if (response.statusCode == 403) {
+      // accessToken 만료
       logout();
     } else if (response.statusCode == 500) {
+      // 서버 연결 오류
       return 500;
     }
 
@@ -84,6 +86,7 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
+      // 일치 검사 성공
       // 3-1. 임시 비밀번호 발급
       final url2 = Uri.parse('$baseUrl/email/password');
       final response2 = await http.post(
@@ -96,14 +99,16 @@ class UserService {
         ),
       );
       if (response2.statusCode == 200) {
-        return 200;
+        return 200; // 이메일 발신 성공
+      } else if (response2.statusCode == 400) {
+        return 400; // 이메일 발신 실패(보통 시간 초과)
       } else if (response2.statusCode == 500) {
         return 500;
       }
     } else if (response.statusCode == 400) {
-      return 400;
+      return 400; // 존재하지 않는 회원
     }
-    return 500;
+    return 500; // 서버 연결 오류
   }
 
   // 4. 이메일 중복검사
@@ -116,11 +121,11 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
-      return 200;
+      return 200; // 이메일 중복 검사 성공
     } else if (response.statusCode == 400) {
-      return 400;
+      return 400; // 이메일 중복
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
@@ -133,9 +138,11 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
-      return 200;
+      return 200; // 이메일 발신 성공
+    } else if (response.statusCode == 400) {
+      return 400; // 이메일 중복(checkEmail에서 거르긴함) or 이메일 발신 실패
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
@@ -151,10 +158,18 @@ class UserService {
       }),
     );
 
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      return 200;
+      if (responseBody['success'] == true) {
+        return 200; // 이메일 인증 코드 일치
+      } else {
+        return 201; // 이메일 인증 코드 불일치
+      }
+    } else if (response.statusCode == 400) {
+      return 400; // 해당 이메일로 유효한 인증 코드 미존재
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
@@ -176,11 +191,11 @@ class UserService {
     );
 
     if (response.statusCode == 201) {
-      return 201;
+      return 201; // 회원 가입 성공
     } else if (response.statusCode == 400) {
-      return 400; // 하나라도 안 쓰면, email 인증 안 했으면
+      return 400; // 회원 가입에 필요한 조건 미충족 or 이메일 인증 미완료
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 }
