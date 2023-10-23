@@ -5,6 +5,9 @@ import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
 import com.knocknock.domain.email.exception.EmailCodeException;
+import com.knocknock.domain.user.dao.UserRepository;
+import com.knocknock.domain.user.exception.UserException;
+import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.service.UserService;
 import com.knocknock.global.exception.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +30,25 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class EmailServiceImpl implements EmailService {
 
-    private final SpringTemplateEngine templateEngine; // 타임리프 이용
     private final JavaMailSender javaMailSender;
+    private final UserRepository userRepository;
     private final UserService userService;
     private final RedisTemplate<String, Object> redisTemplate; // 이메일 코드 저장용
+    private final SpringTemplateEngine templateEngine; // 타임리프 이용
+
+
 
     @Override
     public EmailCodeResDto sendEmail(EmailPostDto emailPostDto, String type) {
         String email = emailPostDto.getEmail();
+
+        // 근데 이거 프론트에서 처리하긴하는데 지워도되나?
+        // 이메일 중복검사 --> 비번 변경일땐 체크안하고, 회원가입일떄만 체크
+//        if(type.equals("email") && checkEmail(emailPostDto)) {
+//            log.error("[이메일 발신 - 회원가입] 이메일 중복. 회원가입 불가");
+//            throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
+//        }
+
         log.info("[이메일 발신] 발신 요청. email : {}, type : {}", email, type);
 
         // 요청 타입별 이메일 제목 및 수신자 설정
@@ -109,6 +123,23 @@ public class EmailServiceImpl implements EmailService {
     }
 
     /**
+     * 회원가입 전 이메일 중복검사
+     * 중복이 아니라서 회원가입이 가능하면 true를 반환하고,
+     * 중복이면 400에러를 호출합니다.
+     * @param emailPostDto
+     * @return
+     */
+    @Override
+    public Boolean checkEmail(EmailPostDto emailPostDto) {
+        if(userRepository.existsByEmail(emailPostDto.getEmail())){
+            log.error("[이메일 중복 검사] 이메일 중복. 회원가입 불가.");
+            throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
+        }
+
+        return true;
+    }
+
+    /**
      * 이메일 제목 설정
      * 요청 타입에 따라 이메일 제목을 설정합니다.
      * 수신자 이메일도 설정합니다.
@@ -120,9 +151,9 @@ public class EmailServiceImpl implements EmailService {
 
         // 비밀번호 찾기라면
         if(type.equals("password")) {
-            subject = "[KnocknocK] (비밀번호 찾기) 임시 비밀번호 발급";
+            subject = "[KnocknocK] 【비밀번호 찾기】 임시 비밀번호 발급";
         } else {
-            subject = "[KnocknocK] (회원가입) 이메일 인증 코드 발송";
+            subject = "[KnocknocK] 【회원가입】 이메일 인증 코드 발송";
         }
 
         return EmailMessage.builder()

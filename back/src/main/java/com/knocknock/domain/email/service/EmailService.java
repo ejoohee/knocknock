@@ -11,6 +11,8 @@ public interface EmailService {
 
     Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto);
 
+    Boolean checkEmail(EmailPostDto emailPostDto); // 회원가입 전 이메일 중복검사
+
 
 
 

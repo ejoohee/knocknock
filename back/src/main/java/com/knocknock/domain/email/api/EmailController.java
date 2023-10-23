@@ -7,10 +7,7 @@ import com.knocknock.domain.email.service.EmailServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/email")
 @RestController
@@ -26,6 +23,16 @@ public class EmailController {
     @PostMapping("/sign-up")
     public ResponseEntity<EmailCodeResDto> sendSignUpMail(@RequestBody EmailPostDto emailPostDto) {
         return ResponseEntity.ok(emailService.sendEmail(emailPostDto, "email"));
+    }
+
+    @Operation(
+            summary = "이메일 중복 검사",
+            description = "회원가입 이전에 이메일을 중복검사합니다. " +
+                    "중복이 아니라 회원가입이 가능하면 true를 반환합니다."
+    )
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkEmail(@RequestBody EmailPostDto emailPostDto) {
+        return ResponseEntity.ok(emailService.checkEmail(emailPostDto));
     }
 
     @Operation(
