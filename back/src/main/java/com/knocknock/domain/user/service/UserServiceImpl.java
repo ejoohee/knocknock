@@ -15,7 +15,7 @@ import com.knocknock.domain.user.dto.response.LoginResDto;
 import com.knocknock.domain.user.dto.response.ReissueTokenResDto;
 import com.knocknock.domain.user.dto.response.UserResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
-import com.knocknock.domain.user.exception.UserNotFoundException;
+import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,6 +40,21 @@ public class UserServiceImpl implements UserService {
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+
+//    /**
+//     * 이메일 중복 체크
+//     * 회원가입 이전에 이메일을 중복 체크합니다. --> sendEmail에서 처리
+//     * 회원가입이 가능하면(중복X) true / 불가능(중복)하면 false
+//     */
+//    @Transactional(readOnly = true)
+//    @Override
+//    public Boolean checkEmail(String email) {
+//        if(userRepository.existsByEmail(email))
+//            return false; // 이미 존재하는 이메일이면 false를 반환
+//
+//        // 회원가입 가능하면 true를 반환
+//        return true;
+//    }
 
     /**
      * 회원가입 정보의 유효성을 확인합니다.
@@ -56,31 +70,41 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * 프론트에서 이메일 인증번호 받기 버튼 클릭
+     * -> api/user/send-email 호출해서 인증 이메일 발송
+     *
+     * signUp 메서드가 호출되는 순간은
+     * 회원가입 폼을 다 작성완료하고, 이메일 인증까지 완료한 다음에
+     * 프론트에서 회원가입 버튼을 클릭할 때 호출!!
+     *
+     * 즉 signUp 메서드는 회원가입 완료에 대한 부분만 다룬다.
+     */
     @Transactional
     @Override
     public void signUp(UserReqDto userReqDto) {
         String email = userReqDto.getEmail();
         log.info("[유저 회원가입] 회원가입 요청. email : {}", email);
 
-        // 중복 이메일 체크
-        if(!checkEmail(email)) {
-            log.error("[유저 회원가입] 이미 존재하는 이메일입니다.");
-            throw new UserNotFoundException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
-        }
+//        // 중복 이메일 체크 ---> 이메일 인증 전에 체크(EmailService)
+//        if(userRepository.existsByEmail(email)) {
+//            log.error("[유저 회원가입] 이미 존재하는 이메일입니다.");
+//            throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
+//        }
 
         // 회원가입 정보 유효성 확인
         if(!checkSignupInfo(userReqDto)) {
             log.error("[유저 회원가입] 회원가입 정보 유효성 불일치.");
-            throw new IllegalArgumentException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
+            throw new UserException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         }
 
-        log.info("[유저 회원가입] 이메일 인증 코드 발송 요청.");
+//        log.info("[유저 회원가입] 이메일 인증 코드 발송 요청.");
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         // 이메일 인증 여부 확인
         String checkResult = (String) valueOperations.get(userReqDto.getEmail());
         if(checkResult == null || !checkResult.equals("인증완료"))
-            throw new IllegalArgumentException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
+            throw new UserException(UserExceptionMessage.EMAIL_CHECK_FAILED.getMessage());
 
         log.info("[유저 회원가입] 이메일 인증 완료!");
 
@@ -100,7 +124,7 @@ public class UserServiceImpl implements UserService {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[유저 로그인] 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         if(!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
@@ -138,7 +162,7 @@ public class UserServiceImpl implements UserService {
         Users loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         return loginUser;
@@ -146,11 +170,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void logout(String token) {
-        log.info("[로그아웃] 로그아웃 요청! 유저 조회 실시.");
-
         // 로그아웃 여부를 redis에 넣어서 accessToken이 유효한지 체크
         String email = jwtUtil.getLoginEmail(token);
         log.info("[로그아웃] 로그아웃 요청 email : {}", email);
+
+        // 에러 추가(403)? --> 노션도 수정하기
 
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(token);
         refreshTokenRepository.deleteById(email);
@@ -164,28 +188,38 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 비밀번호 찾기를 요청하면
-     * 이메일로 임시 비밀번호가 발급됩니다.
+     * 비밀번호 찾기를 위한 이메일 & 닉네임 일치 체크
+     * 이메일과 닉네임 모두 동일해야 true / 하나라도 틀리면 false를 반환합니다.
+     * true가 반환되면 EmailService의 sendEmail이 실행됩니다.
+     *
+     * 존재하지 않는 유저일때만 에러를 반환합니다.
      * @param findPasswordReqDto
+     * @return true / false
      */
     @Override
-    public void findPassword(FindPasswordReqDto findPasswordReqDto) {
+    public Boolean findPassword(FindPasswordReqDto findPasswordReqDto) {
         String email = findPasswordReqDto.getEmail();
-        log.info("[비밀번호 찾기] 찾기 요청. email : {}", email);
+        String nickname = findPasswordReqDto.getNickname();
+        log.info("[비밀번호 찾기] 찾기 요청. email : {}, nickname : {}", email, nickname);
 
+        // 우선 존재하는 회원인지 체크
+        // 존재하지 않으면 400에러 던짐
         Users findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[비밀번호 찾기] 존재하지 않는 회원입니다.");
-                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 유저 닉네임 일치 확인
-        if(!findUser.getNickname().equals(findPasswordReqDto.getNickname())) {
+        if(!findUser.getNickname().equals(nickname)) {
             log.error("[비밀번호 찾기] 정보가 일치하지 않습니다.");
-            throw new UserNotFoundException(UserExceptionMessage.INFO_NOT_VALID.getMessage());
+            return false;
         }
 
-        // 일치하면 메일 발송 요청 ---> 프론트
+        log.info("[비밀번호 찾기] 이메일 & 닉네임 모두 일치 !! ");
+
+        return true;
+        // 일치하면(true반환) 메일 발송 메서드 실행 ---> 프론트
 
         // 코드 일치 확인할 필요없음
         // 받은 비번으로 지들이 로그인 할거니까
@@ -199,7 +233,7 @@ public class UserServiceImpl implements UserService {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[임시 비밀번호 발급] 존재하지 않는 회원입니다.");
-                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 임시 패스워드 암호화
@@ -208,9 +242,30 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    /**
+     * 서비스 이전에 비밀번호 확인을 합니다.
+     * 일치하면 true / 불일치하면 false
+     * @param passwordReqDto
+     * @param token
+     * @return
+     */
     @Override
     public Boolean checkPassword(PasswordReqDto passwordReqDto, String token) {
-        return null;
+        log.info("jwt 실행");
+        jwtUtil.getUserNo();
+
+
+        Users loginUser = getLoginUser(token);
+        log.info("[비밀번호 확인] email : {}", loginUser.getEmail());
+
+        if(passwordEncoder.matches(passwordReqDto.getPassword(), loginUser.getPassword())) {
+            log.info("[비밀번호 확인] 비밀번호 일치! true 반환.");
+            return true;
+        }
+
+
+        log.info("[비밀번호 확인] 비밀번호 불일치! false 반환.");
+        return false;
     }
 
     @Override
@@ -224,20 +279,20 @@ public class UserServiceImpl implements UserService {
         // 패스워드 일치 확인
         if(!passwordEncoder.matches(updatePasswordRepDto.getPassword(), originPassword)) {
             log.error("[비밀번호 변경] 비밀번호 불일치! 변경 불가.");
-            throw new UserNotFoundException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
+            throw new UserException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
         }
 
         // 패스워드 일치하면 변경 가능
         // 이전이랑 달라야함 ---> 프론트에서 거를건가?
         if(passwordEncoder.matches(updatePasswordRepDto.getNewPassword(), originPassword)) {
             log.error("[비밀번호 변경] 이전 비밀번호와 다른 비밀번호를 입력해야 합니다.");
-            throw new UserNotFoundException(UserExceptionMessage.UPDATE_SAME_PASSWORD_ERROR.getMessage());
+            throw new UserException(UserExceptionMessage.UPDATE_SAME_PASSWORD_ERROR.getMessage());
         }
 
         // 확인한 비밀번호와 일치하지 않음
         if(!updatePasswordRepDto.getNewPassword().equals(updatePasswordRepDto.getNewPasswordCheck())) {
             log.error("[비밀번호 변경] 입력한 비밀번호가 일치하지 않습니다.");
-            throw new UserNotFoundException(UserExceptionMessage.UPDATE_PASSWORD_ERROR.getMessage());
+            throw new UserException(UserExceptionMessage.UPDATE_PASSWORD_ERROR.getMessage());
         }
 
         log.info("[비밀번호 변경] 패스워드 변경 완료.");
@@ -291,20 +346,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /**
-     * 아이디(이메일) 중복 체크
-     */
-    @Transactional(readOnly = true)
-    @Override
-    public Boolean checkEmail(String email) {
-        Optional< Users> user = userRepository.findByEmail(email);
 
-        // 이미 존재하는 유저면 false
-        if(user.isPresent())
-            return false;
 
-        return true;
-    }
+
 
 
     @Override
@@ -327,6 +371,5 @@ public class UserServiceImpl implements UserService {
 //    public Boolean checkAdmin(String token) {
 //
 //    }
-
 
 }
