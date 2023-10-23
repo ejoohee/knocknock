@@ -1,12 +1,13 @@
 package com.knocknock.domain.model.service;
 
-import com.knocknock.domain.model.dto.response.FindModelListReqDto;
+import com.knocknock.domain.model.dto.response.FindModelListResDto;
+import com.knocknock.domain.model.dto.response.FindModelResDto;
 
 import java.util.List;
 
 public interface ModelService {
 
-    List<FindModelListReqDto> findModelList(String type, String keyword, String category);
+    List<FindModelListResDto> findModelList(String type, String keyword, String category);
 
-
+    FindModelResDto findModel(long modelId);
 }
