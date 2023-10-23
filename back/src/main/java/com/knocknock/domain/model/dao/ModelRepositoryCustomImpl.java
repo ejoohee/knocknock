@@ -3,7 +3,7 @@ package com.knocknock.domain.model.dao;
 import com.knocknock.domain.category.domain.QCategory;
 import com.knocknock.domain.model.constant.SearchType;
 import com.knocknock.domain.model.domain.*;
-import com.knocknock.domain.model.dto.response.FindModelListReqDto;
+import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.user.domain.QUsers;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
@@ -22,7 +22,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<FindModelListReqDto> findModelList(Long userId, String type, String keyword, String category) {
+    public List<FindModelListResDto> findModelList(Long userId, String type, String keyword, String category) {
         QModel qModel = QModel.model;
         QCategory qCategory = QCategory.category;
         QUsers qUsers = QUsers.users;
@@ -50,8 +50,8 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
             ));
         }
         // 가전제품 목록 조회 시
-        List<FindModelListReqDto> modelDtoList = queryFactory
-                .select(Projections.bean(FindModelListReqDto.class,
+        List<FindModelListResDto> modelDtoList = queryFactory
+                .select(Projections.bean(FindModelListResDto.class,
                         qModel.id.as("modelId"), qModel.name.as("modelName"),
                         qModel.brand.as("modelBrand"), qModel.grade.as("modelGrade")))
                 .from(qModel)
@@ -66,19 +66,7 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
                 // 에너지 효율 등급이 높은순으로 정렬
                 .orderBy(qModel.grade.asc())
                 .fetch();
-        // 찜 되어있는지
-        for (FindModelListReqDto modelDto : modelDtoList) {
-            List<LikeModel> likeModelList = queryFactory.select(qLikeModel)
-                    .from(qLikeModel)
-                    .where(
-                            qLikeModel.user.userId.eq(userId),
-                            qLikeModel.model.id.eq(modelDto.getModelId())
-                    ).fetch();
-            // 로그인한 회원이 찜하지 않은 상품
-            if(likeModelList.size() == 0) continue;
-            // 찜한 상품
-            modelDto.setIsLiked(true);
-        }
+
         return modelDtoList;
     }
 
