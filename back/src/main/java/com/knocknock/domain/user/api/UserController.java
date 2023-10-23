@@ -1,6 +1,7 @@
 package com.knocknock.domain.user.api;
 
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
+import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.LoginReqDto;
 import com.knocknock.domain.user.dto.request.UserReqDto;
@@ -36,11 +37,19 @@ public class UserController {
                 .body(MessageDto.message("SIGN-UP SUCCESS"));
     }
 
+    @Operation(
+            summary = "로그인 서비스",
+            description = "로그인 처리합니다."
+    )
     @PostMapping("/login")
     public ResponseEntity<LoginResDto> login(@RequestBody LoginReqDto loginReqDto) {
         return ResponseEntity.ok(userService.login(loginReqDto));
     }
 
+    @Operation(
+            summary = "로그아웃 서비스",
+            description = "토큰이 존재한다면 로그아웃 처리합니다."
+    )
     @PostMapping("/logout")
     public ResponseEntity<MessageDto> logout(@RequestHeader(ACCESS_TOKEN) String token) {
         userService.logout(token);
@@ -48,6 +57,11 @@ public class UserController {
         return ResponseEntity.ok(MessageDto.message("LOGOUT SUCCESS"));
     }
 
+    @Operation(
+            summary = "비밀번호 변경",
+            description = "기존 비밀번호, 새로운 비밀번호, 새로운 비밀번호 확인을 체크하여" +
+                    "비밀번호를 변경합니다."
+    )
     @PutMapping("/password")
     public ResponseEntity<MessageDto> updatePassword(@RequestBody UpdatePasswordReqDto reqDto, @RequestHeader(ACCESS_TOKEN) String token) {
         userService.updatePassword(reqDto, token);
@@ -55,12 +69,25 @@ public class UserController {
         return ResponseEntity.ok(MessageDto.message("UPDATE PASSWORD SUCCESS"));
     }
 
+    @Operation(
+            summary = "비밀번호 찾기를 위한 이메일 & 닉네임 일치 검사",
+            description = "비밀번호 찾기 이메일 발송 전에 이메일과 닉네임이 일치하는지 확인합니다."
+    )
     @PostMapping("/password")
-    public ResponseEntity<MessageDto> findPassword(@RequestBody FindPasswordReqDto reqDto) {
-        userService.findPassword(reqDto);
-
-        return ResponseEntity.ok(MessageDto.message("PASSWORD-MAIL SENT SUCCESS"));
+    public ResponseEntity<Boolean> findPassword(@RequestBody FindPasswordReqDto reqDto) {
+        return ResponseEntity.ok(userService.findPassword(reqDto));
     }
+
+    @Operation(
+            summary = "서비스 사용전 비밀번호 확인",
+            description = "일치하면 true, 불일치하면 false를 반환합니다. " +
+                    "true반환 시에만 다음 서비스를 이용할 수 있습니다."
+    )
+    @GetMapping("/password")
+    public ResponseEntity<Boolean> checkPassword(@RequestBody PasswordReqDto reqDto, @RequestHeader(ACCESS_TOKEN) String token) {
+        return ResponseEntity.ok(userService.checkPassword(reqDto, token));
+    }
+
 
 
 }
