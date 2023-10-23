@@ -14,9 +14,10 @@ import java.util.List;
 public interface UserService {
 
     void signUp(UserReqDto userReqDto); // 회원가입
-    Boolean checkEmail(String email); // 이메일 중복검사
+//    Boolean checkEmail(String email); // 이메일 중복검사
 //    void sendEmailCode(String email); // 이메일 인증코드 발신 -> emailService
 //    Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto); // 이메일 인증코드 유효 검사
+    
 
     void addJiroCode(JiroCodeReqDto jiroCodeRepDto, String token); // 지로 코드 등록
 
@@ -42,7 +43,5 @@ public interface UserService {
     void deleteUser(Long userId, String token); // 회원 강제탈퇴
     List<AdminUserResDto> findUserList(String token); // 회원 목록 조회
     AdminUserResDto findUser(Long userId, String token); // 회원 검색
-
-
 
 }
