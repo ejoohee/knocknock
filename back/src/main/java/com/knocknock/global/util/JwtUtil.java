@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -114,18 +115,31 @@ public class JwtUtil {
     }
 
 
+
+//여기부터 checkAdmin까지 테스트해봐야함
+    private UserDetailsImpl getPrincipal() {
+        log.info("[getPrincipal()메서드 실행]");
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Authentication authentication = Objects.requireNonNull(SecurityContextHolder
+                .getContext().getAuthentication());
+
+
+        log.info("authentication : {}", authentication);
+        log.info("principal : {}", authentication.getPrincipal());
+
+
+
+        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+
+        return principal;
+    }
+    
     /**
      * userId 추출(기본키)
      */
     public Long getUserNo() {
         return getPrincipal().getUserId();
-    }
-
-    private UserDetailsImpl getPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-
-        return principal;
     }
 
     /**
