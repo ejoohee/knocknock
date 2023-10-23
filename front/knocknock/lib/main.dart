@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knocknock/color_schemes.g.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,8 +13,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        colorScheme: lightColorScheme,
+      ),
+      darkTheme: ThemeData(
+        useMaterial3: true,
+        colorScheme: darkColorScheme,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
