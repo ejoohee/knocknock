@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knocknock/screens/login.dart';
+import 'package:knocknock/screens/log_in.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
@@ -46,7 +46,7 @@ class StartPage extends StatelessWidget {
                   },
                   child: Container(
                     width: 250,
-                    height: 50,
+                    height: 60,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.grey.withOpacity(0.5),

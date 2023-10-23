@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/color_schemes.g.dart';
-import 'package:knocknock/screens/startpage.dart';
+import 'package:knocknock/screens/start_page.dart';
 
 void main() {
   runApp(const MyApp());

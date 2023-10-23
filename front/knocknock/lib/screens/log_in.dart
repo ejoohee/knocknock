@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:knocknock/screens/mainpage.dart';
-import 'package:knocknock/screens/signup.dart';
+import 'package:knocknock/screens/main_page.dart';
+import 'package:knocknock/screens/sign_up.dart';
 import 'package:knocknock/services/user_service.dart';
 
 class Login extends StatefulWidget {
