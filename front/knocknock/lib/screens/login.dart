@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/screens/signup.dart';
+import 'package:knocknock/services/user_service.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -8,6 +9,7 @@ class Login extends StatefulWidget {
   State<Login> createState() => _LoginState();
 }
 
+UserService userService = UserService();
 TextEditingController emailController = TextEditingController();
 TextEditingController passwordController = TextEditingController();
 final _formKey = GlobalKey<FormState>();
