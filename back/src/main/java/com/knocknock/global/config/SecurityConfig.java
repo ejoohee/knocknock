@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -49,16 +50,13 @@ public class SecurityConfig  {
 
         // email
             "/api/email/**",
+
         // model
 
 
 
     };
 
-    private static final String[] PERMIT_ADMIN_ARRAY = {
-
-
-    };
 
     /*
 antMatchers("/test")는 정확한 /test URL만 일치.
@@ -84,6 +82,7 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
                 .ignoringAntMatchers("/h2-console/**").disable();
 
          http.authorizeRequests()
+                .antMatchers(HttpMethod.POST, "/api/user/password").permitAll()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().authenticated()
                 .and()
