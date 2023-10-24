@@ -12,4 +12,7 @@ public interface ModelRepository extends JpaRepository<Model, Long>, ModelReposi
     @Query(value = "SELECT m FROM Model m JOIN FETCH Category c WHERE m.id = :modelId")
     Optional<Model> findModelById(long modelId);
 
+    // 모델명으로 가전제품 조회
+    Optional<Model> findModelByName(String modelName);
+
 }
