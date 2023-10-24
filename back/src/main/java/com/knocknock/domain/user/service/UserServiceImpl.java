@@ -242,6 +242,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     /**
      * 서비스 이전에 비밀번호 확인을 합니다.
      * 일치하면 true / 불일치하면 false
@@ -250,24 +251,24 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
-    public Boolean checkPassword(PasswordReqDto passwordReqDto, String token) {
+    public Boolean checkPassword(String password, String token) {
         log.info("jwt 실행");
         jwtUtil.getUserNo();
 
-
+        log.info("[여기까지 완료!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]");
         Users loginUser = getLoginUser(token);
         log.info("[비밀번호 확인] email : {}", loginUser.getEmail());
 
-        if(passwordEncoder.matches(passwordReqDto.getPassword(), loginUser.getPassword())) {
+        if(passwordEncoder.matches(password, loginUser.getPassword())) {
             log.info("[비밀번호 확인] 비밀번호 일치! true 반환.");
             return true;
         }
-
 
         log.info("[비밀번호 확인] 비밀번호 불일치! false 반환.");
         return false;
     }
 
+    @Transactional
     @Override
     public void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token) {
 
