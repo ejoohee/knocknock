@@ -3,7 +3,7 @@ package com.knocknock.domain.email.api;
 import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
-import com.knocknock.domain.email.service.EmailServiceImpl;
+import com.knocknock.domain.email.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EmailController {
 
-    private final EmailServiceImpl emailService;
+    private final EmailService emailService;
 
     @Operation(
             summary = "회원가입 이메일 인증 코드 발신",
@@ -31,8 +31,8 @@ public class EmailController {
                     "중복이 아니라 회원가입이 가능하면 true를 반환합니다."
     )
     @GetMapping("/check")
-    public ResponseEntity<Boolean> checkEmail(@RequestBody EmailPostDto emailPostDto) {
-        return ResponseEntity.ok(emailService.checkEmail(emailPostDto));
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(emailService.checkEmail(email));
     }
 
     @Operation(
