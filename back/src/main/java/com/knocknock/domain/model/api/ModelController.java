@@ -1,10 +1,7 @@
 package com.knocknock.domain.model.api;
 
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
-import com.knocknock.domain.model.dto.response.CheckModelResDto;
-import com.knocknock.domain.model.dto.response.FindModelListResDto;
-import com.knocknock.domain.model.dto.response.FindModelResDto;
-import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
+import com.knocknock.domain.model.dto.response.*;
 import com.knocknock.domain.model.service.ModelService;
 import com.knocknock.domain.model.service.MyModelService;
 import com.knocknock.global.dto.MessageDto;
@@ -71,6 +68,16 @@ public class ModelController {
     public ResponseEntity<List<FindMyModelListResDto>> findMyModelList(@RequestParam("category")String category) {
         return ResponseEntity.ok(myModelService.findMyModelList(category));
     }
+
+    @Operation(
+            summary = "등록한 내 가전제품 상세 정보 조회하기",
+            description = "등록한 내 가전제품 상세 정보를 조회합니다."
+    )
+    @GetMapping("/my/{myModelId}")
+    public ResponseEntity<FindMyModelResDto> findMyModel(@PathVariable long myModelId) {
+        return ResponseEntity.ok(myModelService.findMyModel(myModelId));
+    }
+
 
     @Operation(
             summary = "등록한 내 가전제품 삭제하기",
