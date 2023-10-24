@@ -5,6 +5,7 @@ import com.knocknock.domain.model.constant.SearchType;
 import com.knocknock.domain.model.domain.*;
 import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
+import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
 import com.knocknock.domain.user.domain.QUsers;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;

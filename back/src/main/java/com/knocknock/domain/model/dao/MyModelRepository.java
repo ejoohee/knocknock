@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface MyModelRepository extends JpaRepository<MyModel, Long> {
+public interface MyModelRepository extends JpaRepository<MyModel, Long>, MyModelRepositoryCustom {
 
     // userId와 modelId로 회원이 삭제하려는 가전제품을 찾아 삭제
     @Modifying

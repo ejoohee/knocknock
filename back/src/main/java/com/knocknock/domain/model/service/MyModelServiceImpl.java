@@ -5,12 +5,15 @@ import com.knocknock.domain.model.dao.MyModelRepository;
 import com.knocknock.domain.model.domain.Model;
 import com.knocknock.domain.model.domain.MyModel;
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
+import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -43,6 +46,13 @@ public class MyModelServiceImpl implements MyModelService {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
         myModelRepository.deleteByUserAndModel(userId, modelId);
+    }
+
+    @Override
+    public List<FindMyModelListResDto> findMyModelList(String category) {
+        // 현재 로그인한 회원의 user 기본키 가져오기
+        Long userId = jwtUtil.getUserNo();
+        return myModelRepository.findMyModelList(userId, category);
     }
 
 

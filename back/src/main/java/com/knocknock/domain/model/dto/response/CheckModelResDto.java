@@ -1,10 +1,12 @@
 package com.knocknock.domain.model.dto.response;
 
-import lombok.Builder;
-import lombok.Setter;
+import lombok.*;
 
+@Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CheckModelResDto {
 
     String category;

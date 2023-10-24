@@ -2,6 +2,7 @@ package com.knocknock.domain.model.dao;
 
 import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
+import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
 
 import java.util.List;
 
