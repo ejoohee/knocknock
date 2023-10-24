@@ -13,10 +13,10 @@ public class UserReqDto {
     @Email
     private String email;
 
-    @Length(min = 8, max = 16, message = "비밀번호는 8~16자리로 입력해주세요.")
+    @Length(min = 8, max = 16, message = "비밀번호는 8 ~ 16자리로 입력해주세요.")
     private String password;
 
-    @Length(min = 2, max = 5, message = "닉네임은 2~5글자로 입력해주세요.")
+    @Length(min = 2, max = 5, message = "닉네임은 2 ~ 5글자로 입력해주세요.")
     private String nickname;
 
     private String address;
