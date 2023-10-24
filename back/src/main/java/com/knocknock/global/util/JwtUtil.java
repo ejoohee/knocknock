@@ -104,6 +104,8 @@ public class JwtUtil {
      * @return
      */
     public long getRemainMilliSeconds(String token) {
+        token = prefixToken(token); // 유저써비스
+
         Date expiration = extractClaims(token).getExpiration();
         Date now = new Date();
         
@@ -120,10 +122,11 @@ public class JwtUtil {
 //        log.info("newtoken : {}" , newToken);
 
         log.info("getLoginEmail 토큰 : {}", token);
+//
+//        if(token.startsWith("Bearer "))
+//            token = token.substring(7);
 
-        if(token.startsWith("Bearer "))
-            token = token.substring(7);
-
+        token = prefixToken(token); // 유저써비스
 //        log.info("getLoginEmail 에서 토큰 : {}", newToken);
 
         return extractClaims(token).get("email", String.class);
@@ -166,5 +169,16 @@ public class JwtUtil {
     private Key getSigningKey(String secretKey) {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    /**
+     * UserService에서 token이 쓰이는 메서드에 다 체크하는 용으로 만들었습니다.
+     * (임시)
+     */
+    private String prefixToken(String token) {
+        if(token.startsWith("Bearer "))
+            return token.substring(7);
+
+        return token;
     }
 }
