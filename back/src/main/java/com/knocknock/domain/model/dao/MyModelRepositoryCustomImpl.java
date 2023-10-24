@@ -5,6 +5,7 @@ import com.knocknock.domain.model.domain.MyModel;
 import com.knocknock.domain.model.domain.QModel;
 import com.knocknock.domain.model.domain.QMyModel;
 import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
+import com.knocknock.domain.model.dto.response.FindMyModelResDto;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
