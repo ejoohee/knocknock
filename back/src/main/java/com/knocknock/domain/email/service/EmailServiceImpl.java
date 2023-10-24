@@ -126,12 +126,10 @@ public class EmailServiceImpl implements EmailService {
      * 회원가입 전 이메일 중복검사
      * 중복이 아니라서 회원가입이 가능하면 true를 반환하고,
      * 중복이면 400에러를 호출합니다.
-     * @param emailPostDto
-     * @return
      */
     @Override
-    public Boolean checkEmail(EmailPostDto emailPostDto) {
-        if(userRepository.existsByEmail(emailPostDto.getEmail())){
+    public Boolean checkEmail(String email) {
+        if(userRepository.existsByEmail(email)){
             log.error("[이메일 중복 검사] 이메일 중복. 회원가입 불가.");
             throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
         }
