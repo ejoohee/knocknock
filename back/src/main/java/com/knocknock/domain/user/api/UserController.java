@@ -85,7 +85,6 @@ public class UserController {
     )
     @GetMapping("/password")
     public ResponseEntity<Boolean> checkPassword(@RequestParam String password, @RequestHeader(ACCESS_TOKEN) String token) {
-        System.out.println("콘트롤러");
         return ResponseEntity.ok(userService.checkPassword(password, token));
     }
 
