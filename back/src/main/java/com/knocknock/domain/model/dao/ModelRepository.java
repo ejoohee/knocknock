@@ -9,7 +9,7 @@ import java.util.Optional;
 public interface ModelRepository extends JpaRepository<Model, Long>, ModelRepositoryCustom {
 
     // 카테고리와 조인하여 가전제품 조회
-    @Query(value = "SELECT m FROM Model m JOIN FETCH Category c WHERE m.id = :modelId")
+    @Query(value = "SELECT m FROM Model m JOIN FETCH m.category WHERE m.id = :modelId")
     Optional<Model> findModelById(long modelId);
 
     // 모델명으로 가전제품 조회
