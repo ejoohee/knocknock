@@ -14,18 +14,19 @@ import java.util.List;
 public interface UserService {
 
     void signUp(UserReqDto userReqDto); // 회원가입
-    Boolean checkEmail(String email); // 이메일 중복검사
+//    Boolean checkEmail(String email); // 이메일 중복검사
 //    void sendEmailCode(String email); // 이메일 인증코드 발신 -> emailService
 //    Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto); // 이메일 인증코드 유효 검사
+    
 
     void addJiroCode(JiroCodeReqDto jiroCodeRepDto, String token); // 지로 코드 등록
 
     LoginResDto login(LoginReqDto loginReqDto);
     void logout(String token);
 
-    void findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
+    Boolean findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
     void updateTempPassword(String email, String tempPassword);
-    Boolean checkPassword(PasswordReqDto passwordReqDto, String token);  // 서비스전 비밀번호 체크
+    Boolean checkPassword(String password, String token);  // 서비스전 비밀번호 체크
     void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token); // 비밀번호 변경
 
 
@@ -42,7 +43,5 @@ public interface UserService {
     void deleteUser(Long userId, String token); // 회원 강제탈퇴
     List<AdminUserResDto> findUserList(String token); // 회원 목록 조회
     AdminUserResDto findUser(Long userId, String token); // 회원 검색
-
-
 
 }
