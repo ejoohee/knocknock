@@ -4,6 +4,7 @@ import com.knocknock.global.common.security.AccessDeniedHandlerIml;
 import com.knocknock.global.common.security.AuthenticationEntryPointImpl;
 import com.knocknock.global.common.security.AuthenticationJwtFilter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity // 스프링 시큐리티 활성화
 @RequiredArgsConstructor
@@ -41,6 +43,7 @@ public class SecurityConfig  {
 //            "/api/user/**",
             "/api/user/login",
             "/api/user/sign-up",
+
 //            "/api/user/password" // 얘는 Post만
 
 
@@ -48,6 +51,11 @@ public class SecurityConfig  {
             "/api/email/**",
         // model
 
+
+
+    };
+
+    private static final String[] PERMIT_ADMIN_ARRAY = {
 
 
     };
@@ -75,18 +83,39 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
                 .csrf()
                 .ignoringAntMatchers("/h2-console/**").disable();
 
-        return http.authorizeRequests()
+         http.authorizeRequests()
                 .antMatchers(PERMIT_URL_ARRAY).permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .httpBasic().and().formLogin().disable()
-                .cors().and().csrf().disable()
+                .httpBasic().disable()
+                .formLogin().disable()
+                .cors().disable()
+                .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(authenticationJwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling()
                 .authenticationEntryPoint(authenticationEntryPoint)
-                .accessDeniedHandler(accessDeniedHandler).and().build();
+                .accessDeniedHandler(accessDeniedHandler);
+
+
+         log.info("[SecurityConfig] filterChain 완료! ");
+         return http.build();
+
+//        return http.authorizeRequests()
+//                .antMatchers(PERMIT_URL_ARRAY).permitAll()
+//                .anyRequest().authenticated()
+//                .and()
+//                .httpBasic().disable()
+//                .formLogin().disable()
+//                .cors().disable()
+//                .csrf().disable()
+//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                .and()
+//                .addFilterBefore(authenticationJwtFilter, UsernamePasswordAuthenticationFilter.class)
+//                .exceptionHandling()
+//                .authenticationEntryPoint(authenticationEntryPoint)
+//                .accessDeniedHandler(accessDeniedHandler).and().build();
     }
 
 

@@ -7,6 +7,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -32,8 +33,8 @@ public class JwtUtil {
     @Value("${jwt.refresh_expiration_ms}")
     private long refreshExpirationMs;
 
-    @Value("${jwt.issuer}")
-    private String issuer;
+//    @Value("${jwt.issuer}")
+//    private String issuer;
 
 
     /**
@@ -41,7 +42,9 @@ public class JwtUtil {
      * @param token
      * @return
      */
-    public Claims extractClaims(String token) {
+    public Claims extractClaims(String token) { // 여기서의 token은 Bearer 접두사가 사라진 토큰임
+        log.info("[extractClaims] 실행 토큰 : {}", token);
+
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
                 .build()
@@ -111,7 +114,19 @@ public class JwtUtil {
      * Claims에서 loginEmail 추출
      */
     public String getLoginEmail(String token) {
-        return extractClaims(token).get("email").toString();
+//        token.substring(7);
+//        String tmp = new String(token);
+//        String newToken = tmp.substring(7);
+//        log.info("newtoken : {}" , newToken);
+
+        log.info("getLoginEmail 토큰 : {}", token);
+
+        if(token.startsWith("Bearer "))
+            token = token.substring(7);
+
+//        log.info("getLoginEmail 에서 토큰 : {}", newToken);
+
+        return extractClaims(token).get("email", String.class);
     }
 
 
@@ -119,19 +134,13 @@ public class JwtUtil {
 //여기부터 checkAdmin까지 테스트해봐야함
     private UserDetailsImpl getPrincipal() {
         log.info("[getPrincipal()메서드 실행]");
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        Authentication authentication = Objects.requireNonNull(SecurityContextHolder
-                .getContext().getAuthentication());
-
-
-        log.info("authentication : {}", authentication);
-        log.info("principal : {}", authentication.getPrincipal());
-
-
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication authentication = Objects.requireNonNull(SecurityContextHolder
+//                .getContext().getAuthentication());
 
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-
+        log.info("principal : {}", principal.getUsername());
+        log.info("principal : {}", principal.getUserId());
         return principal;
     }
     
@@ -139,6 +148,7 @@ public class JwtUtil {
      * userId 추출(기본키)
      */
     public Long getUserNo() {
+        log.info("[getUserNo]도 실행 완료");
         return getPrincipal().getUserId();
     }
 
