@@ -3,6 +3,7 @@ package com.knocknock.domain.model.service;
 import com.knocknock.domain.model.dao.LikeModelRepository;
 import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.domain.Model;
+import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
@@ -68,6 +69,13 @@ public class ModelServiceImpl implements ModelService {
 //                .releasedDate(model.getReleasedDate())
                 .isLiked(isLiked(userId, modelId))
                 .build();
+    }
+
+    @Override
+    public CheckModelResDto checkModelByModelName(String modelName) {
+        CheckModelResDto checkModelResDto = modelRepository.checkModelByModelName(modelName);
+        if(checkModelResDto == null) throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
+        return checkModelResDto;
     }
 
 

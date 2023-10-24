@@ -3,6 +3,7 @@ package com.knocknock.domain.model.dao;
 import com.knocknock.domain.category.domain.QCategory;
 import com.knocknock.domain.model.constant.SearchType;
 import com.knocknock.domain.model.domain.*;
+import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.user.domain.QUsers;
 import com.querydsl.core.BooleanBuilder;
@@ -68,6 +69,26 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
                 .fetch();
 
         return modelDtoList;
+    }
+
+    @Override
+    public CheckModelResDto checkModelByModelName(String modelName) {
+        QModel qModel = QModel.model;
+        QCategory qCategory = QCategory.category;
+        CheckModelResDto checkModelResDto = queryFactory
+                .select(Projections.bean(CheckModelResDto.class,
+                        qModel.name.as("modelName"), qModel.brand.as("modelBrand")
+                        , qModel.img.as("modelImg"), qCategory.name.as("category")))
+                .from(qModel)
+                .join(qModel.category, qCategory)
+                .fetchJoin()
+                .where(
+                        // 모델명과 일치하는 가전제품인지
+                        qModel.name.eq(modelName)
+                )
+                .fetchOne();
+
+        return checkModelResDto;
     }
 
 }

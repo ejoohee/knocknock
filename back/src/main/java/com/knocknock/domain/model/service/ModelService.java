@@ -1,5 +1,6 @@
 package com.knocknock.domain.model.service;
 
+import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
 
@@ -10,4 +11,7 @@ public interface ModelService {
     List<FindModelListResDto> findModelList(String type, String keyword, String category);
 
     FindModelResDto findModel(long modelId);
+
+    CheckModelResDto checkModelByModelName(String modelName);
+
 }

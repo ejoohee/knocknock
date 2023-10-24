@@ -1,8 +1,10 @@
 package com.knocknock.domain.model.api;
 
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
+import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
+import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
 import com.knocknock.domain.model.service.ModelService;
 import com.knocknock.domain.model.service.MyModelService;
 import com.knocknock.global.dto.MessageDto;
@@ -36,8 +38,17 @@ public class ModelController {
             description = "가전제품 상세 정보를 조회합니다."
     )
     @GetMapping("/{modelId}")
-    public ResponseEntity<FindModelResDto> findMode(@PathVariable long modelId) {
+    public ResponseEntity<FindModelResDto> findModel(@PathVariable long modelId) {
         return ResponseEntity.ok(modelService.findModel(modelId));
+    }
+
+    @Operation(
+            summary = "가전제품 모델명 확인용 조회하기",
+            description = "가전제품 모델명으로 해당하는 모델이 존재하는지 정보를 조회합니다."
+    )
+    @GetMapping("/check")
+    public ResponseEntity<CheckModelResDto> checkModelByModelName(@RequestParam("modelName")String modelName) {
+        return ResponseEntity.ok(modelService.checkModelByModelName(modelName));
     }
 
 
@@ -50,6 +61,15 @@ public class ModelController {
         myModelService.addMyModel(addMyModelReqDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(MessageDto.message("내 가전제품 등록 완료"));
+    }
+
+    @Operation(
+            summary = "등록한 내 가전제품 목록 조회하기",
+            description = "등록한 내 가전제품 전체 목록을 조회합니다."
+    )
+    @GetMapping("/my")
+    public ResponseEntity<List<FindMyModelListResDto>> findMyModelList(@RequestParam("category")String category) {
+        return ResponseEntity.ok(myModelService.findMyModelList(category));
     }
 
     @Operation(
