@@ -84,8 +84,9 @@ public class UserController {
                     "true반환 시에만 다음 서비스를 이용할 수 있습니다."
     )
     @GetMapping("/password")
-    public ResponseEntity<Boolean> checkPassword(@RequestBody PasswordReqDto reqDto, @RequestHeader(ACCESS_TOKEN) String token) {
-        return ResponseEntity.ok(userService.checkPassword(reqDto, token));
+    public ResponseEntity<Boolean> checkPassword(@RequestParam String password, @RequestHeader(ACCESS_TOKEN) String token) {
+        System.out.println("콘트롤러");
+        return ResponseEntity.ok(userService.checkPassword(password, token));
     }
 
 
