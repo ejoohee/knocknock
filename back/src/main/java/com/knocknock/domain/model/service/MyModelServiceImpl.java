@@ -38,6 +38,12 @@ public class MyModelServiceImpl implements MyModelService {
         myModelRepository.save(myModel);
     }
 
+    @Override
+    public void deleteMyModel(long modelId) {
+        // 현재 로그인한 회원의 user 기본키 가져오기
+        Long userId = jwtUtil.getUserNo();
+        myModelRepository.deleteByUserAndModel(userId, modelId);
+    }
 
 
 }
