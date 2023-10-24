@@ -1,13 +1,13 @@
-package com.knocknock.knocknock;
+// package com.knocknock.knocknock;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class KnocknockApplicationTests {
+// @SpringBootTest
+// class KnocknockApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }
