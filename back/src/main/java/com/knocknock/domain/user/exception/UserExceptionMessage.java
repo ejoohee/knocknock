@@ -14,7 +14,8 @@ public enum UserExceptionMessage {
     INFO_NOT_VALID("유저 정보가 일치하지 않습니다."),
     LOGIN_PASSWORD_ERROR("비밀번호가 일치하지 않습니다."),
     UPDATE_SAME_PASSWORD_ERROR("이전 비밀번호와 다른 비밀번호를 사용해야 합니다."),
-    UPDATE_PASSWORD_ERROR("입력한 비밀번호가 일치하지 않습니다.");
+    UPDATE_PASSWORD_ERROR("입력한 비밀번호가 일치하지 않습니다."),
+    ACCESS_TOKEN_NOT_FOUND("Access token을 찾을 수 없습니다.");
 
     private String message;
 
