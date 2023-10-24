@@ -32,7 +32,7 @@ spring:
       type.descriptor.sql: trace # sql의 데이터까지 다 보이게
 
   redis:
-    host: localhost
+    host: redis
     port: 6379
 
   mail:
