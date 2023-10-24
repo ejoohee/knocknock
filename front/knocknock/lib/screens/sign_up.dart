@@ -19,6 +19,7 @@ TextEditingController addressController = TextEditingController();
 String enteredCode = "";
 final _formKey = GlobalKey<FormState>();
 Map<String, String> formData = {};
+
 final emailRegex = RegExp(
     r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
@@ -367,6 +368,7 @@ class _SignupState extends State<Signup> {
                       alignment: Alignment.centerRight,
                       children: [
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: emailController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -393,19 +395,24 @@ class _SignupState extends State<Signup> {
                             filled: true,
                           ),
                         ),
-                        TextButton(
-                          onPressed: onCertificationButtonTap,
-                          child: const Text('인증'),
+                        Positioned(
+                          top: 3,
+                          right: 0,
+                          child: TextButton(
+                            onPressed: onCertificationButtonTap,
+                            child: const Text('인증'),
+                          ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: passwordController,
                       obscureText: true, // 비밀번호 숨기기 옵션
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return '비밀번호를 입력하세요.';
+                          return '사용할 비밀번호를 입력하세요.';
                         } else if (value.length < 8 || value.length > 16) {
                           return '비밀번호는 8~16자리 사이여야 합니다.';
                         }
@@ -428,14 +435,14 @@ class _SignupState extends State<Signup> {
                         filled: true,
                       ),
                     ),
+
                     const SizedBox(height: 15),
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: passwordConfirmController,
                       obscureText: true,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return '비밀번호를 입력해주세요.';
-                        } else if (value != passwordController.text) {
+                        if (value != passwordController.text) {
                           return '비밀번호가 일치하지 않습니다.';
                         }
                         return null;
@@ -459,11 +466,12 @@ class _SignupState extends State<Signup> {
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       controller: nicknameController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return '닉네임을 입력해주세요.';
-                        } else if (value.length < 2 || value.length > 8) {
+                        } else if (value.length < 2 || value.length > 5) {
                           return '닉네임은 2~5자리 사이여야 합니다.';
                         }
                         return null;
@@ -492,6 +500,7 @@ class _SignupState extends State<Signup> {
                       alignment: Alignment.centerRight,
                       children: [
                         TextFormField(
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: addressController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
