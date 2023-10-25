@@ -21,8 +21,8 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:mariadb://mariadb:3306/knocknock
-#    url: jdbc:h2:mem:testdb
+#    url: jdbc:mariadb://mariadb:3306/knocknock 잠시 테스트디비로...
+    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
