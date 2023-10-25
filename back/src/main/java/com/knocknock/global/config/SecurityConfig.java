@@ -84,7 +84,7 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
                 .and()
                 .httpBasic().disable()
                 .formLogin().disable()
-                // .cors().disable()
+                .cors().disable()
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
