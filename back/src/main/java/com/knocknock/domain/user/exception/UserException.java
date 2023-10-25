@@ -1,8 +1,13 @@
 package com.knocknock.domain.user.exception;
 
-import com.knocknock.global.exception.exception.NotFoundException;
+/**
+ * NOT_FOUND와 UNAUTHORIZED를 제외한 모든 UserException
+ */
+public class UserException extends IllegalArgumentException {
 
-public class UserException extends NotFoundException {
+    public UserException() {
+        super("USER_EXCEPTION 발생");
+    }
 
     public UserException(String msg) {
         super(msg);

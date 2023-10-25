@@ -5,6 +5,8 @@ import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
 import com.knocknock.domain.email.exception.EmailCodeException;
+import com.knocknock.domain.email.exception.EmailCodeNotFoundException;
+import com.knocknock.domain.email.exception.EmailException;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
@@ -77,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("[이메일 발신] 발신 실패. ERROR 발생.");
-            throw new EmailCodeException("이메일 발신 실패 에러");
+            throw new EmailException("이메일 발신 실패.");
         }
 
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
@@ -97,6 +99,8 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     @Override
     public Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto) {
+        log.info("[이메일 인증 코드 유효검사] 검사 요청. email : {}, code : {}", emailCodeReqDto.getEmail(), emailCodeReqDto.getCode());
+
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         // email 키로 code value 반환
@@ -104,7 +108,7 @@ public class EmailServiceImpl implements EmailService {
 
         if(originCode == null){
             log.error("[인증 코드 일치 체크] 인증 코드가 존재하지 않습니다.");
-            throw new NotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다.");
+            throw new EmailCodeNotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다.");
         }
 
         if(originCode.equals(emailCodeReqDto.getCode())) {
@@ -139,6 +143,7 @@ public class EmailServiceImpl implements EmailService {
             throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
         }
 
+        log.info("[이메일 중복 검사] 중복 검사 완료. 중복없어 회원가입 가능!");
         return true;
     }
 

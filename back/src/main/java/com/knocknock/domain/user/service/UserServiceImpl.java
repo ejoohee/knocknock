@@ -7,7 +7,6 @@ import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
-import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.response.AdminUserResDto;
@@ -16,6 +15,7 @@ import com.knocknock.domain.user.dto.response.ReissueTokenResDto;
 import com.knocknock.domain.user.dto.response.UserResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserException;
+import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -120,23 +120,28 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResDto login(LoginReqDto loginReqDto) {
         String email = loginReqDto.getEmail();
+        log.info("[유저 로그인] 로그인 요청. {} ", email);
 
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[유저 로그인] 유저를 찾을 수 없습니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
+
+        log.info("[유저 로그인] 존재하는 유저임.");
 
         if(!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
             log.error("[유저 로그인] 패스워드 불일치");
-            throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
+            throw new UserException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
         }
 
-        log.info("[유저 로그인] 로그인 요청. email : {}", email);
+        log.info("[유저 로그인] 아이디 & 패스워드 일치. 토큰 생성 실시.");
 
         // 토큰 생성
         String accessToken = jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        log.info("[유저 로그인] 토큰 생성 완료! Redis 저장 실시.");
 
         // Redis에 refreshToken 저장
         // 회원의 이메일(ID)을 키로 저장
@@ -145,6 +150,8 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
+
+        log.info("[유저 로그인] Redis 저장 완료. 로그인 성공 !! ");
 
         return LoginResDto.builder()
                 .accessToken(accessToken)
@@ -162,7 +169,7 @@ public class UserServiceImpl implements UserService {
         Users loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         return loginUser;
@@ -176,6 +183,7 @@ public class UserServiceImpl implements UserService {
         log.info("[로그아웃] 로그아웃 요청 email : {}", email);
 
         // 에러 추가(403)? --> 노션도 수정하기
+
 
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(token);
         refreshTokenRepository.deleteById(email);
@@ -209,7 +217,7 @@ public class UserServiceImpl implements UserService {
         Users findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[비밀번호 찾기] 존재하지 않는 회원입니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 유저 닉네임 일치 확인
@@ -236,7 +244,7 @@ public class UserServiceImpl implements UserService {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[임시 비밀번호 발급] 존재하지 않는 회원입니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 임시 패스워드 암호화
@@ -249,7 +257,6 @@ public class UserServiceImpl implements UserService {
     /**
      * 서비스 이전에 비밀번호 확인을 합니다.
      * 일치하면 true / 불일치하면 false
-     * @param passwordReqDto
      * @param token
      * @return
      */
