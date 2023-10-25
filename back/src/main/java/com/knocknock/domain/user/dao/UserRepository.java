@@ -1,5 +1,6 @@
 package com.knocknock.domain.user.dao;
 
+import com.knocknock.domain.user.domain.UserType;
 import com.knocknock.domain.user.domain.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,6 +10,6 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByEmail(String email);
 
-    Optional<Users> findByEmailAndIsSocial(String email, boolean isSocial);
+    Optional<Users> findByEmailAndUserType(String email, UserType userType);
 
 }

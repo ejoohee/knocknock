@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.knocknock.domain.user.dao.RefreshTokenRedisRepository;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.RefreshToken;
+import com.knocknock.domain.user.domain.UserType;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.response.SocialLoginResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
@@ -50,19 +51,18 @@ public class UserSocialServiceImpl implements UserSocialService {
 
         String email = userResourceNode.get("email").asText();
         String nickname = userResourceNode.get("name").asText();
-        Boolean isSocial = true;
+        UserType isSocial = UserType.ROLE_SOCIAL;
 
-//        String accessToken = jwtUtil.generateAccessToken(email);
-//        String refreshToken = jwtUtil.generateRefreshToken(email);
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
 
         // 이메일과 isSocial 값을 기반으로 사용자 찾기
-        Users user = userRepository.findByEmailAndIsSocial(email, isSocial)
+        Users user = userRepository.findByEmailAndUserType(email, isSocial)
                 .orElseGet(() -> {
                     return userRepository.save(Users.builder()
                             .email(email)
-                            .userType("ROLE_USER")
+                            .userType("소셜회원")
                             .nickname(nickname)
-                            .isSocial(isSocial)
                             .build());
                 });
         // Redis에 refreshToken 저장
@@ -73,8 +73,8 @@ public class UserSocialServiceImpl implements UserSocialService {
         authenticateUser(user);
 
         return SocialLoginResDto.builder()
-//                .accessToken(accessToken)
-//                .refreshToken(refreshToken)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .email(email)
                 .address(user.getAddress())
                 .nickname(user.getNickname())
@@ -107,7 +107,7 @@ public class UserSocialServiceImpl implements UserSocialService {
         SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getUserType().getValue());
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 user,
-                null,
+                null, //소셜은 password 없으니까
                 Collections.singletonList(authority)
         );
         SecurityContextHolder.getContext().setAuthentication(auth);
@@ -144,5 +144,4 @@ public class UserSocialServiceImpl implements UserSocialService {
         HttpEntity entity = new HttpEntity(headers);
         return restTemplate.exchange(resourceUri, HttpMethod.GET, entity, JsonNode.class).getBody();
     }
-
 }
