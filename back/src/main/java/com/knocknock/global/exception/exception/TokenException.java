@@ -4,6 +4,14 @@ import org.springframework.security.core.AuthenticationException;
 
 public class TokenException extends AuthenticationException {
 
+    public TokenException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
+    
+    public TokenException() {
+        super("TOKEN_EXCEPTION 발생");
+    }
+    
     public TokenException(String message) {
         super(message);
     }

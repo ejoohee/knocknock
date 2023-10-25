@@ -15,6 +15,7 @@ import com.knocknock.domain.user.dto.response.ReissueTokenResDto;
 import com.knocknock.domain.user.dto.response.UserResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserException;
+import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -124,14 +125,14 @@ public class UserServiceImpl implements UserService {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[유저 로그인] 유저를 찾을 수 없습니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         log.info("[유저 로그인] 존재하는 유저임.");
 
         if(!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
             log.error("[유저 로그인] 패스워드 불일치");
-            throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
+            throw new UserException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
         }
 
         log.info("[유저 로그인] 아이디 & 패스워드 일치. 토큰 생성 실시.");
@@ -168,7 +169,7 @@ public class UserServiceImpl implements UserService {
         Users loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         return loginUser;
@@ -182,6 +183,7 @@ public class UserServiceImpl implements UserService {
         log.info("[로그아웃] 로그아웃 요청 email : {}", email);
 
         // 에러 추가(403)? --> 노션도 수정하기
+
 
         long remainMilliSeconds = jwtUtil.getRemainMilliSeconds(token);
         refreshTokenRepository.deleteById(email);
@@ -215,7 +217,7 @@ public class UserServiceImpl implements UserService {
         Users findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[비밀번호 찾기] 존재하지 않는 회원입니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 유저 닉네임 일치 확인
@@ -242,7 +244,7 @@ public class UserServiceImpl implements UserService {
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[임시 비밀번호 발급] 존재하지 않는 회원입니다.");
-                    return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         // 임시 패스워드 암호화

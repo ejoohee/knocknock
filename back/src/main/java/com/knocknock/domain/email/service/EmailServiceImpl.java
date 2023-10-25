@@ -5,6 +5,8 @@ import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
 import com.knocknock.domain.email.exception.EmailCodeException;
+import com.knocknock.domain.email.exception.EmailCodeNotFoundException;
+import com.knocknock.domain.email.exception.EmailException;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
@@ -77,7 +79,7 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("[이메일 발신] 발신 실패. ERROR 발생.");
-            throw new EmailCodeException("이메일 발신 실패 에러");
+            throw new EmailException("이메일 발신 실패.");
         }
 
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
@@ -106,7 +108,7 @@ public class EmailServiceImpl implements EmailService {
 
         if(originCode == null){
             log.error("[인증 코드 일치 체크] 인증 코드가 존재하지 않습니다.");
-            throw new NotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다.");
+            throw new EmailCodeNotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다.");
         }
 
         if(originCode.equals(emailCodeReqDto.getCode())) {
