@@ -63,6 +63,7 @@ public class MyModelServiceImpl implements MyModelService {
         Model model = modelRepository.findModelById(myModel.getModel().getId()).orElseThrow(() -> new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다."));
 
         return FindMyModelResDto.builder()
+                .myModelId(myModelId)
                 .modelId(model.getId())
                 .category(model.getCategory().getName())
                 .modelName(model.getName())

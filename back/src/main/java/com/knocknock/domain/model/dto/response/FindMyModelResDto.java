@@ -11,6 +11,7 @@ import java.util.Date;
 @AllArgsConstructor
 public class FindMyModelResDto {
 
+    private Long myModelId;
     private Long modelId;
     private String category;
     private String modelName;
