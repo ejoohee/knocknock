@@ -2,6 +2,7 @@ package com.knocknock.domain.model.api;
 
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
 import com.knocknock.domain.model.dto.response.*;
+import com.knocknock.domain.model.service.LikeModelService;
 import com.knocknock.domain.model.service.ModelService;
 import com.knocknock.domain.model.service.MyModelService;
 import com.knocknock.global.dto.MessageDto;
@@ -20,6 +21,7 @@ public class ModelController {
 
     private final ModelService modelService;
     private final MyModelService myModelService;
+    private final LikeModelService likeModelService;
 
     @Operation(
             summary = "가전제품 목록 조회하기",
@@ -98,5 +100,17 @@ public class ModelController {
         myModelService.updateMyModelPinned(myModelId);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(
+            summary = "가전제품 찜 하기",
+            description = "가전제품을 찜 합니다."
+    )
+    @PostMapping("/like/{modelId}")
+    public ResponseEntity<MessageDto> addLikeModel(@PathVariable long modelId) {
+        likeModelService.addLikeModel(modelId);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(MessageDto.message("가전제품 찜 완료"));
+    }
+
 
 }
