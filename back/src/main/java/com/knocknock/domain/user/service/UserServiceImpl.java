@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
      * 회원가입 정보의 유효성을 확인합니다.
      * 유효하면 true / 에러시 false
      */
-    public Boolean checkSignupInfo(UserReqDto userReqDto) {
+    private Boolean checkSignupInfo(UserReqDto userReqDto) {
         if(userReqDto.getEmail() == null || userReqDto.getEmail().equals("") ||
            userReqDto.getPassword() == null || userReqDto.getPassword().equals("") ||
            userReqDto.getNickname() == null || userReqDto.getNickname().equals("")) {
@@ -168,6 +168,7 @@ public class UserServiceImpl implements UserService {
         return loginUser;
     }
 
+    @Transactional
     @Override
     public void logout(String token) {
         // 로그아웃 여부를 redis에 넣어서 accessToken이 유효한지 체크
@@ -196,6 +197,7 @@ public class UserServiceImpl implements UserService {
      * @param findPasswordReqDto
      * @return true / false
      */
+    @Transactional
     @Override
     public Boolean findPassword(FindPasswordReqDto findPasswordReqDto) {
         String email = findPasswordReqDto.getEmail();
@@ -228,6 +230,7 @@ public class UserServiceImpl implements UserService {
     /**
      * 임시 비밀번호를 발급합니다.
      */
+    @Transactional
     @Override
     public void updateTempPassword(String email, String tempPassword) {
         Users user = userRepository.findByEmail(email)
@@ -242,7 +245,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @Transactional
+
     /**
      * 서비스 이전에 비밀번호 확인을 합니다.
      * 일치하면 true / 불일치하면 false
@@ -250,6 +253,7 @@ public class UserServiceImpl implements UserService {
      * @param token
      * @return
      */
+    @Transactional
     @Override
     public Boolean checkPassword(String password, String token) {
         log.info("jwt 실행");
@@ -304,32 +308,38 @@ public class UserServiceImpl implements UserService {
         userRepository.save(loginUser);
     }
 
+    @Transactional
     @Override
     public UserResDto updateUser(UpdateUserReqDto updateUserReqDto, String token) {
         return null;
     }
 
+    @Transactional
     @Override
     public void withdraw(Boolean checkPassword, String token) {
 
     }
 
+    @Transactional
     @Override
     public UserResDto findMyInfo(String token) {
         return null;
     }
 
+    @Transactional
     @Override
     public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
         return null;
     }
 
+    @Transactional
     @Override
     public void deleteUser(Long userId, String token) {
         // 관리자 체크
 
     }
 
+    @Transactional
     @Override
     public List<AdminUserResDto> findUserList(String token) {
 
@@ -338,6 +348,7 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Transactional
     @Override
     public AdminUserResDto findUser(Long userId, String token) {
 
@@ -351,7 +362,7 @@ public class UserServiceImpl implements UserService {
 
 
 
-
+    @Transactional
     @Override
     public void addJiroCode(JiroCodeReqDto jiroCodeRepDto, String token) {
 
