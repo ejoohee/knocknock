@@ -1,6 +1,5 @@
 package com.knocknock.domain.model.dto.response;
 
-import com.knocknock.domain.model.domain.Model;
 import lombok.*;
 
 @Getter
@@ -17,17 +16,19 @@ public class FindModelResDto {
     private Integer modelGrade;
     private String modelImg;
     private String modelURL;
-    private String usage;
-    private Integer modelUsage;
-    private String usageUnit;
+    private String usage1;
+    private Integer usageValue1;
+    private String usageUnit1;
     private String usage2;
-    private Integer modelUsage2;
+    private Integer usageValue2;
     private String usageUnit2;
     private String usage3;
-    private Integer modelUsage3;
+    private Integer usageValue3;
     private String usageUnit3;
     private Integer modelCo2;
+    private String co2Unit;
     private Integer modelCost;
+    private String costUnit;
 //    private String releasedDate;
     private Boolean isLiked;
 

@@ -5,7 +5,6 @@ import com.knocknock.domain.model.dao.MyModelRepository;
 import com.knocknock.domain.model.domain.Model;
 import com.knocknock.domain.model.domain.MyModel;
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
-import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.dto.response.FindMyModelListResDto;
 import com.knocknock.domain.model.dto.response.FindMyModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
@@ -75,18 +74,19 @@ public class MyModelServiceImpl implements MyModelService {
                 .modelBrand(model.getBrand())
                 .modelGrade(model.getGrade())
                 .modelImg(model.getImg())
-                .modelURL(model.getUrl())
-                .usage(model.getCategory().getUsage())
-                .modelUsage(model.getUsage())
-                .usageUnit(model.getCategory().getUsageUnit())
+                .usage1(model.getCategory().getUsage1())
+                .usageValue1(model.getUsageValue1())
+                .usageUnit1(model.getCategory().getUsageUnit1())
                 .usage2(model.getCategory().getUsage2())
-                .modelUsage2(model.getUsage2())
+                .usageValue2(model.getUsageValue2())
                 .usageUnit2(model.getCategory().getUsageUnit2())
                 .usage3(model.getCategory().getUsage3())
-                .modelUsage3(model.getUsage3())
+                .usageValue3(model.getUsageValue3())
                 .usageUnit3(model.getCategory().getUsageUnit3())
                 .modelCo2(model.getCo2())
+                .co2Unit(model.getCategory().getCo2Unit())
                 .modelCost(model.getCost())
+                .costUnit(model.getCategory().getCostUnit())
 //                .releasedDate(model.getReleasedDate())
                 // null이 아니면 문자열로 변환해서 반환
                 .addAtPin((myModel.getAddAtPin() == null) ? null : myModel.getAddAtPin().toString())

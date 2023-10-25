@@ -37,14 +37,14 @@ public class Model {
     @Column(name = "model_URL", nullable = false)
     String url;
 
-    @Column(name = "model_usage")
-    Integer usage;
+    @Column(name = "usage_value1")
+    Integer usageValue1;
 
-    @Column(name = "model_usage2")
-    Integer usage2;
+    @Column(name = "usage_value2")
+    Integer usageValue2;
 
-    @Column(name = "model_usage3")
-    Integer usage3;
+    @Column(name = "usage_value3")
+    Integer usageValue3;
 
     @Column(name = "model_co2", nullable = false)
     Integer co2;
@@ -60,16 +60,16 @@ public class Model {
     Date releasedDate;
 
     @Builder
-    public Model(Category category, String name, String brand, Integer grade, String img, String url, Integer usage, Integer usage2, Integer usage3, Integer co2, Integer cost, Date releasedDate) {
+    public Model(Category category, String name, String brand, Integer grade, String img, String url, Integer usageValue1, Integer usageValue2, Integer usageValue3, Integer co2, Integer cost, Date releasedDate) {
         this.category = category;
         this.name = name;
         this.brand = brand;
         this.grade = grade;
         this.img = img;
         this.url = url;
-        this.usage = usage;
-        this.usage2 = usage2;
-        this.usage3 = usage3;
+        this.usageValue1 = usageValue1;
+        this.usageValue2 = usageValue2;
+        this.usageValue3 = usageValue3;
         this.co2 = co2;
         this.cost = cost;
         this.releasedDate = releasedDate;
