@@ -9,12 +9,12 @@ import lombok.*;
 @AllArgsConstructor
 public class CheckModelResDto {
 
-    String category;
+    private String category;
 
-    String modelName;
+    private String modelName;
 
-    String modelBrand;
+    private String modelBrand;
 
-    String modelImg;
+    private String modelImg;
 
 }

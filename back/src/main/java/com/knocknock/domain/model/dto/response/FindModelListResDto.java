@@ -9,14 +9,14 @@ import lombok.*;
 @AllArgsConstructor
 public class FindModelListResDto {
 
-    Long modelId;
+    private Long modelId;
 
-    String modelName;
+    private String modelName;
 
-    String modelBrand;
+    private String modelBrand;
 
-    Integer modelGrade;
+    private Integer modelGrade;
 
-    Boolean isLiked;
+    private Boolean isLiked;
 
 }

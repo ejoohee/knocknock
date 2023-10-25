@@ -11,18 +11,18 @@ import java.util.Date;
 @AllArgsConstructor
 public class FindMyModelListResDto {
 
-    Long myModelId;
+    private Long myModelId;
 
-    Long modelId;
+    private Long modelId;
 
-    String category;
+    private String category;
 
-    String modelBrand;
+    private String modelBrand;
 
-    Integer modelGrade;
+    private Integer modelGrade;
 
-    String modelNickname;
+    private String modelNickname;
 
-    String addAtPin;
+    private String addAtPin;
 
 }

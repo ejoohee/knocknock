@@ -33,14 +33,17 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
 
         BooleanBuilder searchOption = new BooleanBuilder();
         BooleanBuilder categoryOption = new BooleanBuilder();
-        // 검색 유형이 뭔지
-        if(type.equals(SearchType.BRAND.getValue())){
-            // 브랜드로 검색
-            searchOption.and(qModel.brand.contains(keyword));
-        }
-        if(type.equals(SearchType.MODEL.getValue())){
-            // 모델명으로 검색
-            searchOption.and(qModel.name.contains(keyword));
+        // 검색어가 null이 아닐 때
+        if(keyword != null) {
+            // 검색 유형이 뭔지
+            if (type.equals(SearchType.BRAND.getValue())) {
+                // 브랜드로 검색
+                searchOption.and(qModel.brand.contains(keyword));
+            }
+            if (type.equals(SearchType.MODEL.getValue())) {
+                // 모델명으로 검색
+                searchOption.and(qModel.name.contains(keyword));
+            }
         }
         // 어떤 카테고리 인지 (null 이면 전체 조회)
         if(category != null){
