@@ -97,6 +97,8 @@ public class EmailServiceImpl implements EmailService {
     @Transactional
     @Override
     public Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto) {
+        log.info("[이메일 인증 코드 유효검사] 검사 요청. email : {}, code : {}", emailCodeReqDto.getEmail(), emailCodeReqDto.getCode());
+
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         // email 키로 code value 반환
@@ -139,6 +141,7 @@ public class EmailServiceImpl implements EmailService {
             throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
         }
 
+        log.info("[이메일 중복 검사] 중복 검사 완료. 중복없어 회원가입 가능!");
         return true;
     }
 
