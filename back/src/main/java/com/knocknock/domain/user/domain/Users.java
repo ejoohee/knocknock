@@ -23,10 +23,10 @@ public class Users {
     @Column(unique = true, nullable = false)
     private String email; // 아이디
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20 )
     private String nickname;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")
@@ -37,11 +37,9 @@ public class Users {
     @Column(length = 10)
     private Integer giroCode;
 
-    @Column(nullable = false)
+    @Column
     private String address;
 
-    @ColumnDefault("false")
-    private Boolean isSocial;
 
     @Builder
     public Users(String email, String password, String nickname, Integer giroCode, String address, String userType) {
