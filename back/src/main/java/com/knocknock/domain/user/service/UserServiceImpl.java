@@ -7,7 +7,6 @@ import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
-import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.response.AdminUserResDto;
@@ -120,6 +119,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public LoginResDto login(LoginReqDto loginReqDto) {
         String email = loginReqDto.getEmail();
+        log.info("[유저 로그인] 로그인 요청. {} ", email);
 
         Users user = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
@@ -249,7 +249,6 @@ public class UserServiceImpl implements UserService {
     /**
      * 서비스 이전에 비밀번호 확인을 합니다.
      * 일치하면 true / 불일치하면 false
-     * @param passwordReqDto
      * @param token
      * @return
      */
