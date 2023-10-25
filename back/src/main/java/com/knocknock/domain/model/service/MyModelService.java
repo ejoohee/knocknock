@@ -16,6 +16,6 @@ public interface MyModelService {
 
     FindMyModelResDto findMyModel(long myModelId);
 
-    void pinMyModel(long myModelId);
+    void updateMyModelPinned(long myModelId);
 
 }

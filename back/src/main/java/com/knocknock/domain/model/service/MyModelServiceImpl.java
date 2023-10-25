@@ -89,10 +89,12 @@ public class MyModelServiceImpl implements MyModelService {
     }
 
     @Override
-    public void pinMyModel(long myModelId) {
+    public void updateMyModelPinned(long myModelId) {
         MyModel myModel = myModelRepository.findById(myModelId).orElseThrow(() -> new ModelNotFoundException("내가 등록한 가전제품에 존재하지 않는 가전제품입니다."));
         // 핀 등록한 날짜 기입
-        myModel.setAddAtPin(new Date());
+        Date now = null;
+        if(myModel.getAddAtPin() == null) now = new Date();
+        myModel.setAddAtPin(now);
     }
 
 
