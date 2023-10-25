@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
@@ -37,7 +38,7 @@ public class EmailServiceImpl implements EmailService {
     private final SpringTemplateEngine templateEngine; // 타임리프 이용
 
 
-
+    @Transactional
     @Override
     public EmailCodeResDto sendEmail(EmailPostDto emailPostDto, String type) {
         String email = emailPostDto.getEmail();
@@ -93,6 +94,7 @@ public class EmailServiceImpl implements EmailService {
     /**
      * 발송된 이메일 인증 코드와, 작성한 인증 코드 일치 체크
      */
+    @Transactional
     @Override
     public Boolean checkEmailCode(EmailCodeReqDto emailCodeReqDto) {
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
@@ -127,8 +129,11 @@ public class EmailServiceImpl implements EmailService {
      * 중복이 아니라서 회원가입이 가능하면 true를 반환하고,
      * 중복이면 400에러를 호출합니다.
      */
+    @Transactional
     @Override
     public Boolean checkEmail(String email) {
+        log.info("[이메일 중복 검사] 중복 검사 요청. email : {}", email);
+
         if(userRepository.existsByEmail(email)){
             log.error("[이메일 중복 검사] 이메일 중복. 회원가입 불가.");
             throw new UserException(UserExceptionMessage.EMAIL_DUPLICATED.getMessage());
