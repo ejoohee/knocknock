@@ -132,11 +132,13 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
         }
 
-        log.info("[유저 로그인] 로그인 요청. email : {}", email);
+        log.info("[유저 로그인] 아이디 & 패스워드 일치. 토큰 생성 실시.");
 
         // 토큰 생성
         String accessToken = jwtUtil.generateAccessToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        log.info("[유저 로그인] 토큰 생성 완료! Redis 저장 실시.");
 
         // Redis에 refreshToken 저장
         // 회원의 이메일(ID)을 키로 저장
@@ -145,6 +147,8 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .expiration(JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
                 .build());
+
+        log.info("[유저 로그인] Redis 저장 완료. 로그인 성공 !! ");
 
         return LoginResDto.builder()
                 .accessToken(accessToken)
