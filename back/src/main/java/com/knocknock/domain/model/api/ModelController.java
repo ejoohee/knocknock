@@ -116,10 +116,19 @@ public class ModelController {
             summary = "가전제품 찜 취소하기",
             description = "가전제품을 찜 취소합니다."
     )
-    @DeleteMapping("/like/{modelId}")
-    public ResponseEntity<MessageDto> deleteLikeModel(@PathVariable long modelId) {
-        likeModelService.deleteLikeModel(modelId);
+    @DeleteMapping("/like/{likeModelId}")
+    public ResponseEntity<MessageDto> deleteLikeModel(@PathVariable long likeModelId) {
+        likeModelService.deleteLikeModel(likeModelId);
         return ResponseEntity.ok(MessageDto.message("가전제품 찜 취소 완료"));
+    }
+
+    @Operation(
+            summary = "찜한 가전제품 목록 조회하기",
+            description = "찜한 가전제품 카테고리 별 or 전체 목록을 조회합니다."
+    )
+    @GetMapping("/like")
+    public ResponseEntity<List<FindLikeModelListResDto>> findLikeModelList(@RequestParam("category")String category) {
+        return ResponseEntity.ok(likeModelService.findLikeModelList(category));
     }
 
 

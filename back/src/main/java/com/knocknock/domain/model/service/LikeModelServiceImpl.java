@@ -5,6 +5,7 @@ import com.knocknock.domain.model.dao.LikeModelRepository;
 import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.domain.LikeModel;
 import com.knocknock.domain.model.domain.Model;
+import com.knocknock.domain.model.dto.response.FindLikeModelListResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.Users;
@@ -12,6 +13,8 @@ import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -40,10 +43,17 @@ public class LikeModelServiceImpl implements LikeModelService {
     }
 
     @Override
-    public void deleteLikeModel(long modelId) {
+    public void deleteLikeModel(long likeModelId) {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
-        likeModelRepository.deleteByUserAndModel(userId, modelId);
+        likeModelRepository.deleteById(likeModelId);
+    }
+
+    @Override
+    public List<FindLikeModelListResDto> findLikeModelList(String category) {
+
+
+        return null;
     }
 
 
