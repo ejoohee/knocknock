@@ -1,4 +1,4 @@
 spring:
   profiles:
-    active: back-develop
-#    active: develop
+#    active: back-develop
+    active: develop
