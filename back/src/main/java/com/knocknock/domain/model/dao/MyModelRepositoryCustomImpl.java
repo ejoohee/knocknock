@@ -59,7 +59,7 @@ public class MyModelRepositoryCustomImpl implements MyModelRepositoryCustom {
                     .modelBrand(myModel.getModel().getBrand())
                     .modelGrade(myModel.getModel().getGrade())
                     .modelNickname(myModel.getModelNickname())
-                    .addAtPin(myModel.getAddAtPin())
+                    .addAtPin((myModel.getAddAtPin() == null) ? null : myModel.getAddAtPin().toString())
                     .build()
         ).collect(Collectors.toList());
     }

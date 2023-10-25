@@ -23,6 +23,6 @@ public class FindMyModelListResDto {
 
     String modelNickname;
 
-    Date addAtPin;
+    String addAtPin;
 
 }

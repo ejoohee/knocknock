@@ -30,6 +30,6 @@ public class FindMyModelResDto {
     private String usageUnit3;
     private Integer modelCo2;
     private Integer modelCost;
-    private Date addAtPin;
+    private String addAtPin;
 
 }

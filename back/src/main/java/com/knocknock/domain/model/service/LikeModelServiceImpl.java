@@ -11,8 +11,10 @@ import com.knocknock.domain.user.domain.Users;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class LikeModelServiceImpl implements LikeModelService {
 
@@ -35,6 +37,13 @@ public class LikeModelServiceImpl implements LikeModelService {
                 .user(user)
                 .build();
         likeModelRepository.save(likeModel);
+    }
+
+    @Override
+    public void deleteLikeModel(long modelId) {
+        // 현재 로그인한 회원의 user 기본키 가져오기
+        Long userId = jwtUtil.getUserNo();
+        likeModelRepository.deleteByUserAndModel(userId, modelId);
     }
 
 

@@ -14,11 +14,13 @@ import com.knocknock.domain.user.domain.Users;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class MyModelServiceImpl implements MyModelService {
 
@@ -52,6 +54,7 @@ public class MyModelServiceImpl implements MyModelService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<FindMyModelListResDto> findMyModelList(String category) {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
@@ -59,6 +62,7 @@ public class MyModelServiceImpl implements MyModelService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public FindMyModelResDto findMyModel(long myModelId) {
         MyModel myModel = myModelRepository.findById(myModelId).orElseThrow(() -> new ModelNotFoundException("내가 등록한 가전제품에 존재하지 않는 가전제품입니다."));
         Model model = modelRepository.findModelById(myModel.getModel().getId()).orElseThrow(() -> new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다."));
@@ -84,7 +88,8 @@ public class MyModelServiceImpl implements MyModelService {
                 .modelCo2(model.getCo2())
                 .modelCost(model.getCost())
 //                .releasedDate(model.getReleasedDate())
-                .addAtPin(myModel.getAddAtPin())
+                // null이 아니면 문자열로 변환해서 반환
+                .addAtPin((myModel.getAddAtPin() == null) ? null : myModel.getAddAtPin().toString())
                 .build();
     }
 

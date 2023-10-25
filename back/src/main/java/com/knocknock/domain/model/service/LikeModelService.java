@@ -4,5 +4,6 @@ public interface LikeModelService {
 
     void addLikeModel(long modelId);
 
+    void deleteLikeModel(long modelId);
 
 }

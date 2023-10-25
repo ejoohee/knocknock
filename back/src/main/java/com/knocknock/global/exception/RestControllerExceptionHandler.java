@@ -1,6 +1,7 @@
 package com.knocknock.global.exception;
 
 import com.knocknock.global.dto.MessageDto;
+import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,12 @@ public class RestControllerExceptionHandler {
     public ResponseEntity<MessageDto> handleTokenException(TokenException tokenException) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(MessageDto.message(tokenException.getMessage()));
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<MessageDto> handleNotFoundException(NotFoundException notFoundException) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(MessageDto.message(notFoundException.getMessage()));
     }
 
 }

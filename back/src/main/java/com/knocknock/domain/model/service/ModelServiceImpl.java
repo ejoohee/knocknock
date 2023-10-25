@@ -10,10 +10,12 @@ import com.knocknock.domain.model.exception.ModelNotFoundException;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ModelServiceImpl implements ModelService {
 
@@ -23,6 +25,7 @@ public class ModelServiceImpl implements ModelService {
 
     // 목록 조회
     @Override
+    @Transactional(readOnly = true)
     public List<FindModelListResDto> findModelList(String type, String keyword, String category) {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
@@ -42,6 +45,7 @@ public class ModelServiceImpl implements ModelService {
 
     // 상세 정보 조회
     @Override
+    @Transactional(readOnly = true)
     public FindModelResDto findModel(long modelId) {
         Model model = modelRepository.findModelById(modelId).orElseThrow(() -> new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다."));
         // 찜한 가전제품 인지 확인
@@ -72,6 +76,7 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public CheckModelResDto checkModelByModelName(String modelName) {
         CheckModelResDto checkModelResDto = modelRepository.checkModelByModelName(modelName);
         if(checkModelResDto == null) throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
