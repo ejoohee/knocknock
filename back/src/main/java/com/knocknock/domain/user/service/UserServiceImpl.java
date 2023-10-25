@@ -127,6 +127,8 @@ public class UserServiceImpl implements UserService {
                     return new UserException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
+        log.info("[유저 로그인] 존재하는 유저임.");
+
         if(!passwordEncoder.matches(loginReqDto.getPassword(), user.getPassword())) {
             log.error("[유저 로그인] 패스워드 불일치");
             throw new IllegalArgumentException(UserExceptionMessage.LOGIN_PASSWORD_ERROR.getMessage());
