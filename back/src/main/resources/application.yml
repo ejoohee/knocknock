@@ -49,6 +49,8 @@ spring:
             enable: true
             trust: smtp.gmail.com
 
+  jackson:
+    time-zone: Asia/Seoul
 
 
 server:
