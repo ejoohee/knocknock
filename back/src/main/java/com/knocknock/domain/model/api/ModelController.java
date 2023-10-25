@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/model")
+@RequestMapping("/api/model")
 public class ModelController {
 
     private final ModelService modelService;
@@ -87,6 +87,16 @@ public class ModelController {
     public ResponseEntity<MessageDto> deleteMyModel(@PathVariable long modelId) {
         myModelService.deleteMyModel(modelId);
         return ResponseEntity.ok(MessageDto.message("내 가전제품 삭제 완료"));
+    }
+
+    @Operation(
+            summary = "내 가전제품 핀 등록하기",
+            description = "내 가전제품을 핀 등록합니다."
+    )
+    @PatchMapping("/my/pin/{myModelId}")
+    public ResponseEntity<MessageDto> addMyModel(@PathVariable long myModelId ) {
+        myModelService.pinMyModel(myModelId);
+        return ResponseEntity.ok().build();
     }
 
 }

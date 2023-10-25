@@ -42,4 +42,10 @@ public class MyModel {
         this.addAtPin = addAtPin;
     }
 
+    // 비즈니스 메서드
+
+    public void setAddAtPin(Date now){
+        this.addAtPin = now;
+    }
+
 }

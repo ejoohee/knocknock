@@ -15,6 +15,7 @@ import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -85,6 +86,13 @@ public class MyModelServiceImpl implements MyModelService {
 //                .releasedDate(model.getReleasedDate())
                 .addAtPin(myModel.getAddAtPin())
                 .build();
+    }
+
+    @Override
+    public void pinMyModel(long myModelId) {
+        MyModel myModel = myModelRepository.findById(myModelId).orElseThrow(() -> new ModelNotFoundException("내가 등록한 가전제품에 존재하지 않는 가전제품입니다."));
+        // 핀 등록한 날짜 기입
+        myModel.setAddAtPin(new Date());
     }
 
 
