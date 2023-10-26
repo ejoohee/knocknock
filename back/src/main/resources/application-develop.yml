@@ -29,7 +29,8 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:mariadb://mariadb:3306/knocknock
+    hikari:
+      jdbc-url: jdbc:mariadb://mariadb:3306/knocknock
     driver-class-name: org.mariadb.jdbc.Driver
     username: root
     password: knocknock
