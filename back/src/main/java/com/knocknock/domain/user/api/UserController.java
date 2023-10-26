@@ -28,7 +28,7 @@ import java.util.List;
 public class UserController {
 
     private final String ACCESS_TOKEN = "Authorization";
-    private final String REFRESH_TOKEN = "RefreshToken";
+    private final String REFRESH_TOKEN = "Refresh-Token";
     private final UserService userService;
 
     @Operation(
@@ -141,7 +141,7 @@ public class UserController {
             description = "토큰을 재발급 받습니다."
     )
     @PostMapping("/reissue-token")
-    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("accessToken") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
+    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
         return ResponseEntity.ok(userService.reissueToken(accessToken, refreshToken));
     }
 
