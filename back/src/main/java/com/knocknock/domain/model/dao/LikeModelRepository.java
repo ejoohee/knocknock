@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface LikeModelRepository extends JpaRepository<LikeModel, Long> {
+public interface LikeModelRepository extends JpaRepository<LikeModel, Long>, LikeModelRepositoryCustom {
 
     // 찜한 상품인지 확인용
     @Query(value = "SELECT lm FROM LikeModel lm WHERE lm.user.userId = :userId AND lm.model.id = :modelId")

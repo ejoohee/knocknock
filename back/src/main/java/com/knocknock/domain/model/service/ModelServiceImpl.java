@@ -9,6 +9,7 @@ import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class ModelServiceImpl implements ModelService {
 
     private final ModelRepository modelRepository;
@@ -29,12 +31,14 @@ public class ModelServiceImpl implements ModelService {
     public List<FindModelListResDto> findModelList(String type, String keyword, String category) {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
+        log.info("[가전제품 목록 조회] 현재 로그인한 회원의 기본키 {}", userId);
         List<FindModelListResDto> findModelListResDtoList = modelRepository.findModelList(userId, type, keyword, category);
         // 찜 되어있는지
         for (FindModelListResDto modelDto : findModelListResDtoList) {
             // 찜한 상품
             modelDto.setIsLiked(isLiked(userId, modelDto.getModelId()));
         }
+        log.info("[가전제품 목록 조회] 가전제품 목록 조회 성공.");
         return modelRepository.findModelList(userId, type, keyword, category);
     }
 
@@ -47,10 +51,15 @@ public class ModelServiceImpl implements ModelService {
     @Override
     @Transactional(readOnly = true)
     public FindModelResDto findModel(long modelId) {
-        Model model = modelRepository.findModelById(modelId).orElseThrow(() -> new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다."));
+        Model model = modelRepository.findModelById(modelId).orElseThrow(() -> {
+            log.error("[가전제품 상세 정보 조회] 조회 실패...해당하는 가전제품이 존재하지 않습니다.");
+            return new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
+        });
         // 찜한 가전제품 인지 확인
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
+
+        log.info("[가전제품 상세 정보 조회] 가전제품 상세 정보 조회 성공.");
         return FindModelResDto.builder()
                 .modelId(modelId)
                 .category(model.getCategory().getName())
@@ -81,7 +90,11 @@ public class ModelServiceImpl implements ModelService {
     @Transactional(readOnly = true)
     public CheckModelResDto checkModelByModelName(String modelName) {
         CheckModelResDto checkModelResDto = modelRepository.checkModelByModelName(modelName);
-        if(checkModelResDto == null) throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
+        if(checkModelResDto == null) {
+            log.error("[가전제품 모델명으로 조회] 조회 실패...해당하는 가전제품이 존재하지 않습니다.");
+            throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
+        }
+        log.info("[가전제품 모델명으로 조회] 가전제품 모델명으로 조회 성공.");
         return checkModelResDto;
     }
 
