@@ -21,11 +21,10 @@ spring:
       enabled: true
 
   datasource:
-#    url: jdbc:mariadb://mariadb:3306/knocknock
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mariadb://mariadb:3306/knocknock
+    driver-class-name: org.mariadb.jdbc.Driver
+    username: root
+    password: knocknock
 
   logging.level:
     org.hibernate:
