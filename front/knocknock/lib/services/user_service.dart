@@ -15,6 +15,7 @@ class UserService {
   // 1. 로그인
   Future<int> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/user/login');
+
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -26,7 +27,7 @@ class UserService {
       ),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       final String? token = responseData['accessToken'];
       final String? refreshToken = responseData['refreshToken'];
@@ -38,7 +39,7 @@ class UserService {
         await storage.write(key: "refreshToken", value: refreshToken);
         await storage.write(key: "nickname", value: nickname);
         await storage.write(key: "address", value: address);
-        return 201; // 로그인 성공 및 토큰 생성 성공
+        return 200; // 로그인 성공 및 토큰 생성 성공
       }
     } else if (response.statusCode == 400) {
       return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
@@ -113,15 +114,16 @@ class UserService {
 
   // 4. 이메일 중복검사
   Future<int> checkEmail(String email) async {
-    final url = Uri.parse("$baseUrl/user/check?email=$email");
+    final url = Uri.parse("$baseUrl/email/check?email=$email");
 
     final response = await http.get(
       url,
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
     );
 
+    print(response.body);
     if (response.statusCode == 200) {
-      return 200; // 이메일 중복 검사 성공
+      return 200;
     } else if (response.statusCode == 400) {
       return 400; // 이메일 중복
     } else {
@@ -131,10 +133,14 @@ class UserService {
 
   // 5. 이메일 인증코드 발신
   Future<int> sendCheckEmailCode(String email) async {
-    final url = Uri.parse("$baseUrl/email/sign-up?email=$email");
+    print("이메일을 보냅니다.");
+    final url = Uri.parse("$baseUrl/email/sign-up");
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "email": email,
+      }),
     );
 
     if (response.statusCode == 200) {
@@ -158,10 +164,10 @@ class UserService {
       }),
     );
 
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    dynamic responseBody = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      if (responseBody['success'] == true) {
+      if (responseBody == true) {
         return 200; // 이메일 인증 코드 일치
       } else {
         return 201; // 이메일 인증 코드 불일치
@@ -177,6 +183,7 @@ class UserService {
   Future<int> signUp(
       String email, String password, String nickname, String address) async {
     final url = Uri.parse("$baseUrl/user/sign-up");
+
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},

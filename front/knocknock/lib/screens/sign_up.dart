@@ -370,6 +370,7 @@ class _SignupState extends State<Signup> {
                         TextFormField(
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           controller: emailController,
+                          readOnly: isEmailVerified,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return '이메일을 입력하세요.';
@@ -405,6 +406,12 @@ class _SignupState extends State<Signup> {
                         ),
                       ],
                     ),
+                    isEmailVerified
+                        ? Text(
+                            "인증 완료",
+                            style: TextStyle(color: Colors.green[900]),
+                          )
+                        : const SizedBox(height: 0),
                     const SizedBox(height: 15),
                     TextFormField(
                       autovalidateMode: AutovalidateMode.onUserInteraction,
