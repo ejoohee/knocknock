@@ -35,14 +35,14 @@ public class Users {
     private UserType userType;
 
     @Column(length = 10)
-    private Integer giroCode;
+    private String giroCode;
 
     @Column
     private String address;
 
 
     @Builder
-    public Users(String email, String password, String nickname, Integer giroCode, String address, String userType) {
+    public Users(String email, String password, String nickname, String giroCode, String address, String userType) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -51,15 +51,34 @@ public class Users {
         this.userType = UserType.getUserType(userType);
     }
 
-    // 비밀번호 변경
+    /**
+     * 패스워드 변경 서비스
+     */
     public void updatePassword(String encodingPassword) {
         this.password = encodingPassword;
     }
 
-    // 주소 변경
+    /**
+     * 내 주소 수정 서비스
+     */
     public void updateAddress(String newAddress) {
         this.address = newAddress;
     }
 
+    /**
+     * 내 정보 수정 서비스
+     */
+    public void updateUser(String nickname, String address, String giroCode) {
+        this.nickname = nickname == null ? this.nickname : nickname;
+        this.address = address == null ? this.address : address;
+        this.giroCode = giroCode == null ? this.giroCode : giroCode;
+    }
+
+    /**
+     * 지로 코드 등록 서비스
+     */
+    public void addGiroCode(String giroCode) {
+        this.giroCode = giroCode == null ? this.giroCode : giroCode;
+    }
 
 }

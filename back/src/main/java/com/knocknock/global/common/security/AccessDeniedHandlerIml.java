@@ -17,6 +17,6 @@ public class AccessDeniedHandlerIml implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest req, HttpServletResponse res, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        res.sendError(HttpServletResponse.SC_FORBIDDEN, "403에러 발생");
+        res.sendError(HttpServletResponse.SC_FORBIDDEN, "인증은 됐으나 권한이 없어용");
     }
 }

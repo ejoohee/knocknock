@@ -3,21 +3,18 @@ package com.knocknock.domain.email.api;
 import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
-import com.knocknock.domain.email.service.EmailServiceImpl;
+import com.knocknock.domain.email.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/api/email")
 @RestController
 @RequiredArgsConstructor
 public class EmailController {
 
-    private final EmailServiceImpl emailService;
+    private final EmailService emailService;
 
     @Operation(
             summary = "회원가입 이메일 인증 코드 발신",
@@ -26,6 +23,16 @@ public class EmailController {
     @PostMapping("/sign-up")
     public ResponseEntity<EmailCodeResDto> sendSignUpMail(@RequestBody EmailPostDto emailPostDto) {
         return ResponseEntity.ok(emailService.sendEmail(emailPostDto, "email"));
+    }
+
+    @Operation(
+            summary = "이메일 중복 검사",
+            description = "회원가입 이전에 이메일을 중복검사합니다. " +
+                    "중복이 아니라 회원가입이 가능하면 true를 반환합니다."
+    )
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(emailService.checkEmail(email));
     }
 
     @Operation(

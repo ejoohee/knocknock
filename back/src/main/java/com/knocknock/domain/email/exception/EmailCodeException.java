@@ -1,9 +1,11 @@
 package com.knocknock.domain.email.exception;
 
 
-import com.knocknock.global.exception.exception.MessagingException;
+public class EmailCodeException extends IllegalArgumentException {
 
-public class EmailCodeException extends MessagingException {
+    public EmailCodeException() {
+        super("EMAIL_CODE_EXCEPTION(400) 인증 코드 불일치");
+    }
 
     public EmailCodeException(String msg) {
         super(msg);
