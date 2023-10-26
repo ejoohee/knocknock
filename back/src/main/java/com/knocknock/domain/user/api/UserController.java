@@ -20,7 +20,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/user")
 public class UserController {
 
-    private final String ACCESS_TOKEN = "AccessToken";
+    private final String ACCESS_TOKEN = "Authorization";
     private final String REFRESH_TOKEN = "RefreshToken";
     private final UserService userService;
 
