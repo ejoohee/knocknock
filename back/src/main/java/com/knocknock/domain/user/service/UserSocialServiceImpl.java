@@ -6,7 +6,9 @@ import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.UserType;
 import com.knocknock.domain.user.domain.Users;
+import com.knocknock.domain.user.dto.request.UpdateAddressReqDto;
 import com.knocknock.domain.user.dto.response.SocialLoginResDto;
+import com.knocknock.domain.user.dto.response.UpdateAddressResDto;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
@@ -38,7 +40,6 @@ public class UserSocialServiceImpl implements UserSocialService {
     private final UserRepository userRepository;
     private final RestTemplate restTemplate = new RestTemplate();
 
-
     @Transactional
     @Override
     public SocialLoginResDto socialLogin(String code) {
@@ -61,21 +62,23 @@ public class UserSocialServiceImpl implements UserSocialService {
                 .orElseGet(() -> {
                     return userRepository.save(Users.builder()
                             .email(email)
-                            .userType("소셜회원")
+                            .userType(isSocial.getValue())
                             .nickname(nickname)
                             .build());
                 });
-        // Redis에 refreshToken 저장
-        // 회원의 이메일(ID)을 키로 저장
-        // saveRefreshTokenToRedis(email, refreshToken);
+//         Redis에 refreshToken 저장
+//         회원의 이메일(ID)을 키로 저장
+        saveRefreshTokenToRedis(email, refreshToken);
 
         // Spring Security Context에 인증 정보 저장
         authenticateUser(user);
 
+        log.info("[소셜 유저 로그인] 로그인 성공 - 이메일: {}", email);
         return SocialLoginResDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(email)
+                .userType(isSocial.getValue())
                 .address(user.getAddress())
                 .nickname(user.getNickname())
                 .build();
@@ -83,14 +86,14 @@ public class UserSocialServiceImpl implements UserSocialService {
 
     private void validateAccessToken(String oauthAccessToken) {
         if (oauthAccessToken == null) {
-            log.error("[소셜 유저 로그인] Access token 가져오기 실패");
+            log.error("[소셜 유저 로그인] 토큰 획득 실패");
             throw new UserNotFoundException(UserExceptionMessage.ACCESS_TOKEN_NOT_FOUND.getMessage());
         }
     }
 
     private void validateUserResource(JsonNode userResourceNode) {
         if (userResourceNode == null || !userResourceNode.has("email")) {
-            log.error("[소셜 유저 로그인] 사용자 정보 가져오기 실패");
+            log.error("[소셜 유저 로그인] 사용자 정보 획득 실패");
             throw new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
         }
     }
@@ -114,6 +117,7 @@ public class UserSocialServiceImpl implements UserSocialService {
     }
 
     private String getAccessToken(String authorizationCode) {
+        log.info("[소셜 유저 로그인] 토큰 요청");
         String clientId = oauth2Config.getClientId();
         String clientSecret = oauth2Config.getClientSecret();
         String redirectUri = oauth2Config.getRedirectUri();
@@ -133,15 +137,44 @@ public class UserSocialServiceImpl implements UserSocialService {
 
         ResponseEntity<JsonNode> responseNode = restTemplate.exchange(tokenUri, HttpMethod.POST, entity, JsonNode.class);
         JsonNode accessTokenNode = responseNode.getBody();
+        log.info("[소셜 유저 로그인] 토큰 획득 성공");
         return accessTokenNode.get("access_token").asText();
     }
 
     private JsonNode getUserResource(String accessToken) {
+        log.info("[소셜 유저 로그인] 리소스 요청");
         String resourceUri = oauth2Config.getResourceUri();
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Bearer " + accessToken);
         HttpEntity entity = new HttpEntity(headers);
+        log.info("[소셜 유저 로그인] 리소스 획득 성공");
         return restTemplate.exchange(resourceUri, HttpMethod.GET, entity, JsonNode.class).getBody();
+    }
+
+    @Override
+    public UpdateAddressResDto updateAddress(UpdateAddressReqDto updateAddressReqDto, String token) {
+        log.info("[소셜 유저 로그인] 주소 변경 요청");
+        Users loginUser = getLoginUser(token);
+
+        loginUser.updateAddress(updateAddressReqDto.getAddress());
+        userRepository.save(loginUser);
+
+        log.info("[소셜 유저 로그인] 주소 변경 성공");
+        return UpdateAddressResDto.builder()
+                .address(loginUser.getAddress())
+                .build();
+    }
+
+    private Users getLoginUser(String token) {
+        String email = jwtUtil.getLoginEmail(token);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        return loginUser;
     }
 }
