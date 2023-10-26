@@ -4,14 +4,13 @@ import com.knocknock.domain.email.domain.EmailMessage;
 import com.knocknock.domain.email.dto.EmailCodeReqDto;
 import com.knocknock.domain.email.dto.EmailCodeResDto;
 import com.knocknock.domain.email.dto.EmailPostDto;
-import com.knocknock.domain.email.exception.EmailCodeException;
 import com.knocknock.domain.email.exception.EmailCodeNotFoundException;
 import com.knocknock.domain.email.exception.EmailException;
+import com.knocknock.domain.email.exception.EmailExceptionMessage;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.service.UserService;
-import com.knocknock.global.exception.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -79,7 +78,7 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("[이메일 발신] 발신 실패. ERROR 발생.");
-            throw new EmailException("이메일 발신 실패.");
+            throw new EmailException(EmailExceptionMessage.EMAIL_NOT_SENT.getMessage());
         }
 
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
@@ -108,7 +107,7 @@ public class EmailServiceImpl implements EmailService {
 
         if(originCode == null){
             log.error("[인증 코드 일치 체크] 인증 코드가 존재하지 않습니다.");
-            throw new EmailCodeNotFoundException("해당 이메일로 유효한 인증 코드가 존재하지 않습니다.");
+            throw new EmailCodeNotFoundException(EmailExceptionMessage.EMAIL_CODE_NOT_FOUND.getMessage());
         }
 
         if(originCode.equals(emailCodeReqDto.getCode())) {
@@ -123,6 +122,8 @@ public class EmailServiceImpl implements EmailService {
             return true;
         }
 
+        // 인증 코드 불일치일 떄
+        log.error(EmailExceptionMessage.EMAIL_CODE_NOT_VALID.getMessage());
         // 이거 코드 잘못입력한 후 false 나오고 나면
         // 그이후에 맞는 코드 작성해도 계속 false 나오는데 이게맞나,,,?
         return false;

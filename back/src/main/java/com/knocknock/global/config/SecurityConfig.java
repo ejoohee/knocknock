@@ -96,21 +96,6 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
 
          log.info("[SecurityConfig] filterChain 완료! ");
          return http.build();
-
-//        return http.authorizeRequests()
-//                .antMatchers(PERMIT_URL_ARRAY).permitAll()
-//                .anyRequest().authenticated()
-//                .and()
-//                .httpBasic().disable()
-//                .formLogin().disable()
-//                .cors().disable()
-//                .csrf().disable()
-//                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .addFilterBefore(authenticationJwtFilter, UsernamePasswordAuthenticationFilter.class)
-//                .exceptionHandling()
-//                .authenticationEntryPoint(authenticationEntryPoint)
-//                .accessDeniedHandler(accessDeniedHandler).and().build();
     }
 
 

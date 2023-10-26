@@ -7,7 +7,6 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
-import java.util.Objects;
 
 @Slf4j
 @Component
@@ -116,23 +114,23 @@ public class JwtUtil {
      * Claims에서 loginEmail 추출
      */
     public String getLoginEmail(String token) {
-//        token.substring(7);
-//        String tmp = new String(token);
-//        String newToken = tmp.substring(7);
-//        log.info("newtoken : {}" , newToken);
-
         log.info("getLoginEmail 토큰 : {}", token);
-//
-//        if(token.startsWith("Bearer "))
-//            token = token.substring(7);
 
-        token = prefixToken(token); // 유저써비스
-//        log.info("getLoginEmail 에서 토큰 : {}", newToken);
+        token = prefixToken(token); // 유저써비스용
 
         return extractClaims(token).get("email", String.class);
     }
 
+    /**
+     * UserService에서 token이 쓰이는 메서드에 다 체크하는 용으로 만들었습니다.
+     * (임시)
+     */
+    private String prefixToken(String token) {
+        if(token.startsWith("Bearer "))
+            return token.substring(7);
 
+        return token;
+    }
 
 //여기부터 checkAdmin까지 테스트해봐야함
     private UserDetailsImpl getPrincipal() {
@@ -142,8 +140,8 @@ public class JwtUtil {
 //                .getContext().getAuthentication());
 
         UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+
         log.info("principal : {}", principal.getUsername());
-        log.info("principal : {}", principal.getUserId());
         return principal;
     }
     
@@ -151,7 +149,6 @@ public class JwtUtil {
      * userId 추출(기본키)
      */
     public Long getUserNo() {
-        log.info("[getUserNo]도 실행 완료");
         return getPrincipal().getUserId();
     }
 
@@ -171,14 +168,4 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    /**
-     * UserService에서 token이 쓰이는 메서드에 다 체크하는 용으로 만들었습니다.
-     * (임시)
-     */
-    private String prefixToken(String token) {
-        if(token.startsWith("Bearer "))
-            return token.substring(7);
-
-        return token;
-    }
 }

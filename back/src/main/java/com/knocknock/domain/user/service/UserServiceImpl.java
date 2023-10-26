@@ -9,14 +9,14 @@ import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
-import com.knocknock.domain.user.dto.response.AdminUserResDto;
-import com.knocknock.domain.user.dto.response.LoginResDto;
-import com.knocknock.domain.user.dto.response.ReissueTokenResDto;
-import com.knocknock.domain.user.dto.response.UserResDto;
+import com.knocknock.domain.user.dto.response.*;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserNotFoundException;
+import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
+import com.knocknock.global.exception.exception.NotFoundException;
+import com.knocknock.global.exception.exception.TokenException;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -164,11 +165,18 @@ public class UserServiceImpl implements UserService {
      * 로그인 유저를 반환
      */
     private Users getLoginUser(String token) {
-        String email = jwtUtil.getLoginEmail(token);
+//        String email = jwtUtil.getLoginEmail(token);
+        Long userId = jwtUtil.getUserNo();
 
-        Users loginUser = userRepository.findByEmail(email)
+//        Users loginUser = userRepository.findByEmail(email)
+//                .orElseThrow(() -> {
+//                    log.error("[User Service] 로그인 유저를 찾을 수 없습니다.");
+//                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+//                });
+
+        Users loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> {
-                    log.error("[UserService] 로그인 유저를 찾을 수 없습니다.");
+                    log.error("[User Service] 로그인 유저를 찾을 수 없습니다.");
                     return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
@@ -263,10 +271,6 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public Boolean checkPassword(String password, String token) {
-        log.info("jwt 실행");
-        jwtUtil.getUserNo();
-
-        log.info("[여기까지 완료!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!]");
         Users loginUser = getLoginUser(token);
         log.info("[비밀번호 확인] email : {}", loginUser.getEmail());
 
@@ -282,8 +286,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token) {
-
-        // 유저
+        // 유저 반환
         Users loginUser = getLoginUser(token);
         log.info("[비밀번호 변경] 변경 요청. 로그인 유저 : {}", loginUser.getEmail());
 
@@ -318,37 +321,149 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public UserResDto updateUser(UpdateUserReqDto updateUserReqDto, String token) {
-        return null;
+        // 유저 뽑아오기
+        Users loginUser = getLoginUser(token);
+        log.info("[내 정보 수정] 정보 수정 요청. email : {}", loginUser.getEmail());
+
+        // 내정보 수정 전에 비밀번호 체크(checkPassword) 실행 ---> 프론트
+
+        loginUser.updateUser(updateUserReqDto.getNickname(), updateUserReqDto.getAddress(), updateUserReqDto.getGiroCode());
+        userRepository.save(loginUser);
+
+        log.info("[내 정보 수정] 정보 수정 완료.");
+
+        return UserResDto.entityToDto(loginUser);
     }
 
     @Transactional
     @Override
-    public void withdraw(Boolean checkPassword, String token) {
+    public void withdraw(String token) {
+        // 패스워드 확인 -> 쁘론트
 
+        Users loginUser = getLoginUser(token);
+        log.info("[회원탈퇴] 회원 탈퇴 요청. email : {}", loginUser.getEmail());
+
+        userRepository.delete(loginUser);
+        log.info("[회원탈퇴] 회원 탈퇴 완료. 메서드 종료!");
     }
 
     @Transactional
     @Override
     public UserResDto findMyInfo(String token) {
-        return null;
+        Users loginUser = getLoginUser(token);
+        log.info("[내 정보 조회] 정보 조회 요청. email : {}", loginUser.getEmail());
+
+        return UserResDto.entityToDto(loginUser);
+    }
+
+    /**
+     * Bearer 떼고 엑세스 토큰 가져옴
+     */
+    private String noPrefixToken(String token) {
+        return token.substring(7);
     }
 
     @Transactional
     @Override
     public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
-        return null;
+        log.info("[토큰 재발급] 토큰 재발급 요청. accessToken : {}", accessToken);
+//        accessToken = noPrefixToken(accessToken);
+
+        // refreshToken에서 email 가져오기
+        String email = null;
+
+        try {
+            email = jwtUtil.getLoginEmail(refreshToken);
+        } catch (Exception e) {
+            // 리프레시 토큰 만료
+            log.error("[토큰 재발급] 리프레시 토큰이 만료되었습니다. 재로그인 해주세요.");
+            throw new TokenException("리프레시 토큰 만료. 재로그인 필수.");
+        }
+
+        // refreshToken을 redis 레포에서 가져와서 일치 검사
+        String originRefreshToken = refreshTokenRepository.findById(email)
+                .orElseThrow(() -> {
+                    log.error("[토큰 재발급] 해당 이메일에 대한 토큰이 존재하지 않습니다.");
+                    return new NotFoundException("해당 이메일에 대한 토큰 미존재.");
+                }).getRefreshToken();
+
+        if(!originRefreshToken.equals(refreshToken)) {
+            log.error("[토큰 재발급] 토큰이 일치하지 않아 재발급 불가.");
+            throw new TokenException("토큰 불일치.");
+        }
+
+        // access & refresh Token 재발급
+        accessToken = jwtUtil.generateAccessToken(email);
+        refreshToken = jwtUtil.generateRefreshToken(email);
+
+        // redis에 refreshToken 저장 필요
+        // 회원의 이메일 아이디를 키로 저장
+
+        // 기존에 저장된 리프레시 토큰 삭제
+        refreshTokenRepository.deleteById(email);
+
+        refreshTokenRepository.save(RefreshToken.builder()
+                .email(email)
+                .refreshToken(refreshToken)
+                .expiration(JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+                .build());
+
+        return ReissueTokenResDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Transactional
     @Override
     public void deleteUser(Long userId, String token) {
-        // 관리자 체크
+        log.info("[관리자 전용 - 회원 강제탈퇴] 강제탈퇴 요청. token : {}", token);
 
+        // 관리자 체크
+        if(!jwtUtil.checkAdmin()) {
+            log.error("[관리자 전용 - 회원 강제탈퇴] 관리자 회원만 접근이 가능합니다.");
+            throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
+        }
+
+        log.info("[관리자 전용 - 회원 강제탈퇴] 관리자 체크 완료. 해당 회원을 찾아냅니다.. findUserId : {}", userId);
+        Users findUser = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("[관리자 전용 - 회원 강제탈퇴] 회원을 찾을 수 없습니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        log.info("[관리자 전용 - 회원 강제탈퇴] 회원 찾기 완료! findUserEmail : {}", findUser.getEmail());
+
+        userRepository.delete(findUser);
+        log.info("[관리자 전용 - 회원 강제탈퇴] 회원 강제탈퇴 처리 완료. 메서드 종료!");
     }
 
     @Transactional
     @Override
     public List<AdminUserResDto> findUserList(String token) {
+        log.info("[관리자 전용 - 전체 회원 목록 조회] 조회 요청. token : {}", token);
+
+        // 관리자 체크 -- test
+        if(!jwtUtil.checkAdmin()) {
+            log.error("[관리자 전용 - 전체 회원 목록 조회] 관리자 회원만 접근이 가능합니다.");
+            throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
+        }
+
+        log.info("[관리자 전용 - 전체 회원 목록 조회] 관리자 체크 완료. 전체 회원을 조회합니다...");
+
+        return userRepository.findAll().stream()
+                .map(user -> AdminUserResDto.entityToDto(user))
+                .collect(Collectors.toList());
+    }
+
+    // 유저 - 소셜 / 기본 나눠서 조회하거나 이름으로 조히ㅗ하거나 ... 등등
+    // 회원 검색 따로 있어야함
+    @Transactional
+    @Override
+    public List<AdminUserResDto> findUserByCondition(UserSearchCondition condition, String token) {
+        log.info("[관리자 전용 - 회원 검색] 회원 검색 요청. token : {}", token);
+
+
 
         // 관리자 체크
 
@@ -358,36 +473,44 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public AdminUserResDto findUser(Long userId, String token) {
+        log.info("[관리자 전용 - 회원 조회] 조회 요청. token : {}", token);
 
-        // 관리자 체크
-        
-        return null;
+        // 관리자 체크 -- 테스트해바야함
+        if(!jwtUtil.checkAdmin()) {
+            log.error("[관리자 전용 - 회원 조회] 관리자 회원만 접근이 가능합니다.");
+            throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
+        }
+
+        log.info("[관리자 전용 - 회원 조회] 관리자 체크 완료. 회원을 찾아냅니다... findUserId : {}", userId);
+        Users findUser = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("[관리자 전용 - 회원 조회] 회원을 찾을 수 없습니다.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        log.info("[관리자 전용 - 회원 조회] 회원 찾기 완료 ! findUserEmail : {}", findUser.getEmail());
+
+        return AdminUserResDto.entityToDto(findUser);
     }
-
-
-
-
-
 
     @Transactional
     @Override
-    public void addJiroCode(JiroCodeReqDto jiroCodeRepDto, String token) {
+    public void addGiroCode(GiroCodeReqDto giroCodeRepDto, String token) {
+        Users loginUser = getLoginUser(token);
+        log.info("[지로 코드 등록] 지로 코드 등록 요청. email : {}", loginUser.getEmail());
 
+        loginUser.addGiroCode(giroCodeRepDto.getGiroCode());
+        userRepository.save(loginUser);
+
+        log.info("[지로 코드 등록] 지로 코드 등록 완료. 메서드 종료!");
     }
-
-
-//    @Override
-//    public Boolean checkEmailCode(EmailCodeReqDto checkEmailCodeReqDto) {
-//        return null;
-//    }
 
 
 //    /**
 //     * 로그인 유저가 관리자 회원인지 확인합니다.
 //     * @param token
-//     * @return
 //     */
-//    public Boolean checkAdmin(String token) {
+//    private Boolean checkAdmin(String token) {
 //
 //    }
 
