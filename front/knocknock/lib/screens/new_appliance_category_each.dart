@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knocknock/models/new_model_tile.dart';
+import 'package:knocknock/models/appliance_model.dart';
 
 class NewApplianceCategoryEach extends StatefulWidget {
   const NewApplianceCategoryEach({super.key});
