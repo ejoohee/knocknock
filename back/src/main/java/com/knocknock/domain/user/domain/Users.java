@@ -20,13 +20,13 @@ public class Users {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email; // 아이디
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = 20)
     private String nickname;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")
@@ -37,11 +37,9 @@ public class Users {
     @Column(length = 10)
     private String giroCode;
 
-    @Column(nullable = false)
+    @Column
     private String address;
 
-    @ColumnDefault("false")
-    private Boolean isSocial;
 
     @Builder
     public Users(String email, String password, String nickname, String giroCode, String address, String userType) {
@@ -58,6 +56,13 @@ public class Users {
      */
     public void updatePassword(String encodingPassword) {
         this.password = encodingPassword;
+    }
+
+    /**
+     * 내 주소 수정 서비스
+     */
+    public void updateAddress(String newAddress) {
+        this.address = newAddress;
     }
 
     /**
