@@ -20,13 +20,13 @@ public class Users {
     @Column(name = "user_id")
     private Long userId;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email; // 아이디
 
     @Column
     private String password;
 
-    @Column(length = 20 )
+    @Column(length = 20)
     private String nickname;
 
     @Column(nullable = false, columnDefinition = "varchar(50)")
@@ -55,5 +55,11 @@ public class Users {
     public void updatePassword(String encodingPassword) {
         this.password = encodingPassword;
     }
+
+    // 주소 변경
+    public void updateAddress(String newAddress) {
+        this.address = newAddress;
+    }
+
 
 }
