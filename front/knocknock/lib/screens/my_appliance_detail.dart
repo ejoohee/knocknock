@@ -3,31 +3,44 @@ import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/constants/color_chart.dart';
 
-class NewApplianceDetail extends StatefulWidget {
-  const NewApplianceDetail({super.key});
+class MyApplianceDetail extends StatefulWidget {
+  const MyApplianceDetail({super.key});
 
   @override
-  State<NewApplianceDetail> createState() => _NewApplianceDetailState();
+  State<MyApplianceDetail> createState() => _MyApplianceDetailState();
 }
 
-class _NewApplianceDetailState extends State<NewApplianceDetail> {
+class _MyApplianceDetailState extends State<MyApplianceDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 30),
+          padding: const EdgeInsets.symmetric(
+            vertical: 30,
+            horizontal: 30,
+          ),
           child: Column(
             children: [
               Stack(
                 children: [
-                  const Center(
-                    child: Text(
-                      "상세조회",
-                      style: TextStyle(
-                        fontSize: 25, // 아이콘은 약 1.5배하자
-                        fontWeight: FontWeight.w700,
-                      ),
+                  Center(
+                    child: Column(
+                      children: [
+                        const Text(
+                          "닉네임",
+                          style: TextStyle(
+                            fontSize: 25, // 아이콘은 약 1.5배하자
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        Divider(
+                          indent: 120,
+                          endIndent: 120,
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                          thickness: 2,
+                        ),
+                      ],
                     ),
                   ),
                   Row(
@@ -37,14 +50,10 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                       IconButton(
                         onPressed: () {},
                         icon: const Icon(
-                          Icons.favorite_border_rounded,
+                          Icons.bookmark_outline_rounded,
                           size: 36,
-                          color: Colors.red,
                         ),
                       ),
-                      const SizedBox(
-                        width: 40,
-                      )
                     ],
                   ),
                 ],
@@ -59,7 +68,6 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                     vertical: 10,
-                    horizontal: 30,
                   ),
                   height: 210,
                   decoration: const BoxDecoration(
@@ -71,7 +79,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 40.0,
+                    horizontal: 20.0,
                     vertical: 10,
                   ),
                   child: ShaderMask(
@@ -224,25 +232,15 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                 onPressed: () {
                   // 버튼 클릭 시 실행할 동작
                 },
-                bColor: Theme.of(context).colorScheme.primary,
-                fColor: Theme.of(context).colorScheme.onPrimary,
-                width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
-                height: MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
-                label: "나의 현재 가전과 비교하기", // 버튼에 표시할 텍스트
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              KnockButton(
-                onPressed: () {
-                  // 버튼 클릭 시 실행할 동작
-                },
                 bColor: Theme.of(context).colorScheme.secondaryContainer,
                 fColor: Theme.of(context).colorScheme.onSecondaryContainer,
                 width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
                 height: MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
-                label: "구매하러 가기 🔗", // 버튼에 표시할 텍스트
-              )
+                label: "새로운 가전 구경하러 가기", // 버튼에 표시할 텍스트
+              ),
+              const SizedBox(
+                height: 10,
+              ),
             ],
           ),
         ),

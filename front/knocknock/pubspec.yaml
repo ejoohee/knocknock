@@ -40,6 +40,11 @@ dependencies:
   flutter_interceptor: ^0.0.2
   http_interceptor: ^1.0.2
   url_launcher: ^6.1.14
+  flutter_inner_shadow: ^0.0.1
+  camera: ^0.10.5+5
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  flutter_layout_grid: ^2.0.5
 
 dev_dependencies:
   flutter_test:
@@ -60,6 +65,7 @@ flutter:
   assets:
     #images
     - assets/images/google.png
+    - assets/images/label_example.png
     - assets/icons/TV.png
     - assets/icons/공기청정기.png
     - assets/icons/김치냉장고.png

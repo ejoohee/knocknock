@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'package:knocknock/screens/take_picture.dart';
 
 class ManageAppliances extends StatefulWidget {
   const ManageAppliances({super.key});
@@ -8,6 +10,21 @@ class ManageAppliances extends StatefulWidget {
 }
 
 class _ManageAppliancesState extends State<ManageAppliances> {
+  Future<void> toRegisterMine() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    // Obtain a list of the available cameras on the device.
+    final cameras = await availableCameras();
+    // Get a specific camera from the list of available cameras.
+    final firstCamera = cameras.first;
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => TakePictureScreen(
+              camera: firstCamera)), // SignUpPage는 회원가입 페이지 위젯입니다.
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -40,6 +57,7 @@ class _ManageAppliancesState extends State<ManageAppliances> {
               height: 80,
             ),
             GestureDetector(
+              onTap: toRegisterMine,
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: MediaQuery.of(context).size.height * 0.25,

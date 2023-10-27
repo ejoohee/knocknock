@@ -24,7 +24,7 @@ class KnockButton extends ElevatedButton {
           child: Text(
             label,
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 17,
               color: fColor,
             ),
           ),
@@ -35,7 +35,7 @@ class KnockButton extends ElevatedButton {
             ),
             shape: MaterialStateProperty.all<RoundedRectangleBorder>(
               RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(7.0), // 모서리 라운딩 설정
+                borderRadius: BorderRadius.circular(7.0),
               ),
             ),
             elevation: MaterialStateProperty.all<double>(3),
