@@ -34,7 +34,7 @@ public class Model {
     @Column(name = "model_img", nullable = false)
     String img;
 
-    @Column(name = "model_URL", nullable = false)
+    @Column(name = "model_URL")
     String url;
 
     @Column(name = "usage_value1")

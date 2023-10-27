@@ -7,12 +7,17 @@ import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
+import com.knocknock.global.common.openapi.OpenAPIWebClient;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.util.List;
 
 @Service
@@ -24,6 +29,7 @@ public class ModelServiceImpl implements ModelService {
     private final ModelRepository modelRepository;
     private final LikeModelRepository likeModelRepository;
     private final JwtUtil jwtUtil;
+    private final OpenAPIWebClient openAPIWebClient;
 
     // 목록 조회
     @Override
@@ -98,5 +104,21 @@ public class ModelServiceImpl implements ModelService {
         return checkModelResDto;
     }
 
+//    @Scheduled(cron = "")
+    public void addModel() {
+        // 기기 제품 정보 api 호출해서 모델명 가져와서,, 정보 가져와서,,,,
+        try {
+            List<Model> modelList = openAPIWebClient.findModelList();
+            modelRepository.saveAll(modelList);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
