@@ -38,13 +38,13 @@ public class Model {
     String url;
 
     @Column(name = "usage_value1")
-    Integer usageValue1;
+    Float usageValue1;
 
     @Column(name = "usage_value2")
-    Integer usageValue2;
+    Float usageValue2;
 
     @Column(name = "usage_value3")
-    Integer usageValue3;
+    Float usageValue3;
 
     @Column(name = "model_co2", nullable = false)
     Integer co2;
@@ -60,7 +60,7 @@ public class Model {
     Date releasedDate;
 
     @Builder
-    public Model(Category category, String name, String brand, Integer grade, String img, String url, Integer usageValue1, Integer usageValue2, Integer usageValue3, Integer co2, Integer cost, Date releasedDate) {
+    public Model(Category category, String name, String brand, Integer grade, String img, String url, Float usageValue1, Float usageValue2, Float usageValue3, Integer co2, Integer cost, Date releasedDate) {
         this.category = category;
         this.name = name;
         this.brand = brand;

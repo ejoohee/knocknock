@@ -19,11 +19,11 @@ public class AddModelReqDto {
 
     String url;
 
-    Integer usageValue1;
+    Float usageValue1;
 
-    Integer usageValue2;
+    Float usageValue2;
 
-    Integer usageValue3;
+    Float usageValue3;
 
     Integer co2;
 

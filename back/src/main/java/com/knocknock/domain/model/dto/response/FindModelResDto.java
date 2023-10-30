@@ -17,13 +17,13 @@ public class FindModelResDto {
     private String modelImg;
     private String modelURL;
     private String usage1;
-    private Integer usageValue1;
+    private Float usageValue1;
     private String usageUnit1;
     private String usage2;
-    private Integer usageValue2;
+    private Float usageValue2;
     private String usageUnit2;
     private String usage3;
-    private Integer usageValue3;
+    private Float usageValue3;
     private String usageUnit3;
     private Integer modelCo2;
     private String co2Unit;
