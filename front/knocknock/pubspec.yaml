@@ -66,6 +66,7 @@ flutter:
     #images
     - assets/images/google.png
     - assets/images/label_example.png
+    - assets/images/label_example_blur.png
     - assets/icons/TV.png
     - assets/icons/공기청정기.png
     - assets/icons/김치냉장고.png

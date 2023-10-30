@@ -6,6 +6,7 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 // A screen that allows users to take a picture using a given camera.
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:knocknock/screens/display_picture_screen.dart';
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
@@ -41,7 +42,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
     // Next, initialize the controller. This returns a Future.
     _initializeControllerFuture = _controller.initialize();
-    start();
   }
 
   @override
@@ -86,7 +86,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                         // return Center(
                         //     child: ClipRRect(
                         //         child: SizedOverflowBox(
-                        //   size: const Size(300, 450), // aspect is 1:1
+                        //   size: const Size(300, 450), // aspect
                         //   alignment: Alignment.center,
                         //   child: CameraPreview(_controller),
                         // )));
@@ -106,7 +106,33 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                       ),
                       IconButton(
                         splashColor: Colors.transparent,
-                        onPressed: () {},
+                        onPressed: () async {
+                          // Take the Picture in a try / catch block. If anything goes wrong,
+                          // catch the error.
+                          try {
+                            // Ensure that the camera is initialized.
+                            await _initializeControllerFuture;
+
+                            // Attempt to take a picture and then get the location
+                            // where the image file is saved.
+                            final image = await _controller.takePicture();
+                            if (!mounted) return;
+
+                            // If the picture was taken, display it on a new screen.
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => DisplayPictureScreen(
+                                  // Pass the automatically generated path to
+                                  // the DisplayPictureScreen widget.
+                                  imagePath: image.path,
+                                ),
+                              ),
+                            );
+                          } catch (e) {
+                            // If an error occurs, log the error to the console.
+                            print(e);
+                          }
+                        },
                         icon: Icon(
                           Icons.radio_button_checked_sharp,
                           size: 80,
@@ -139,17 +165,5 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         ),
       ),
     );
-  }
-
-  void start() async {
-    // Ensure that plugin services are initialized so that `availableCameras()`
-// can be called before `runApp()`
-    WidgetsFlutterBinding.ensureInitialized();
-
-// Obtain a list of the available cameras on the device.
-    final cameras = await availableCameras();
-
-// Get a specific camera from the list of available cameras.
-    final firstCamera = cameras.first;
   }
 }
