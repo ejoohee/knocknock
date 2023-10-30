@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/models/appliance_model.dart';
 
 class NewApplianceCategoryEach extends StatefulWidget {
@@ -15,8 +16,10 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
   @override
   void initState() {
     super.initState();
-    // loadModelData(); // 데이터 로딩
+    loadModelData(); // 데이터 로딩
   }
+
+  void loadModelData() {}
 
   @override
   Widget build(BuildContext context) {
@@ -39,46 +42,36 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                       height: 10,
                     ),
                     Text('${model.modelGrade}등급 - 헤딩이다 헤헤'),
-                    Card(
-                      child: Row(
-                        children: [
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              model.isLiked!
-                                  ? const Icon(Icons.favorite_rounded)
-                                  : const Icon(Icons.favorite_border_rounded),
-                            ],
-                          ),
-                          ListTile(
-                            leading: const Text('아이콘'),
-                            title: Text(model.modelName!),
-                            subtitle: Text(model.modelBrand!),
-                          ),
-                        ],
+                    Tile(
+                      isBookmarked: true,
+                      bookmarkIcon: IconButton(
+                          onPressed: () {},
+                          icon: model.isLiked!
+                              ? const Icon(Icons.favorite_rounded)
+                              : const Icon(Icons.favorite_border_rounded)),
+                      onTap: () {},
+                      child: ListTile(
+                        leading: const Icon(Icons.access_time_sharp),
+                        title: Text(model.modelName!),
+                        subtitle: Text(model.modelBrand!),
                       ),
                     ),
                   ],
                 );
               }
               // divide할 필요없으면 그냥 카드
-              return Card(
-                child: Row(
-                  children: [
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        model.isLiked!
-                            ? const Icon(Icons.favorite_rounded)
-                            : const Icon(Icons.favorite_border_rounded),
-                      ],
-                    ),
-                    ListTile(
-                      leading: const Text('아이콘'),
-                      title: Text(model.modelName!),
-                      subtitle: Text(model.modelBrand!),
-                    ),
-                  ],
+              return Tile(
+                isBookmarked: true,
+                bookmarkIcon: IconButton(
+                    onPressed: () {},
+                    icon: model.isLiked!
+                        ? const Icon(Icons.favorite_rounded)
+                        : const Icon(Icons.favorite_border_rounded)),
+                onTap: () {},
+                child: ListTile(
+                  leading: const Icon(Icons.access_time_sharp),
+                  title: Text(model.modelName!),
+                  subtitle: Text(model.modelBrand!),
                 ),
               );
             })

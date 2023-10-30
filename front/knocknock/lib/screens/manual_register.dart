@@ -38,7 +38,8 @@ class _ManualRegisterState extends State<ManualRegister> {
                     //   image: AssetImage('assets/images/label_example_blur.png'),
                     // ),
                     ),
-                child: Image.asset('assets/images/label_example_blur.png'),
+                child: Image.asset('assets/images/label_example_blur.png',
+                    scale: 1.5),
               ),
               Form(
                 key: _formKey,
