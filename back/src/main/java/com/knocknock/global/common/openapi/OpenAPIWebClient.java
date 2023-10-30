@@ -3,6 +3,7 @@ package com.knocknock.global.common.openapi;
 
 import com.knocknock.domain.category.dao.CategoryRepository;
 import com.knocknock.domain.category.domain.Category;
+import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.domain.Model;
 import com.knocknock.domain.model.dto.request.AddModelReqDto;
 import com.knocknock.global.common.openapi.constants.CategoryURL;
@@ -10,6 +11,7 @@ import com.knocknock.global.common.openapi.constants.CategoryUsageType;
 import com.knocknock.global.util.CrawlingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.TimeoutException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +35,7 @@ public class OpenAPIWebClient {
     private WebClient authWebClient;
 
     private final CategoryRepository categoryRepository;
+    private final ModelRepository modelRepository;
 
 
     private final CrawlingUtil crawlingUtil;
@@ -73,7 +76,7 @@ public class OpenAPIWebClient {
 
         crawlingUtil.process();
 
-        for (int i = 440; i <= pages; i++) {
+        for (int i = 52; i <= pages; i++) {
             int finalI = i;
             response = authWebClient
                     .get()
@@ -83,7 +86,8 @@ public class OpenAPIWebClient {
                             .build())
                     .retrieve().bodyToMono(String.class);
             log.info("현재 page---------->{}", i);
-            modelList.addAll(parseModelListFromJson(response.block()));
+//            modelList.addAll(parseModelListFromJson(response.block()));
+            modelRepository.saveAll(parseModelListFromJson(response.block()));
         }
 
         crawlingUtil.close();
@@ -119,7 +123,7 @@ public class OpenAPIWebClient {
             CategoryURL categoryURL = CategoryURL.findtCategoryUrl(category);
             // 저장할 카테고리에 해당하지 않음
             if(categoryURL == null) continue;
-            log.info("현재 카테고리 -----------> {}", category);
+//            log.info("현재 카테고리 -----------> {}", category);
             if(categoryEntity == null) categoryEntity = categoryRepository.findByName(categoryURL.getConvertedCategory()).get();
             else if(!categoryEntity.getName().equals(categoryURL.getConvertedCategory())) {
                 // 최적화,,,,할 수 있나? 계속 EQUALS 부르는데
@@ -128,19 +132,30 @@ public class OpenAPIWebClient {
             CategoryUsageType categoryUsageType = CategoryUsageType.findCategoryType(category);
             AddModelReqDto addModelReqDto = null;
             addModelReqDto = checkModelBrand(modelName, categoryURL.getUrl(), categoryUsageType);
-            log.info("현재 모델명 -----------> {}", modelName);
             while(addModelReqDto != null && addModelReqDto.getError()) {
                 log.info("언제돼?");
                 addModelReqDto = checkModelBrand(modelName, categoryURL.getUrl(), categoryUsageType);
             }
             // 삼성전자 모델이 아님
             if(addModelReqDto == null) continue;
+
+            log.info("현재 모델명 -----------> {}", modelName);
+            log.info("삼성전자 모델");
             // 웹 크롤링
+            String img = null;
+            try {
+                img = crawlingUtil.getImgLink(modelName);
+            } catch (TimeoutException e) {
+                log.error("존재하지 않는 상품!!!!!!!!!!!!!!!!!!!!!!!!");
+                // not found 이미지
+                continue;
+            }
             addModelReqDto.setImg(crawlingUtil.getImgLink(modelName));
             // 월간이 아니라 연간 에너지 비용
-            if(addModelReqDto.getCost() == null) addModelReqDto.setCost(jsonObject1.getInt("연간 에너지 비용"));
-            addModelReqDto.setCo2(Integer.valueOf(jsonObject1.getString("시간당 이산화탄소 배출량")));
-            addModelReqDto.setGrade(Integer.valueOf(jsonObject1.getString("등급")));
+            if(addModelReqDto.getCost() == null) addModelReqDto.setCost(jsonObject2.getInt("연간 에너지 비용"));
+            float co2 = Float.valueOf(jsonObject2.getString("시간당 이산화탄소 배출량"));
+            addModelReqDto.setCo2((int) co2);
+            addModelReqDto.setGrade(Integer.valueOf(jsonObject2.getString("등급")));
             modelList.add(
                     Model.builder()
                             .category(categoryEntity)
@@ -184,13 +199,16 @@ public class OpenAPIWebClient {
         conn.setRequestMethod("GET");
         conn.setRequestProperty("Content-type", "application/json");
         try {
-            System.out.println("Response code: " + conn.getResponseCode());
+            conn.getResponseCode();
+//            System.out.println("Response code: " + conn.getResponseCode());
         }catch(ConnectException e) {
             try {
+                // 1초 대기
                 Thread.sleep(1000); // 1000 밀리초 = 1초
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
+            // 에러 발생
             return AddModelReqDto.builder()
                     .error(true)
                     .build();
@@ -208,7 +226,7 @@ public class OpenAPIWebClient {
         }
         rd.close();
         conn.disconnect();
-        log.info("응답-------->{}", sb.toString());
+//        log.info("응답-------->{}", sb.toString());
 //        Mono<String> response = noAuthWebClient
 //                .get()
 //                .uri(urlBuilder.toString())
@@ -241,12 +259,40 @@ public class OpenAPIWebClient {
                     .add("index", json)
                     .build();
             jsonObject1 = jsonObject1.getJsonObject("index");
+            Float usageValue1 = null;
+            Float usageValue2 = null;
+            Float usageValue3 = null;
+            try {
+                usageValue1 = Float.valueOf(jsonObject1.getString(categoryUsageType.getUsage1()));
+            } catch (NumberFormatException e) {
+                log.error("usageValue1 값이 {},,,,,,,,,,,자료형 변환 불가능!!!!!!!!!!!!!!!", jsonObject1.getString(categoryUsageType.getUsage1()));
+                String tmp = jsonObject1.getString(categoryUsageType.getUsage1());
+                tmp = tmp.substring(0, tmp.length()-4);
+                usageValue1 = Float.valueOf(tmp);
+            }
+            try {
+                usageValue2 = categoryUsageType.getUsage2() == null ? null : Float.valueOf(jsonObject1.getString(categoryUsageType.getUsage2()));
+            } catch (NumberFormatException e) {
+                log.error("usageValue2 값이 {},,,,,,,,,,,자료형 변환 불가능!!!!!!!!!!!!!!!", jsonObject1.getString(categoryUsageType.getUsage2()));
+                String tmp = jsonObject1.getString(categoryUsageType.getUsage2());
+                tmp = tmp.substring(0, tmp.length()-4);
+                usageValue2 = Float.valueOf(tmp);
+            }
+            try {
+                usageValue3 = categoryUsageType.getUsage3() == null  ? null : Float.valueOf(jsonObject1.getString(categoryUsageType.getUsage3()));
+            } catch (NumberFormatException e) {
+                log.error("usageValue3 값이 {},,,,,,,,,,,자료형 변환 불가능!!!!!!!!!!!!!!!", jsonObject1.getString(categoryUsageType.getUsage3()));
+                String tmp = jsonObject1.getString(categoryUsageType.getUsage3());
+                tmp = tmp.substring(0, tmp.length()-4);
+                usageValue3 = Float.valueOf(tmp);
+            }
             addModelReqDto = AddModelReqDto.builder()
-                    .usageValue1(jsonObject1.getInt(categoryUsageType.getUsage1()))
-                    .usageValue2(categoryUsageType.getUsage2() == null  ? null : jsonObject1.getInt(categoryUsageType.getUsage2()))
-                    .usageValue3(categoryUsageType.getUsage3() == null  ? null : jsonObject1.getInt(categoryUsageType.getUsage3()))
+                    .error(false)
+                    .usageValue1(usageValue1)
+                    .usageValue2(usageValue2)
+                    .usageValue3(usageValue3)
                     // 연간이 아니라 월간인 경우
-                    .cost(categoryUsageType.getCost() == null  ? null : jsonObject1.getInt(categoryUsageType.getCost()))
+                    .cost(categoryUsageType.getCost() == null  ? null : Integer.valueOf(jsonObject1.getString(categoryUsageType.getCost())))
                     .build();
         }
         return addModelReqDto;

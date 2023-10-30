@@ -1,5 +1,6 @@
 package com.knocknock.global.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class CrawlingUtil {
     private WebDriver driver;
 
@@ -57,7 +59,7 @@ public class CrawlingUtil {
         //Thread.sleep(1000); //브라우저 로딩될때까지 잠시 기다린다.
 
         webDriverWait.until(
-                ExpectedConditions.presenceOfElementLocated(By.cssSelector("span.img"))
+                ExpectedConditions.presenceOfElementLocated(By.cssSelector("div.img"))
                 //cssSelector로 선택한 부분이 존재할때까지 기다려라
         );
 
@@ -79,12 +81,24 @@ public class CrawlingUtil {
         try {
             element = driver.findElement(By.cssSelector("div.slick-slide.slick-current.slick-active"));
         } catch (NoSuchElementException e) {
-            element = driver.findElement(By.cssSelector("span.img"));
+            try {
+                element = driver.findElement(By.cssSelector("span.img"));
+            } catch (NoSuchElementException e2) {
+                element = driver.findElement(By.cssSelector("div.img"));
+            }
         }
-        System.out.println("----------------------------");
-//        System.out.println(element.findElement(By.tagName("img")).getAttribute("alt"));	//⭐
-        System.out.println(element.findElement(By.tagName("img")).getAttribute("src"));	//⭐
-        return element.findElement(By.tagName("img")).getAttribute("src");
+//        System.out.println("----------------------------");
+////        System.out.println(element.findElement(By.tagName("img")).getAttribute("alt"));	//⭐
+//        System.out.println(element.findElement(By.tagName("img")).getAttribute("src"));	//⭐
+        String link = null;
+        try {
+            link = element.findElement(By.tagName("img")).getAttribute("src");
+        } catch (NoSuchElementException e) {
+            log.error("img 링크를 찾을 수 없음!!!!!!!!!!!!!!!!!!!!!!!!");
+            // not found 이미지
+            link = "https://images.samsung.com/kdp?$SRP_PRD_THUM_GRID_PNG$";
+        }
+        return link;
     }
 
 }
