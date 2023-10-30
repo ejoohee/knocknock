@@ -1,5 +1,7 @@
 package com.knocknock.global.common.security;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -15,9 +17,12 @@ import java.io.IOException;
 @Component
 public class AuthenticationEntryPointImpl implements AuthenticationEntryPoint {
 
+    private static final Logger logger = LoggerFactory.getLogger(AuthenticationEntryPointImpl.class);
 
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse res, AuthenticationException authException) throws IOException, ServletException {
-        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "401에러 발생");
+        logger.error("Unauthorized error : {}", authException.getMessage());
+
+        res.sendError(HttpServletResponse.SC_UNAUTHORIZED, "인증이 안됐어용");
     }
 }

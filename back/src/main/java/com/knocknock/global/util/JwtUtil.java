@@ -31,8 +31,8 @@ public class JwtUtil {
     @Value("${jwt.refresh_expiration_ms}")
     private long refreshExpirationMs;
 
-    @Value("${jwt.issuer}")
-    private String issuer;
+//    @Value("${jwt.issuer}")
+//    private String issuer;
 
 
     /**
@@ -40,7 +40,9 @@ public class JwtUtil {
      * @param token
      * @return
      */
-    public Claims extractClaims(String token) {
+    public Claims extractClaims(String token) { // 여기서의 token은 Bearer 접두사가 사라진 토큰임
+        log.info("[extractClaims] 실행 토큰 : {}", token);
+
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
                 .build()
@@ -100,6 +102,8 @@ public class JwtUtil {
      * @return
      */
     public long getRemainMilliSeconds(String token) {
+        token = prefixToken(token); // 유저써비스
+
         Date expiration = extractClaims(token).getExpiration();
         Date now = new Date();
         
@@ -110,22 +114,42 @@ public class JwtUtil {
      * Claims에서 loginEmail 추출
      */
     public String getLoginEmail(String token) {
-        return extractClaims(token).get("email").toString();
+        log.info("getLoginEmail 토큰 : {}", token);
+
+        token = prefixToken(token); // 유저써비스용
+
+        return extractClaims(token).get("email", String.class);
     }
 
+    /**
+     * UserService에서 token이 쓰이는 메서드에 다 체크하는 용으로 만들었습니다.
+     * (임시)
+     */
+    private String prefixToken(String token) {
+        if(token.startsWith("Bearer "))
+            return token.substring(7);
 
+        return token;
+    }
+
+//여기부터 checkAdmin까지 테스트해봐야함
+    private UserDetailsImpl getPrincipal() {
+        log.info("[getPrincipal()메서드 실행]");
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Authentication authentication = Objects.requireNonNull(SecurityContextHolder
+//                .getContext().getAuthentication());
+
+        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
+
+        log.info("principal : {}", principal.getUsername());
+        return principal;
+    }
+    
     /**
      * userId 추출(기본키)
      */
     public Long getUserNo() {
         return getPrincipal().getUserId();
-    }
-
-    private UserDetailsImpl getPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-
-        return principal;
     }
 
     /**
@@ -143,4 +167,5 @@ public class JwtUtil {
         byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
 }

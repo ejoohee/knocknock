@@ -49,6 +49,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getAccessToken(req);
+        log.info("get해와서 accessToken : {}", accessToken);
 
         if (accessToken != null && !accessToken.equals("undefined")) {
 
@@ -71,7 +72,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
             log.info("[토큰 필터] 토큰 검사 완료!");
 
-            if(email == null) {
+            if (email == null) {
                 log.error("[토큰 필터] 유저 정보를 반환하지 못했습니다.");
                 throw new TokenException("토큰으로 유저 정보를 반환하지 못했습니다.");
             }
@@ -85,53 +86,35 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             // securityContextHolder에 인증된 회원의 정보를 저장
             processSecurity(req, userDetails);
 
-
+            log.info("[토큰 유효성 검사 완전완전 완료~~] user : {}", userDetails.getUsername());
         }
 
-
-//        String authorizationHeader = req.getHeader(HttpHeaders.AUTHORIZATION);
-//
-//        // Header의 Authorization 값이 비어있을 때 => Jwt token 전송 X => 로그인 X
-//        if(authorizationHeader == null) {
-//            filterChain.doFilter(req, res);
-//            return;
-//        }
-//
-//        // Header의 Authorization 값의 접두사가 'Bearer '로 시작하지 않으면 => 잘못된 토큰
-//        if(!authorizationHeader.startsWith("Bearer ")) {
-//            filterChain.doFilter(req, res);
-//            return;
-//        }
-//
-//        // 전송받은 값에서 'Bearer ' 뒷부분(Jwt token) 추출
-//        String token = authorizationHeader.split(" ")[1];
-//
-//        // 전송받은 Jwt token이 만료되었으면 => 다음 필터 진행(인증 X)
-//        if(jwtUtil.isTokenExpired(token)) {
-//            filterChain.doFilter(req, res);
-//            return;
-//        }
-//
-//        // Jwt token에서 loginId 추출
-//        Long loginUserNo = jwtUtil.getUserNo(token);
-//
-//        // loginId로 User 찾기
-//        Users loginUser = userService.getLoginUserByLoginId(loginId);
-//
-//        // loginUser 정보로 UsernamePasswordAuthenticationToken 발급
-//        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-//                loginUser.getLoginId(), null, List.of(new SimpleGrantedAuthority(loginUser.getRole().name())));
-//        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
-//
-//        // 권한 부여
-//        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+        // 다음 순서 필터로 넘어가기
+        log.info("[다음 순서 필터로 넘어가]");
         filterChain.doFilter(req, res);
     }
 
     private String getAccessToken(HttpServletRequest req) {
-        String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue());
 
-        if(StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
+//        Enumeration<String> headerNames = req.getHeaderNames();
+//
+//        log.info("headerNames 뽑아와요");
+//        while (headerNames.hasMoreElements()) {
+//
+//            String headerName = headerNames.nextElement();
+//            String headerValue = req.getHeader(headerName);
+//            log.info("{} : {}", headerName ,headerValue);
+//
+//        }
+//        log.info("headerNames 다뽑았어요");
+
+//        String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue());
+//        String headerAuth = req.getHeader("accesstoken"); // 와이라노
+        String headerAuth = req.getHeader("Authorization");
+
+        log.info("[header] {}", headerAuth);
+
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
             return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
         }
 
@@ -139,7 +122,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void checkLogout(String accessToken) {
-        if(logoutAccessTokenRedisRepository.existsById(accessToken)) {
+        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
             throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
         }
     }
@@ -166,7 +149,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void processSecurity(HttpServletRequest request, UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }

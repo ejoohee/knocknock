@@ -50,7 +50,11 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// h2 database
+	runtimeOnly 'com.h2database:h2:1.4.200'
 	runtimeOnly 'com.h2database:h2'
+
+	//mariadb
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.2.0'
 
 	// mysql database
 	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
