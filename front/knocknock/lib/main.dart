@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/color_schemes.g.dart';
+import 'package:knocknock/screens/log_in.dart';
+import 'package:knocknock/screens/main_page.dart';
 import 'package:knocknock/screens/my_page.dart';
 import 'package:knocknock/screens/start_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: darkColorScheme,
       ),
-      home: const MyPage(),
+      home: const MainPage(),
     );
   }
 }

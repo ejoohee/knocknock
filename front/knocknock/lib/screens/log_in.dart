@@ -26,148 +26,181 @@ class _LoginState extends State<Login> {
   bool isLoading = false;
 
   // 비밀번호 찾기 누르면 나오는 modal
-  showFindPasswordDialog() async {
+  void showFindPasswordDialog(BuildContext context) async {
+    bool localIsLoading = false;
     setState(() {
       emailController2 = emailController;
     });
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title: const Text('비밀번호 재발급'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
+        return StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+          return Stack(
             children: [
-              TextFormField(
-                controller: nicknameController,
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  labelText: '닉네임',
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                ),
-              ),
-              const SizedBox(height: 10),
-              TextFormField(
-                controller: emailController2,
-                decoration: InputDecoration(
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.green),
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide.none,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  labelText: '이메일',
-                  fillColor: Colors.grey[200],
-                  filled: true,
-                ),
-              ),
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () async {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  print('here');
-                  final response = await userService.findPassword(
-                      nicknameController.text, emailController2.text);
-                  print('here222');
-                  setState(() {
-                    isLoading = false;
-                  });
+              AlertDialog(
+                title: const Text('비밀번호 재발급'),
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextFormField(
+                      controller: nicknameController,
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                        labelText: '닉네임',
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: emailController2,
+                      decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.green),
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 15),
+                        labelText: '이메일',
+                        fillColor: Colors.grey[200],
+                        filled: true,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    GestureDetector(
+                      onTap: () async {
+                        setState(() {
+                          localIsLoading = true;
+                        });
+                        final response = await userService.findPassword(
+                            nicknameController.text, emailController2.text);
+                        setState(() {
+                          localIsLoading = false;
+                        });
 
-                  if (response == 200) {
-                    if (!mounted) return;
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('알림'),
-                          content: const Text('임시 비밀번호 발급 완료'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('확인'),
-                            ),
-                          ],
-                        );
+                        if (response == 200) {
+                          if (!mounted) return;
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('알림'),
+                                content: const Text('임시 비밀번호 발급 완료'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('확인'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else if (response == 404) {
+                          if (!mounted) return;
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('알림'),
+                                content: const Text('닉네임 및 이메일을 다시 확인해주세요'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('확인'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else if (response == 500) {
+                          if (!mounted) return;
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text('알림'),
+                                content: const Text('서버 연결 오류입니다'),
+                                actions: <Widget>[
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('확인'),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        }
                       },
-                    );
-                  } else if (response == 404) {
-                    if (!mounted) return;
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('알림'),
-                          content: const Text('닉네임 및 이메일을 다시 확인해주세요'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('확인'),
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          color: Colors.green[900],
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: const Text(
+                          '재발급',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (localIsLoading)
+                Positioned.fill(
+                  child: Container(
+                    color: Colors.black.withOpacity(0.5),
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            color: Colors.green[900],
+                            backgroundColor: Colors.black.withOpacity(0.5),
+                            strokeWidth: 5.0,
+                          ),
+                          const SizedBox(height: 20),
+                          const Text(
+                            '재발급 중입니다...',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16.0,
+                              fontWeight: FontWeight.bold,
                             ),
-                          ],
-                        );
-                      },
-                    );
-                  } else if (response == 500) {
-                    if (!mounted) return;
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('알림'),
-                          content: const Text('서버 연결 오류입니다'),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('확인'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
-                  }
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.green[900],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Text(
-                    '재발급',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
             ],
-          ),
-        );
+          );
+        });
       },
     );
   }
@@ -324,7 +357,8 @@ class _LoginState extends State<Login> {
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             TextButton(
-                                onPressed: showFindPasswordDialog,
+                                onPressed: () =>
+                                    showFindPasswordDialog(context),
                                 child: const Text('비밀번호를 잊으셨나요?')),
                           ],
                         ),
