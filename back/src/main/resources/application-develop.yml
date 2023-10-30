@@ -19,7 +19,7 @@ spring:
         show_sql: true
     hibernate:
       # 나중에 다시 none으로 바꾸기
-      ddl-auto: update
+      ddl-auto: none
     defer-datasource-initialization: true
   sql:
     init:
@@ -67,7 +67,8 @@ logging:
       apache.tiles: INFO
     root: INFO
     com.samsung.security: DEBUG
-
+  file:
+    name: ./ssafy-web.log
 server:
   error:
     include-exception: false     # Response 에 Exception 을 표시할지
