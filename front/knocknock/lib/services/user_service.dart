@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
@@ -15,6 +16,7 @@ class UserService {
   // 1. 로그인
   Future<int> login(String email, String password) async {
     final url = Uri.parse('$baseUrl/user/login');
+
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -26,7 +28,7 @@ class UserService {
       ),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       final Map<String, dynamic> responseData = jsonDecode(response.body);
       final String? token = responseData['accessToken'];
       final String? refreshToken = responseData['refreshToken'];
@@ -38,12 +40,12 @@ class UserService {
         await storage.write(key: "refreshToken", value: refreshToken);
         await storage.write(key: "nickname", value: nickname);
         await storage.write(key: "address", value: address);
-        return 201;
+        return 200; // 로그인 성공 및 토큰 생성 성공
       }
-    } else if (response.statusCode == 400) {
-      return 400;
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
+      return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
     }
-    return 500;
+    return 500; // 서버 연결 오류
   }
 
   // 2. 로그아웃
@@ -59,10 +61,12 @@ class UserService {
 
     if (response.statusCode == 200) {
       await storage.deleteAll();
-      return 200;
+      return 200; // 로그아웃 성공
     } else if (response.statusCode == 403) {
+      // accessToken 만료
       logout();
     } else if (response.statusCode == 500) {
+      // 서버 연결 오류
       return 500;
     }
 
@@ -82,60 +86,75 @@ class UserService {
         },
       ),
     );
+    dynamic responseBody = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      // 3-1. 임시 비밀번호 발급
-      final url2 = Uri.parse('$baseUrl/email/password');
-      final response2 = await http.post(
-        url2,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(
-          {
-            "email": email,
-          },
-        ),
-      );
-      if (response2.statusCode == 200) {
-        return 200;
-      } else if (response2.statusCode == 500) {
-        return 500;
+      if (responseBody) {
+        // 일치 검사 성공
+        // 3-1. 임시 비밀번호 발급
+        final url2 = Uri.parse('$baseUrl/email/password');
+        final response2 = await http.post(
+          url2,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(
+            {
+              "email": email,
+            },
+          ),
+        );
+        if (response2.statusCode == 200) {
+          return 200; // 이메일 발신 성공
+        } else if (response2.statusCode == 400) {
+          return 400; // 이메일 발신 실패(보통 시간 초과)
+        } else if (response2.statusCode == 500) {
+          return 500;
+        }
+      } else {
+        return 404;
       }
-    } else if (response.statusCode == 400) {
-      return 400;
+    } else if (response.statusCode == 404) {
+      return 404; // 이메일이 없음
     }
-    return 500;
+    return 500; // 서버 연결 오류
   }
 
   // 4. 이메일 중복검사
   Future<int> checkEmail(String email) async {
-    final url = Uri.parse("$baseUrl/user/check?email=$email");
+    final url = Uri.parse("$baseUrl/email/check?email=$email");
 
     final response = await http.get(
       url,
       headers: {"Content-Type": "application/x-www-form-urlencoded"},
     );
 
+    print(response.body);
     if (response.statusCode == 200) {
       return 200;
     } else if (response.statusCode == 400) {
-      return 400;
+      return 400; // 이메일 중복
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
   // 5. 이메일 인증코드 발신
   Future<int> sendCheckEmailCode(String email) async {
-    final url = Uri.parse("$baseUrl/email/sign-up?email=$email");
+    print("이메일을 보냅니다.");
+    final url = Uri.parse("$baseUrl/email/sign-up");
     final response = await http.post(
       url,
-      headers: {"Content-Type": "application/x-www-form-urlencoded"},
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "email": email,
+      }),
     );
 
     if (response.statusCode == 200) {
-      return 200;
+      return 200; // 이메일 발신 성공
+    } else if (response.statusCode == 400) {
+      return 400; // 이메일 중복(checkEmail에서 거르긴함) or 이메일 발신 실패
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
@@ -151,10 +170,18 @@ class UserService {
       }),
     );
 
+    dynamic responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      return 200;
+      if (responseBody == true) {
+        return 200; // 이메일 인증 코드 일치
+      } else {
+        return 201; // 이메일 인증 코드 불일치
+      }
+    } else if (response.statusCode == 400) {
+      return 400; // 해당 이메일로 유효한 인증 코드 미존재
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 
@@ -162,6 +189,7 @@ class UserService {
   Future<int> signUp(
       String email, String password, String nickname, String address) async {
     final url = Uri.parse("$baseUrl/user/sign-up");
+
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -176,11 +204,11 @@ class UserService {
     );
 
     if (response.statusCode == 201) {
-      return 201;
+      return 201; // 회원 가입 성공
     } else if (response.statusCode == 400) {
-      return 400; // 하나라도 안 쓰면, email 인증 안 했으면
+      return 400; // 회원 가입에 필요한 조건 미충족 or 이메일 인증 미완료
     } else {
-      return 500;
+      return 500; // 서버 연결 오류
     }
   }
 }

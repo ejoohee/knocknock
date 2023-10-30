@@ -30,14 +30,12 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   remedi_kopo: ^0.0.2
   http: ^0.13.3
   flutter_secure_storage: ^9.0.0
-  flutter_interceptor: ^0.0.2
   http_interceptor: ^1.0.2
   url_launcher: ^6.1.14
   flutter_inner_shadow: ^0.0.1
@@ -45,6 +43,8 @@ dependencies:
   path_provider: ^2.1.1
   path: ^1.8.3
   flutter_layout_grid: ^2.0.5
+  firebase_core: ^2.19.0
+  firebase_analytics: ^10.6.2
 
 dev_dependencies:
   flutter_test:
@@ -82,6 +82,10 @@ flutter:
     - assets/icons/정수기.png
     - assets/icons/제습기.png
     - assets/icons/진공청소기.png
+    - assets/images/appliance.png
+    - assets/images/electric.png
+    - assets/images/neighborhood.png
+    - assets/images/recycle.png
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
