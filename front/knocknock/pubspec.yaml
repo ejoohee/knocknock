@@ -38,6 +38,11 @@ dependencies:
   flutter_secure_storage: ^9.0.0
   http_interceptor: ^1.0.2
   url_launcher: ^6.1.14
+  flutter_inner_shadow: ^0.0.1
+  camera: ^0.10.5+5
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  flutter_layout_grid: ^2.0.5
   firebase_core: ^2.19.0
   firebase_analytics: ^10.6.2
 
@@ -60,6 +65,23 @@ flutter:
   assets:
     #images
     - assets/images/google.png
+    - assets/images/label_example.png
+    - assets/images/label_example_blur.png
+    - assets/icons/TV.png
+    - assets/icons/공기청정기.png
+    - assets/icons/김치냉장고.png
+    - assets/icons/냉장고.png
+    - assets/icons/세탁기(드럼).png
+    - assets/icons/세탁기(일반).png
+    - assets/icons/에어컨.png
+    - assets/icons/의류건조기.png
+    - assets/icons/전기레인지.png
+    - assets/icons/전기밥솥.png
+    - assets/icons/전기스토브.png
+    - assets/icons/전기온풍기.png
+    - assets/icons/정수기.png
+    - assets/icons/제습기.png
+    - assets/icons/진공청소기.png
     - assets/images/appliance.png
     - assets/images/electric.png
     - assets/images/neighborhood.png
