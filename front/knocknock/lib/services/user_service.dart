@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
@@ -41,7 +42,7 @@ class UserService {
         await storage.write(key: "address", value: address);
         return 200; // 로그인 성공 및 토큰 생성 성공
       }
-    } else if (response.statusCode == 400) {
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
       return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
     }
     return 500; // 서버 연결 오류
@@ -85,29 +86,34 @@ class UserService {
         },
       ),
     );
+    dynamic responseBody = jsonDecode(response.body);
 
     if (response.statusCode == 200) {
-      // 일치 검사 성공
-      // 3-1. 임시 비밀번호 발급
-      final url2 = Uri.parse('$baseUrl/email/password');
-      final response2 = await http.post(
-        url2,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(
-          {
-            "email": email,
-          },
-        ),
-      );
-      if (response2.statusCode == 200) {
-        return 200; // 이메일 발신 성공
-      } else if (response2.statusCode == 400) {
-        return 400; // 이메일 발신 실패(보통 시간 초과)
-      } else if (response2.statusCode == 500) {
-        return 500;
+      if (responseBody) {
+        // 일치 검사 성공
+        // 3-1. 임시 비밀번호 발급
+        final url2 = Uri.parse('$baseUrl/email/password');
+        final response2 = await http.post(
+          url2,
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(
+            {
+              "email": email,
+            },
+          ),
+        );
+        if (response2.statusCode == 200) {
+          return 200; // 이메일 발신 성공
+        } else if (response2.statusCode == 400) {
+          return 400; // 이메일 발신 실패(보통 시간 초과)
+        } else if (response2.statusCode == 500) {
+          return 500;
+        }
+      } else {
+        return 404;
       }
-    } else if (response.statusCode == 400) {
-      return 400; // 존재하지 않는 회원
+    } else if (response.statusCode == 404) {
+      return 404; // 이메일이 없음
     }
     return 500; // 서버 연결 오류
   }
