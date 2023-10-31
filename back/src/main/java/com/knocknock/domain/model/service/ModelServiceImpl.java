@@ -38,6 +38,10 @@ public class ModelServiceImpl implements ModelService {
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
         log.info("[가전제품 목록 조회] 현재 로그인한 회원의 기본키 {}", userId);
+        log.info("type-->{}", type);
+        log.info("keyword-->{}", keyword);
+        if(category == null) log.info("category null");
+        else log.info("category is not null");
         List<FindModelListResDto> findModelListResDtoList = modelRepository.findModelList(userId, type, keyword, category);
         // 찜 되어있는지
         for (FindModelListResDto modelDto : findModelListResDtoList) {
