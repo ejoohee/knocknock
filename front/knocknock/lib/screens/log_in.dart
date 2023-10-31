@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:knocknock/screens/main_page.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/sign_up.dart';
 import 'package:knocknock/services/user_service.dart';
 
@@ -220,8 +220,8 @@ class _LoginState extends State<Login> {
       });
       if (loginSuccess == 200) {
         if (!mounted) return;
-        Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const MainPage()));
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       } else if (loginSuccess == 400 || loginSuccess == 404) {
         if (!mounted) return;
         showDialog(
