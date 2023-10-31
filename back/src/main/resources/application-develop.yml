@@ -3,6 +3,10 @@ spring:
     resources:
       static-locations: classpath:/dist/
       add-mappings: "false"
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 
   oauth2:
     google:
