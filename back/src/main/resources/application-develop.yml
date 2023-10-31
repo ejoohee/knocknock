@@ -72,7 +72,7 @@ logging:
     root: INFO
     com.samsung.security: DEBUG
   file:
-    name: ./ssafy-web.log
+    name: /var/jenkins_home/util/knock/back/ssafy-web.log
 server:
   error:
     include-exception: false     # Response 에 Exception 을 표시할지
