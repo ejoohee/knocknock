@@ -49,7 +49,7 @@ public class ModelServiceImpl implements ModelService {
             modelDto.setIsLiked(isLiked(userId, modelDto.getModelId()));
         }
         log.info("[가전제품 목록 조회] 가전제품 목록 조회 성공.");
-        return modelRepository.findModelList(userId, type, keyword, category);
+        return findModelListResDtoList;
     }
 
     // 찜 여부 반환
