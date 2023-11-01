@@ -23,6 +23,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Enumeration;
 
 /*
 사용자의 요청에서 Jwt Token을 추출해 
@@ -108,8 +109,8 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 //        }
 //        log.info("headerNames 다뽑았어요");
 
-//        String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue());
-        String headerAuth = req.getHeader("accesstoken"); // 와이라노
+        String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue()); // 포스트맨용
+//        String headerAuth = req.getHeader("accessToken"); // 스웨거용
 
         log.info("[header] {}", headerAuth);
 
