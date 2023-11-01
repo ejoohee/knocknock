@@ -365,9 +365,9 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
-        log.info("[토큰 재발급] 토큰 재발급 요청. accessToken : {}", accessToken);
-//        accessToken = noPrefixToken(accessToken);
+    public ReissueTokenResDto reissueToken(String refreshToken) {
+        log.info("[토큰 재발급] 토큰 재발급 요청. refreshToken : {}", refreshToken);
+        refreshToken = noPrefixToken(refreshToken);
 
         // refreshToken에서 email 가져오기
         String email = null;
@@ -389,11 +389,13 @@ public class UserServiceImpl implements UserService {
 
         if(!originRefreshToken.equals(refreshToken)) {
             log.error("[토큰 재발급] 토큰이 일치하지 않아 재발급 불가.");
+            log.error("[토큰 재발급] 현재 : {}, 기존 : {}", refreshToken, originRefreshToken);
+
             throw new TokenException("토큰 불일치.");
         }
 
         // access & refresh Token 재발급
-        accessToken = jwtUtil.generateAccessToken(email);
+        String accessToken = jwtUtil.generateAccessToken(email);
         refreshToken = jwtUtil.generateRefreshToken(email);
 
         // redis에 refreshToken 저장 필요
@@ -413,6 +415,60 @@ public class UserServiceImpl implements UserService {
                 .refreshToken(refreshToken)
                 .build();
     }
+
+//    @Transactional
+//    @Override
+//    public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
+//        log.info("[토큰 재발급] 토큰 재발급 요청. accessToken : {}", accessToken);
+////        accessToken = noPrefixToken(accessToken);
+//        refreshToken = noPrefixToken(refreshToken);
+//
+//        // refreshToken에서 email 가져오기
+//        String email = null;
+//
+//        try {
+//            email = jwtUtil.getLoginEmail(refreshToken);
+//        } catch (Exception e) {
+//            // 리프레시 토큰 만료
+//            log.error("[토큰 재발급] 리프레시 토큰이 만료되었습니다. 재로그인 해주세요.");
+//            throw new TokenException("리프레시 토큰 만료. 재로그인 필수.");
+//        }
+//
+//        // refreshToken을 redis 레포에서 가져와서 일치 검사
+//        String originRefreshToken = refreshTokenRepository.findById(email)
+//                .orElseThrow(() -> {
+//                    log.error("[토큰 재발급] 해당 이메일에 대한 토큰이 존재하지 않습니다.");
+//                    return new NotFoundException("해당 이메일에 대한 토큰 미존재.");
+//                }).getRefreshToken();
+//
+//        if(!originRefreshToken.equals(refreshToken)) {
+//            log.error("[토큰 재발급] 토큰이 일치하지 않아 재발급 불가.");
+//            log.error("[토큰 재발급] 기존 리프레시 : {}, 현재 리프레시 : {}", refreshToken, originRefreshToken);
+//
+//            throw new TokenException("토큰 불일치.");
+//        }
+//
+//        // access & refresh Token 재발급
+//        accessToken = jwtUtil.generateAccessToken(email);
+//        refreshToken = jwtUtil.generateRefreshToken(email);
+//
+//        // redis에 refreshToken 저장 필요
+//        // 회원의 이메일 아이디를 키로 저장
+//
+//        // 기존에 저장된 리프레시 토큰 삭제
+//        refreshTokenRepository.deleteById(email);
+//
+//        refreshTokenRepository.save(RefreshToken.builder()
+//                .email(email)
+//                .refreshToken(refreshToken)
+//                .expiration(JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
+//                .build());
+//
+//        return ReissueTokenResDto.builder()
+//                .accessToken(accessToken)
+//                .refreshToken(refreshToken)
+//                .build();
+//    }
 
     @Transactional
     @Override
