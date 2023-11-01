@@ -3,6 +3,7 @@ package com.knocknock.domain.user.service;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
+import com.knocknock.domain.user.dto.request.UserSearchCondition;
 import com.knocknock.domain.user.dto.response.*;
 
 import java.util.List;
