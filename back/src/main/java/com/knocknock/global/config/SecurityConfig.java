@@ -43,6 +43,7 @@ public class SecurityConfig  {
         // user
             "/api/user/login",
             "/api/user/sign-up",
+            "/api/user/reissue-token",
 
         // email
             "/api/email/**",
