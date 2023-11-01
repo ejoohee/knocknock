@@ -8,7 +8,7 @@ import lombok.Data;
 public class UserSearchCondition {
 
 //    String option; // random & like & all & rank
-    String name; // 포함
+    String nickName; // 포함
     String address; // 포함
     String userType; // 일치
 
