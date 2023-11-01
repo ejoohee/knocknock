@@ -83,6 +83,13 @@ dependencies {
 	// Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
+	// Selenium
+	implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
+	// webflux
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	// json
+	implementation group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
+
 	// config 클래스 자동으로 생성
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }

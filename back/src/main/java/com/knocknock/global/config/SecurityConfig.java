@@ -44,6 +44,7 @@ public class SecurityConfig  {
             "/api/user/login",
             "/api/user/sign-up",
             "/api/user/reissue-token",
+            "/api/user/login/google",
 
         // email
             "/api/email/**",
@@ -94,10 +95,7 @@ https://velog.io/@topy/antMatchers-vs-mvcMatchers
                 .authenticationEntryPoint(authenticationEntryPoint)
                 .accessDeniedHandler(accessDeniedHandler);
 
-
-         log.info("[SecurityConfig] filterChain 완료! ");
+        log.info("[SecurityConfig] filterChain 완료! ");
          return http.build();
     }
-
-
 }

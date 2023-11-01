@@ -3,12 +3,16 @@ spring:
     resources:
       static-locations: classpath:/dist/
       add-mappings: "false"
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
 
   oauth2:
     google:
       client-id: 36630242297-dlq71h1k3vjocp2ai6i902uuu0lg4273.apps.googleusercontent.com
       client-secret: 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
-      redirect-uri: http://localhost:8080/api/user/login/google
+      redirect-uri: http://localhost:8083/api/user/login/google
       token-uri: https://oauth2.googleapis.com/token
       resource-uri: https://www.googleapis.com/oauth2/v2/userinfo
 
@@ -18,6 +22,7 @@ spring:
         format_sql: true
         show_sql: true
     hibernate:
+      # 나중에 다시 none으로 바꾸기
       ddl-auto: none
     defer-datasource-initialization: true
   sql:
@@ -66,7 +71,8 @@ logging:
       apache.tiles: INFO
     root: INFO
     com.samsung.security: DEBUG
-
+  file:
+    name: /var/jenkins_home/util/knock/back/ssafy-web.log
 server:
   error:
     include-exception: false     # Response 에 Exception 을 표시할지

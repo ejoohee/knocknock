@@ -73,7 +73,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
             log.info("[토큰 필터] 토큰 검사 완료!");
 
-            if(email == null) {
+            if (email == null) {
                 log.error("[토큰 필터] 유저 정보를 반환하지 못했습니다.");
                 throw new TokenException("토큰으로 유저 정보를 반환하지 못했습니다.");
             }
@@ -114,7 +114,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
 
         log.info("[header] {}", headerAuth);
 
-        if(StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
             return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());
         }
 
@@ -122,7 +122,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void checkLogout(String accessToken) {
-        if(logoutAccessTokenRedisRepository.existsById(accessToken)) {
+        if (logoutAccessTokenRedisRepository.existsById(accessToken)) {
             throw new IllegalArgumentException("이미 로그아웃된 회원입니다.");
         }
     }
@@ -149,7 +149,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void processSecurity(HttpServletRequest request, UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails,null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
     }
