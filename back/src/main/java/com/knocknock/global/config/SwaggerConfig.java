@@ -8,12 +8,6 @@ import org.springdoc.core.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@OpenAPIDefinition(
-        servers = {@Server(url = "http://a508.co.kr/", description = "Default Server URL")
-                , @Server(url = "http://localhost:8083/", description = "Develop URL")},
-        info = @Info(title = "PetMeeting API 명세서",
-                description = "PetMeeting WebService API 명세서",
-                version = "v1"))
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerConfig {
@@ -27,5 +21,7 @@ public class SwaggerConfig {
                 .pathsToMatch(paths)
                 .build();
     }
+
+
 
 }
