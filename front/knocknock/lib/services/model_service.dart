@@ -13,31 +13,42 @@ class ModelService {
   final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
 
   // 새 가전 목록 조회
-  Future<List<NewModelTile>> findNewModelList(
-    String type,
-    String keyword,
-    String category,
-  ) async {
+  Future<List<NewModelTile>> findNewModelList({
+    required String type,
+    required String keyword,
+    required String category,
+  }) async {
     List<NewModelTile> modelTiles = [];
-
     final url = Uri.parse(
         '$baseUrl/model?type=$type&keyword=$keyword&category=$category');
+    try {
+      final nickname = await storage.read(key: "nickname");
+    } catch (e) {
+      print('닉넴받아오기~에러는말이죠옹:$e');
+    }
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
     };
+
     final response = await client.get(
       url,
       headers: headers,
     );
 
+    print('응답 받았다 ${response.statusCode}');
+
     if (response.statusCode == 200) {
-      final List<dynamic> models = jsonDecode(response.body);
+      print(response.statusCode);
+
+      final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
         modelTiles.add(NewModelTile.fromJson(model));
       }
     } else if (response.statusCode == 401) {
-      findNewModelList(type, keyword, category);
+      print(response.statusCode);
+
+      findNewModelList(type: type, keyword: keyword, category: category);
     }
 
     return modelTiles;

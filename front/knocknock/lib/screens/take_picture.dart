@@ -7,6 +7,7 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:knocknock/screens/display_picture_screen.dart';
+import 'package:knocknock/screens/manual_register.dart';
 
 class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
@@ -153,7 +154,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                 height: 10,
               ),
               KnockButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            const ManualRegister()), // 옷장 페이지로 이동
+                  );
+                },
                 width: MediaQuery.of(context).size.width * 0.8,
                 height: MediaQuery.of(context).size.width * 0.16,
                 label: '직접 입력하기',
