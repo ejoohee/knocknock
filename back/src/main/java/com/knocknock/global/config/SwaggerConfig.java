@@ -16,17 +16,6 @@ import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spi.service.contexts.SecurityContextBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Predicate;
-
-//@OpenAPIDefinition(
-//        servers = {
-//                @Server(url = "http://a508.co.kr/", description = "Default Server URL")
-//                , @Server(url = "http://localhost:8083/", description = "Develop URL")},
-//        info = @Info(title = "PetMeeting API 명세서",
-//                description = "PetMeeting WebService API 명세서",
-//                version = "v1"))
 @Configuration
 @RequiredArgsConstructor
 public class SwaggerConfig {
@@ -59,16 +48,6 @@ public class SwaggerConfig {
                 .build();
     }
 
-    private List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return List.of(new SecurityReference("Authorization", authorizationScopes));
-    }
 
-    // ApiKey 정의
-    private ApiKey apiKey() {
-        return new ApiKey("Authorization", "Authorization", "header");
-    }
 
 }

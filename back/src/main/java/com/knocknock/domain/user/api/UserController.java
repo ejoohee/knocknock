@@ -28,6 +28,7 @@ import java.util.List;
 public class UserController {
 
     private final String ACCESS_TOKEN = "Authorization";
+//    private final String ACCESS_TOKEN = "accessToken"; // 스웨거용
     private final String REFRESH_TOKEN = "Refresh-Token";
     private final UserService userService;
 
@@ -141,9 +142,12 @@ public class UserController {
             description = "토큰을 재발급 받습니다."
     )
     @PostMapping("/reissue-token")
-    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader("Authorization") String accessToken, @RequestHeader("Refresh-Token") String refreshToken) {
-        return ResponseEntity.ok(userService.reissueToken(accessToken, refreshToken));
+    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader(REFRESH_TOKEN) String refreshToken) {
+        return ResponseEntity.ok(userService.reissueToken(refreshToken));
     }
+//    public ResponseEntity<ReissueTokenResDto> reissueToken(@RequestHeader(ACCESS_TOKEN) String accessToken, @RequestHeader(REFRESH_TOKEN) String refreshToken) {
+//        return ResponseEntity.ok(userService.reissueToken(accessToken, refreshToken));
+//    }
 
 
     // 여기부터 관리자

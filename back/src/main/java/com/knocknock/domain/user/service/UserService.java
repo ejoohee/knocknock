@@ -32,8 +32,8 @@ public interface UserService {
     UserResDto findMyInfo(String token); // 내정보 조회
 
     // 토큰 재발급
-    ReissueTokenResDto reissueToken(String accessToken, String refreshToken);
-
+//    ReissueTokenResDto reissueToken(String accessToken, String refreshToken);
+    ReissueTokenResDto reissueToken(String refreshToken);
 
      // 관리자
     void deleteUser(Long userId, String token); // 회원 강제탈퇴
