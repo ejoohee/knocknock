@@ -8,6 +8,7 @@ import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
+import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.request.UserSearchCondition;
@@ -273,11 +274,11 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public Boolean checkPassword(String password, String token) {
+    public Boolean checkPassword(PasswordReqDto reqDto, String token) {
         Users loginUser = getLoginUser(token);
         log.info("[비밀번호 확인] email : {}", loginUser.getEmail());
 
-        if(passwordEncoder.matches(password, loginUser.getPassword())) {
+        if(passwordEncoder.matches(reqDto.getPassword(), loginUser.getPassword())) {
             log.info("[비밀번호 확인] 비밀번호 일치! true 반환.");
             return true;
         }

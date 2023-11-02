@@ -1,6 +1,7 @@
 package com.knocknock.domain.user.service;
 
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
+import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.request.UserSearchCondition;
@@ -23,7 +24,7 @@ public interface UserService {
 
     Boolean findPassword(FindPasswordReqDto findPasswordReqDto); // 비밀번호 찾아 이메일 전송하기
     void updateTempPassword(String email, String tempPassword);
-    Boolean checkPassword(String password, String token);  // 서비스전 비밀번호 체크
+    Boolean checkPassword(PasswordReqDto reqDto, String token);  // 서비스전 비밀번호 체크
     void updatePassword(UpdatePasswordReqDto updatePasswordRepDto, String token); // 비밀번호 변경
 
 
