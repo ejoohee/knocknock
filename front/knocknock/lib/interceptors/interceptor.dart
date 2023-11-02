@@ -20,14 +20,14 @@ class HttpInterceptor implements InterceptorContract {
   @override
   Future<ResponseData> interceptResponse({required ResponseData data}) async {
     if (data.statusCode == 403) {
-      String? accessToken = await storage.read(key: "accessToken");
+      // String? accessToken = await storage.read(key: "accessToken");
       String? refreshToken = await storage.read(key: "refreshToken");
 
       final url = Uri.parse('$baseUrl/user/reissue-token');
       final response = await http.post(
         url,
         headers: {
-          "Authorization": "Bearer $accessToken",
+          // "Authorization": "Bearer $accessToken",
           "Refresh-Token": "$refreshToken",
         },
       );

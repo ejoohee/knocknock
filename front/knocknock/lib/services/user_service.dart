@@ -211,4 +211,35 @@ class UserService {
       return 500; // 서버 연결 오류
     }
   }
+
+  // 8. 정보 수정 전 비밀번호 체크
+  Future<int> checkPassword(String password) async {
+    final url = Uri.parse("$baseUrl/user/password-check");
+    final token = await storage.read(key: "accessToken");
+    print(password);
+    final response = await client.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(
+        {
+          "password": password,
+        },
+      ),
+    );
+    print(response.body);
+    print(response.statusCode);
+    dynamic responseBody = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (responseBody == true) {
+        return 200;
+      } else {
+        return 404;
+      }
+    } else {
+      return 500;
+    }
+  }
 }

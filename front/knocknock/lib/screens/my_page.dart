@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knocknock/screens/log_in.dart';
+import 'package:knocknock/screens/my_info_modify.dart';
+import 'package:knocknock/services/user_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
 
 class MyPage extends StatefulWidget {
@@ -10,6 +13,134 @@ class MyPage extends StatefulWidget {
 }
 
 class _MyPageState extends State<MyPage> {
+  UserService userService = UserService();
+  TextEditingController passwordController = TextEditingController();
+
+  onCheckTap() async {
+    String password = passwordController.text;
+    final response = await userService.checkPassword(password);
+    if (response == 200) {
+      if (!mounted) return;
+      Navigator.pushReplacement(context,
+          MaterialPageRoute(builder: (context) => const MyInfoModify()));
+    } else if (response == 404) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('비밀번호가 일치하지 않습니다'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('서버 연결 오류입니다'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  showPasswordCheckDialog() async {
+    if (!mounted) return;
+    await showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('비밀번호 확인'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                controller: passwordController,
+                obscureText: true,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '비밀번호를 입력하세요.';
+                  } else if (value.length < 8 || value.length > 16) {
+                    return '비밀번호는 8~16자리 사이여야 합니다.';
+                  }
+                  return null;
+                },
+                decoration: const InputDecoration(
+                  labelText: '비밀번호',
+                ),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: onCheckTap,
+              child: const Text('확인'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // 대화상자 닫기
+              },
+              child: const Text('취소'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  onMyInfoModifyTextPressed() async {
+    showPasswordCheckDialog();
+  }
+
+  onLogoutTextPressed() async {
+    final response = await userService.logout();
+    if (response == 200) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => const Login()));
+    } else if (response == 500) {
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('알림'),
+            content: const Text('서버 연결 오류입니다'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,7 +150,7 @@ class _MyPageState extends State<MyPage> {
         child: Column(
           children: [
             const SizedBox(
-              height: 40,
+              height: 80,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -184,10 +315,12 @@ class _MyPageState extends State<MyPage> {
               ],
             ),
             const SizedBox(
-              height: 50,
+              height: 80,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                onMyInfoModifyTextPressed();
+              },
               child: const Text(
                 '내 정보 수정',
                 style: TextStyle(
@@ -202,7 +335,9 @@ class _MyPageState extends State<MyPage> {
               endIndent: 70,
             ),
             TextButton(
-              onPressed: () {},
+              onPressed: () {
+                onLogoutTextPressed();
+              },
               child: const Text(
                 '로그아웃',
                 style: TextStyle(

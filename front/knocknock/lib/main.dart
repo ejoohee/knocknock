@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/color_schemes.g.dart';
 import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/log_in.dart';
+import 'package:knocknock/screens/main_page.dart';
 import 'package:knocknock/screens/my_page.dart';
 import 'package:knocknock/screens/start_page.dart';
 import 'package:firebase_core/firebase_core.dart';
