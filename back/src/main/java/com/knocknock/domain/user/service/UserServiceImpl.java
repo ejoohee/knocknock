@@ -2,11 +2,13 @@ package com.knocknock.domain.user.service;
 
 import com.knocknock.domain.user.dao.LogoutAccessTokenRedisRepository;
 import com.knocknock.domain.user.dao.RefreshTokenRedisRepository;
+import com.knocknock.domain.user.dao.UserQueryDslRepository;
 import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
+import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
 import com.knocknock.domain.user.dto.request.UserSearchCondition;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final UserQueryDslRepository userQueryDslRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
@@ -271,11 +274,11 @@ public class UserServiceImpl implements UserService {
      */
     @Transactional
     @Override
-    public Boolean checkPassword(String password, String token) {
+    public Boolean checkPassword(PasswordReqDto reqDto, String token) {
         Users loginUser = getLoginUser(token);
         log.info("[비밀번호 확인] email : {}", loginUser.getEmail());
 
-        if(passwordEncoder.matches(password, loginUser.getPassword())) {
+        if(passwordEncoder.matches(reqDto.getPassword(), loginUser.getPassword())) {
             log.info("[비밀번호 확인] 비밀번호 일치! true 반환.");
             return true;
         }
@@ -500,7 +503,7 @@ public class UserServiceImpl implements UserService {
     public List<AdminUserResDto> findUserList(String token) {
         log.info("[관리자 전용 - 전체 회원 목록 조회] 조회 요청. token : {}", token);
 
-        // 관리자 체크 -- test
+        // 관리자 체크 
         if(!jwtUtil.checkAdmin()) {
             log.error("[관리자 전용 - 전체 회원 목록 조회] 관리자 회원만 접근이 가능합니다.");
             throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
@@ -517,14 +520,19 @@ public class UserServiceImpl implements UserService {
     // 회원 검색 따로 있어야함
     @Transactional
     @Override
-    public List<AdminUserResDto> findUserByCondition(UserSearchCondition condition, String token) {
+    public List<AdminUserResDto> findUserByCondition(UserSearchCondition condition, String token) { // 테스트 해봐야함
         log.info("[관리자 전용 - 회원 검색] 회원 검색 요청. token : {}", token);
 
-
-
         // 관리자 체크
-
-        return null;
+        if(!jwtUtil.checkAdmin()) {
+            log.error("[관리자 전용 - 회원 검색] 관리자 회원만 접근이 가능합니다.");
+            throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
+        }
+        
+        log.info("[관리자 전용 - 회원 검색] 검색 완료.");
+        return userQueryDslRepository.findByCondition(condition).stream()
+                .map(users -> AdminUserResDto.entityToDto(users))
+                .collect(Collectors.toList());
     }
 
     @Transactional
@@ -532,7 +540,7 @@ public class UserServiceImpl implements UserService {
     public AdminUserResDto findUser(Long userId, String token) {
         log.info("[관리자 전용 - 회원 조회] 조회 요청. token : {}", token);
 
-        // 관리자 체크 -- 테스트해바야함
+        // 관리자 체크 
         if(!jwtUtil.checkAdmin()) {
             log.error("[관리자 전용 - 회원 조회] 관리자 회원만 접근이 가능합니다.");
             throw new UserUnAuthorizedException(UserExceptionMessage.NO_ADMIN_USER.getMessage());
