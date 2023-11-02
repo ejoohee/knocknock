@@ -225,7 +225,7 @@ public class UserServiceImpl implements UserService {
         log.info("[비밀번호 찾기] 찾기 요청. email : {}, nickname : {}", email, nickname);
 
         // 우선 존재하는 회원인지 체크
-        // 존재하지 않으면 400에러 던짐
+        // 존재하지 않으면 404에러 던짐
         Users findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[비밀번호 찾기] 존재하지 않는 회원입니다.");
