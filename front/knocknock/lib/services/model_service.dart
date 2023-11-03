@@ -12,6 +12,36 @@ const storage = FlutterSecureStorage();
 class ModelService {
   final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
 
+  // 카테고리 불러오기
+  Future<List<String>> findCategories() async {
+    List<String> categories = [];
+    final url = Uri.parse('$baseUrl/category');
+
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+
+    final response = await client.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> categoryData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      for (var categoryDatum in categoryData) {
+        final String categoryName = categoryDatum['categoryName'];
+        categories.add(categoryName);
+      }
+    } else if (response.statusCode == 401) {
+      findCategories();
+    }
+
+//
+    return categories;
+  }
+
   // 새 가전 목록 조회
   Future<List<NewModelTile>> findNewModelList({
     required String type,
@@ -21,11 +51,7 @@ class ModelService {
     List<NewModelTile> modelTiles = [];
     final url = Uri.parse(
         '$baseUrl/model?type=$type&keyword=$keyword&category=$category');
-    try {
-      final nickname = await storage.read(key: "nickname");
-    } catch (e) {
-      print('닉넴받아오기~에러는말이죠옹:$e');
-    }
+
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
@@ -39,15 +65,11 @@ class ModelService {
     print('응답 받았다 ${response.statusCode}');
 
     if (response.statusCode == 200) {
-      print(response.statusCode);
-
       final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
         modelTiles.add(NewModelTile.fromJson(model));
       }
     } else if (response.statusCode == 401) {
-      print(response.statusCode);
-
       findNewModelList(type: type, keyword: keyword, category: category);
     }
 

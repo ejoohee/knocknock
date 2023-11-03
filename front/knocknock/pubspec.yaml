@@ -43,9 +43,11 @@ dependencies:
   path_provider: ^2.1.1
   path: ^1.8.3
   flutter_layout_grid: ^2.0.5
-  firebase_core: ^2.19.0
+  firebase_core: ^2.21.0
   firebase_analytics: ^10.6.2
   flutter_scroll_to_top: ^2.3.0
+  flutter_provider: ^2.1.0
+  provider: ^6.0.5
 
 dev_dependencies:
   flutter_test:
@@ -72,14 +74,14 @@ flutter:
     - assets/icons/공기청정기.png
     - assets/icons/김치냉장고.png
     - assets/icons/냉장고.png
-    - assets/icons/세탁기(드럼).png
+    - assets/icons/세탁기.png
     - assets/icons/세탁기(일반).png
     - assets/icons/에어컨.png
     - assets/icons/의류건조기.png
     - assets/icons/전기레인지.png
     - assets/icons/전기밥솥.png
-    - assets/icons/전기스토브.png
-    - assets/icons/전기온풍기.png
+    - assets/icons/전기난로.png
+    - assets/icons/온풍기.png
     - assets/icons/정수기.png
     - assets/icons/제습기.png
     - assets/icons/진공청소기.png

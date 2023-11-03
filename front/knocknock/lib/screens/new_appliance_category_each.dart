@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/appliance_model.dart';
+import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
+import 'package:provider/provider.dart';
 
 class NewApplianceCategoryEach extends StatefulWidget {
-  const NewApplianceCategoryEach({super.key});
+  const NewApplianceCategoryEach({Key? key}) : super(key: key);
 
   @override
   State<NewApplianceCategoryEach> createState() =>
@@ -23,32 +27,15 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
     ColorChart.forth,
     ColorChart.fifth,
   ];
-
+  late String selectedCategory;
   @override
   void initState() {
     super.initState();
-    modelListFuture = loadNewModelData(); // Initialize the future
+    // modelListFuture = loadNewModelData(); // Initialize the future
   }
 
-  // Future<void> loadNewModelData() async {
-  //   String selectedCategory = '';
-  //   try {
-  //     final loadedModelList = await modelService.findNewModelList(
-  //       type: '',
-  //       keyword: '',
-  //       category: selectedCategory,
-  //     );
-  //     modelList = loadedModelList;
-  //     if (mounted) {
-  //       setState(() {});
-  //     }
-  //   } catch (e) {
-  //     // 에러 처리
-  //     print("Error loading clothing data: $e");
-  //   }
-  // }
   Future<List<NewModelTile>> loadNewModelData() async {
-    String selectedCategory = '';
+    selectedCategory = context.watch<SelectedAppliance>().category;
     try {
       final loadedModelList = await modelService.findNewModelList(
         type: '',
@@ -64,34 +51,45 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    modelListFuture = loadNewModelData();
+  }
+
+  @override
   Widget build(BuildContext context) {
     String dropdownValue = '모델명';
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text(
-          '카테고리명',
-        ),
-        leading: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.west_rounded),
-          ),
-        ),
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(selectedCategory),
+      //   leading: IconButton(
+      //     alignment: AlignmentDirectional.centerEnd,
+      //     enableFeedback: false,
+      //     onPressed: () {
+      //       print('누름!');
+      //       Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //               builder: (context) => const NewApplianceCategories()));
+      //     },
+      //     icon: const Icon(Icons.west_rounded),
+      //   ),
+      // ),
+      appBar: AppBarBack(title: selectedCategory),
       body: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 30,
           ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               Form(
                 child: Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Expanded(
                         flex: 1,
@@ -119,7 +117,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                 Theme.of(context).colorScheme.primaryContainer,
                           ),
                           padding: const EdgeInsets.all(10),
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(20),
                           dropdownColor:
                               Theme.of(context).colorScheme.primaryContainer,
                           value: dropdownValue,
@@ -152,7 +150,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                         child: TextFormField(
                           decoration: InputDecoration(
                             contentPadding: const EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 10),
+                                vertical: 10, horizontal: 20),
                             isDense: true,
                             hintText: '검색어를 입력하세요',
                             hintStyle: const TextStyle(
@@ -193,13 +191,29 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     // 데이터가 아직 준비되지 않은 경우에 대한 UI
-                    return const CircularProgressIndicator();
+                    return const Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
                   } else if (snapshot.hasError) {
                     // 에러 발생 시에 대한 UI
                     return Text('Error: ${snapshot.error}');
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     // 데이터가 비어 있는 경우에 대한 UI
-                    return const Text('No data available.');
+                    return const Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Center(
+                            child: Text('원하는 조건의 제품을 찾을 수 없어요:('),
+                          ),
+                        ],
+                      ),
+                    );
                   } else {
                     // 데이터를 사용하여 ListView.builder 생성
                     List<NewModelTile> modelList = snapshot.data!;
@@ -251,7 +265,19 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                         color: colors[
                                             modelList[index].modelGrade! - 1],
                                         bookmarkIcon: IconButton(
-                                            onPressed: () {},
+                                            onPressed: () {
+                                              // 찜
+
+                                              if (modelList[index].isLiked!) {
+                                                modelService.addLike(
+                                                    modelList[index].modelId!);
+                                              } else {
+                                                // //찜 취소 파라미터 그냥 modelId로
+                                                // modelService.cancelLike(
+                                                //     modelList[index].modelId!);
+                                              }
+                                              setState(() {});
+                                            },
                                             icon: modelList[index].isLiked!
                                                 ? const Icon(
                                                     Icons.favorite_rounded)
@@ -260,7 +286,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                         onTap: () {},
                                         child: ListTile(
                                           leading: Image.asset(
-                                              'assets/icons/공기청정기.png'),
+                                              'assets/icons/$selectedCategory.png'),
                                           title:
                                               Text(modelList[index].modelName!),
                                           subtitle: Text(
@@ -294,7 +320,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                       onTap: () {},
                                       child: ListTile(
                                         leading: Image.asset(
-                                            'assets/icons/공기청정기.png'),
+                                            'assets/icons/$selectedCategory.png'),
                                         title:
                                             Text(modelList[index].modelName!),
                                         subtitle:
