@@ -23,13 +23,16 @@ spring:
         show_sql: true
     hibernate:
       # 나중에 다시 none으로 바꾸기
-      ddl-auto: none
+#      ddl-auto: none
+      ddl-auto: create
     defer-datasource-initialization: true
   sql:
     init:
       mode: never
   datasource:
-    url: jdbc:mariadb://a508.co.kr:3306/knocknock
+    hikari:
+      jdbc-url: jdbc:mariadb://a508.co.kr:3306/knocknock
+#    url: jdbc:mariadb://a508.co.kr:3306/knocknock
     username: root
     password: knocknock
     driver-class-name: org.mariadb.jdbc.Driver
@@ -58,7 +61,6 @@ spring:
 
   jackson:
     time-zone: Asia/Seoul
-
 
 logging:
   level:
