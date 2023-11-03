@@ -34,6 +34,7 @@ spring:
     username: root
     password: knocknock
     driver-class-name: org.mariadb.jdbc.Driver
+
   data:
     web:
       pageable:
