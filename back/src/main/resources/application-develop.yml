@@ -23,8 +23,7 @@ spring:
         show_sql: true
     hibernate:
       # 나중에 다시 none으로 바꾸기
-#      ddl-auto: none
-      ddl-auto: create
+      ddl-auto: none
     defer-datasource-initialization: true
   sql:
     init:
