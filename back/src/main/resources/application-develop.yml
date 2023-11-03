@@ -30,9 +30,7 @@ spring:
     init:
       mode: never
   datasource:
-    hikari:
-      jdbc-url: jdbc:mariadb://a508.co.kr:3306/knocknock
-#    url: jdbc:mariadb://a508.co.kr:3306/knocknock
+    url: jdbc:mariadb://a508.co.kr:3306/knocknock
     username: root
     password: knocknock
     driver-class-name: org.mariadb.jdbc.Driver
