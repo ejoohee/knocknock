@@ -144,13 +144,25 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(title: '내 정보'),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           children: [
             const SizedBox(
+              height: 50,
+            ),
+            Container(
               height: 80,
+              alignment: Alignment.center,
+              child: const Text(
+                '서비스',
+                style: TextStyle(
+                  fontSize: 40,
+                ),
+              ),
+            ),
+            const SizedBox(
+              height: 50,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
