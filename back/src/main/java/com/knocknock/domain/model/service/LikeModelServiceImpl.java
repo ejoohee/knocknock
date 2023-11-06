@@ -49,10 +49,13 @@ public class LikeModelServiceImpl implements LikeModelService {
     }
 
     @Override
-    public void deleteLikeModel(long likeModelId) {
+    public void deleteLikeModel(long modelId) {
         log.info("[가전제품 찜 취소] 가전제품 찜 취소 요청.");
-        log.info("[가전제품 찜 취소] likeModelId -----------> {}", likeModelId);
-        likeModelRepository.deleteById(likeModelId);
+        // 현재 로그인한 회원의 user 기본키 가져오기
+        Long userId = jwtUtil.getUserNo();
+        log.info("[가전제품 찜 취소] 현재 로그인한 회원의 userId -----> {}", userId);
+        log.info("[가전제품 찜 취소] modelId -----------> {}", modelId);
+        likeModelRepository.deleteByUserAndModel(userId, modelId);
         log.info("[가전제품 찜 취소] 가전제품 찜 취소 성공.");
     }
 

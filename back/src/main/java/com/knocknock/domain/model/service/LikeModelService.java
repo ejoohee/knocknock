@@ -8,7 +8,7 @@ public interface LikeModelService {
 
     void addLikeModel(long modelId);
 
-    void deleteLikeModel(long likeModelId);
+    void deleteLikeModel(long modelId);
 
     List<FindLikeModelListResDto> findLikeModelList(String category);
 
