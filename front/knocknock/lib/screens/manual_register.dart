@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:knocknock/components/buttons.dart';
 
 class ManualRegister extends StatefulWidget {
   const ManualRegister({super.key});
@@ -84,30 +85,42 @@ class _ManualRegisterState extends State<ManualRegister> {
                       ),
                     ),
                     ListTile(
-                        leading: const Text(
-                          '모델명 : ',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
+                      leading: const Text(
+                        '모델명 : ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      title: TextFormField(
+                        decoration: const InputDecoration(
+                          hintText: '모델명을 입력하세요.',
+                          hintStyle: TextStyle(
+                            fontWeight: FontWeight.w300,
                           ),
                         ),
-                        title: TextFormField(
-                          decoration: const InputDecoration(
-                            hintText: '모델명을 입력하세요.',
-                            hintStyle: TextStyle(
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                          onSaved: (String? value) {
-                            // This optional block of code can be used to run
-                            // code when the user saves the form.
-                          },
-                          validator: (String? value) {
-                            return (value != null && value.contains('@'))
-                                ? 'Do not use the @ char.'
-                                : null;
-                          },
-                        )),
+                        onSaved: (String? value) {
+                          // This optional block of code can be used to run
+                          // code when the user saves the form.
+                        },
+                        validator: (String? value) {
+                          return (value != null && value.contains('@'))
+                              ? 'Do not use the @ char.'
+                              : null;
+                        },
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    KnockButton(
+                      onPressed: () {},
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: MediaQuery.of(context).size.width * 0.16,
+                      label: '조회하기',
+                      bColor: Theme.of(context).colorScheme.primary,
+                      fColor: Theme.of(context).colorScheme.onPrimary,
+                    )
                   ],
                 ),
               ),

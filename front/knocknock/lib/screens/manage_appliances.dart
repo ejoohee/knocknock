@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/screens/take_picture.dart';
 
 class ManageAppliances extends StatefulWidget {
@@ -25,6 +26,15 @@ class _ManageAppliancesState extends State<ManageAppliances> {
     );
   }
 
+  void toNewApplianceCategories() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) =>
+              const NewApplianceCategories()), // SignUpPage는 회원가입 페이지 위젯입니다.
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +43,7 @@ class _ManageAppliancesState extends State<ManageAppliances> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
+              onTap: toNewApplianceCategories,
               child: Container(
                 width: MediaQuery.of(context).size.width * 0.6,
                 height: MediaQuery.of(context).size.height * 0.25,

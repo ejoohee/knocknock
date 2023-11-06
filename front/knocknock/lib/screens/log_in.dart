@@ -227,6 +227,7 @@ class _LoginState extends State<Login> {
         isLoading = false;
       });
       if (loginSuccess == 200) {
+        final token = await storage.read(key: "accessToken");
         if (!mounted) return;
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const HomeScreen()));
@@ -328,7 +329,7 @@ class _LoginState extends State<Login> {
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
                             labelText: '이메일',
-                            fillColor: Colors.grey[200],
+                            // fillColor: Colors.grey[200],
                             filled: true,
                           ),
                         ),
@@ -357,7 +358,7 @@ class _LoginState extends State<Login> {
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
                             labelText: '비밀번호',
-                            fillColor: Colors.grey[200],
+                            // fillColor: Colors.grey[200],
                             filled: true,
                           ),
                         ),
