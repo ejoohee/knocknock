@@ -112,7 +112,7 @@ public class ModelServiceImpl implements ModelService {
     }
 
     @Override
-    public CompareModelAndMyModelResDto compareModelAndMyModel(long myModelId, long modelId) {
+    public CompareModelAndMyModelResDto compareModelAndMyModel(long modelId, long myModelId) {
         CompareModelAndMyModelResDto dto = new CompareModelAndMyModelResDto();
         // 가전제품과 내 가전제품을 비교한다,,,?
         // 비교군

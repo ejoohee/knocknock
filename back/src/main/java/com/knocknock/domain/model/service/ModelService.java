@@ -15,6 +15,6 @@ public interface ModelService {
 
     CheckModelResDto checkModelByModelName(String modelName);
 
-    CompareModelAndMyModelResDto compareModelAndMyModel(long myModelId, long modelId);
+    CompareModelAndMyModelResDto compareModelAndMyModel(long modelId, long myModelId);
 
 }
