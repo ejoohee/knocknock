@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/sign_up.dart';
 import 'package:knocknock/services/user_service.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -24,6 +25,13 @@ final emailRegex = RegExp(
 
 class _LoginState extends State<Login> {
   bool isLoading = false;
+
+  // 구글 로그인 누르면 실행되는 함수
+  onGoogleLoginTap() async {
+    final url = Uri.parse(
+        "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?client_id=36630242297-dlq71h1k3vjocp2ai6i902uuu0lg4273.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fa508.co.kr%2Fapi%2Fuser%2Flogin%2Fgoogle&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow");
+    await launchUrl(url);
+  }
 
   // 비밀번호 찾기 누르면 나오는 modal
   void showFindPasswordDialog(BuildContext context) async {
@@ -411,6 +419,7 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 30),
                         GestureDetector(
+                          onTap: onGoogleLoginTap,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 12),
