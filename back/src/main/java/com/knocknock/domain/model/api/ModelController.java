@@ -125,9 +125,9 @@ public class ModelController {
             summary = "가전제품 찜 취소하기",
             description = "가전제품을 찜 취소합니다."
     )
-    @DeleteMapping("/like/{likeModelId}")
-    public ResponseEntity<MessageDto> deleteLikeModel(@PathVariable long likeModelId) {
-        likeModelService.deleteLikeModel(likeModelId);
+    @DeleteMapping("/like/{modelId}")
+    public ResponseEntity<MessageDto> deleteLikeModel(@PathVariable long modelId) {
+        likeModelService.deleteLikeModel(modelId);
         return ResponseEntity.ok(MessageDto.message("가전제품 찜 취소 완료"));
     }
 
