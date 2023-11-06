@@ -29,15 +29,18 @@ class UserService {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> responseData = jsonDecode(response.body);
+      final Map<String, dynamic> responseData =
+          jsonDecode(utf8.decode(response.bodyBytes));
       final String? token = responseData['accessToken'];
       final String? refreshToken = responseData['refreshToken'];
+      final String? eamil = responseData['email'];
       final String? nickname = responseData['nickname'];
       final String? address = responseData['address'];
 
       if (token != null) {
         await storage.write(key: "accessToken", value: token);
         await storage.write(key: "refreshToken", value: refreshToken);
+        await storage.write(key: "email", value: eamil);
         await storage.write(key: "nickname", value: nickname);
         await storage.write(key: "address", value: address);
         return 200; // 로그인 성공 및 토큰 생성 성공
@@ -210,5 +213,101 @@ class UserService {
     } else {
       return 500; // 서버 연결 오류
     }
+  }
+
+  // 8. 정보 수정 전 비밀번호 체크
+  Future<int> checkPassword(String password) async {
+    final url = Uri.parse("$baseUrl/user/password-check");
+    final token = await storage.read(key: "accessToken");
+
+    final response = await client.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(
+        {
+          "password": password,
+        },
+      ),
+    );
+
+    dynamic responseBody = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      if (responseBody == true) {
+        return 200;
+      } else {
+        return 404;
+      }
+    } else {
+      return 500;
+    }
+  }
+
+  // 9. 회원정보 수정
+  Future<int> modifyInfo(String nickname, String address) async {
+    final url = Uri.parse("$baseUrl/user");
+    final token = await storage.read(key: "accessToken");
+
+    final response = await client.put(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(
+        {
+          "nickname": nickname,
+          "address": address,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      print(responseData);
+      final String? nickname = responseData['nickname'];
+      final String? address = responseData['address'];
+
+      await storage.write(key: "nickname", value: nickname);
+      await storage.write(key: "address", value: address);
+      return 200; // 로그인 성공 및 토큰 생성 성공
+    } else if (response.statusCode == 403 || response.statusCode == 404) {
+      return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
+    }
+    return 500; // 서버 연결 오류
+  }
+
+  // 10. 비밀번호 수정
+  Future<int> modifyPassword(
+      String oldPassword, String newPassword, String checkPassword) async {
+    final url = Uri.parse("$baseUrl/user/password");
+    final token = await storage.read(key: "accessToken");
+
+    final response = await client.put(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        "Content-Type": "application/json",
+      },
+      body: jsonEncode(
+        {
+          "password": oldPassword,
+          "newPassword": newPassword,
+          "newPasswordCheck": checkPassword,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      return 200;
+    } else if (response.statusCode == 400) {
+      return 400;
+    } else if (response.statusCode == 403 || response.statusCode == 404) {
+      return 404;
+    }
+    return 500;
   }
 }

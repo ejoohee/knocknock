@@ -19,30 +19,32 @@ class _MyApplianceListState extends State<MyApplianceList> {
       body: Column(
         children: [
           const Row(),
-          ListView.builder(itemBuilder: (context, index) {
-            final model = models[index];
-            // heading(등급)넣어주기 위한 조건
+          Expanded(
+            child: ListView.builder(itemBuilder: (context, index) {
+              final model = models[index];
+              // heading(등급)넣어주기 위한 조건
 
-            return Tile(
-              onTap: () {},
-              isBookmarked: true,
-              bookmarkIcon: IconButton(
-                  onPressed: () {}, icon: const Icon(Icons.abc_sharp)),
-              child: ListTile(
-                leading: ClipPath(
-                  clipper: CircleClipper(),
-                  child: Container(
-                    width: 100,
-                    height: 100,
-                    color: Colors.blue,
+              return Tile(
+                onTap: () {},
+                isBookmarked: true,
+                bookmarkIcon: IconButton(
+                    onPressed: () {}, icon: const Icon(Icons.abc_sharp)),
+                child: ListTile(
+                  leading: ClipPath(
+                    clipper: CircleClipper(),
+                    child: Container(
+                      width: 100,
+                      height: 100,
+                      color: Colors.blue,
+                    ),
                   ),
+                  title: Text(model.modelNickname!),
+                  subtitle: Text('${model.category!}\n${model.modelBrand!}'),
+                  isThreeLine: true,
                 ),
-                title: Text(model.modelNickname!),
-                subtitle: Text('${model.category!}\n${model.modelBrand!}'),
-                isThreeLine: true,
-              ),
-            );
-          }),
+              );
+            }),
+          ),
         ],
       ),
     );

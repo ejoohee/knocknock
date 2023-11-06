@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/color_schemes.g.dart';
+
+import 'package:knocknock/screens/home_screen.dart';
+
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/check_appliance.dart';
+
 import 'package:knocknock/screens/log_in.dart';
 import 'package:knocknock/screens/main_page.dart';
 import 'package:knocknock/screens/manage_appliances.dart';
@@ -49,6 +53,7 @@ class MyApp extends StatelessWidget {
         ),
         home: const Login(),
       ),
+
     );
   }
 }
