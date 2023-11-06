@@ -20,19 +20,22 @@ class Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
-      child: Card(
-        color: color,
-        elevation: 8,
-        child: Row(
-          children: [
-            isBookmarked
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [bookmarkIcon!],
-                  )
-                : Container(),
-            child,
-          ],
+      child: SizedBox(
+        height: 100,
+        child: Card(
+          clipBehavior: Clip.hardEdge,
+          color: color,
+          elevation: 8,
+          child: Row(
+            children: [
+              if (isBookmarked)
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [bookmarkIcon!],
+                ),
+              Expanded(child: child),
+            ],
+          ),
         ),
       ),
     );

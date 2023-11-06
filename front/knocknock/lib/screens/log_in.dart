@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/screens/main_page.dart';
+import 'package:knocknock/screens/new_appliance_categories.dart';
+import 'package:knocknock/screens/new_appliance_category_each.dart';
 import 'package:knocknock/screens/sign_up.dart';
 import 'package:knocknock/services/user_service.dart';
 
@@ -219,9 +221,12 @@ class _LoginState extends State<Login> {
         isLoading = false;
       });
       if (loginSuccess == 200) {
+        final token = await storage.read(key: "accessToken");
         if (!mounted) return;
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => const MainPage()));
+            context,
+            MaterialPageRoute(
+                builder: (context) => const NewApplianceCategories()));
       } else if (loginSuccess == 400 || loginSuccess == 404) {
         if (!mounted) return;
         showDialog(
@@ -320,7 +325,7 @@ class _LoginState extends State<Login> {
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
                             labelText: '이메일',
-                            fillColor: Colors.grey[200],
+                            // fillColor: Colors.grey[200],
                             filled: true,
                           ),
                         ),
@@ -349,7 +354,7 @@ class _LoginState extends State<Login> {
                             contentPadding: const EdgeInsets.symmetric(
                                 vertical: 20, horizontal: 15),
                             labelText: '비밀번호',
-                            fillColor: Colors.grey[200],
+                            // fillColor: Colors.grey[200],
                             filled: true,
                           ),
                         ),

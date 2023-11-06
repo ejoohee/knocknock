@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/screens/new_appliance_category_each.dart';
+import 'package:knocknock/services/model_service.dart';
+import 'package:provider/provider.dart';
 
 class NewApplianceCategories extends StatefulWidget {
   const NewApplianceCategories({super.key});
@@ -8,23 +12,30 @@ class NewApplianceCategories extends StatefulWidget {
 }
 
 class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
-  List<String> categories = [
-    'TV',
-    '공기청정기',
-    '냉장고',
-    '김치냉장고',
-    '세탁기(드럼)',
-    '세탁기(일반)',
-    '에어컨',
-    '의류건조기',
-    '전기레인지',
-    '전기밥솥',
-    '전기스토브',
-    '전기온풍기',
-    '정수기',
-    '제습기',
-    '진공청소기',
-  ];
+  late Future<List<String>> categories;
+  ModelService modelService = ModelService();
+
+  @override
+  void initState() {
+    super.initState();
+    categories = loadCategories();
+  }
+
+  Future<List<String>> loadCategories() async {
+    try {
+      final categoryList = await modelService.findCategories();
+      return categoryList;
+    } catch (e) {
+      print("Error loading categories: $e");
+      return <String>[]; // 빈 리스트를 반환하거나 다른 오류 처리를 수행
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    categories = loadCategories();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +63,7 @@ class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
           ),
           Flexible(
             fit: FlexFit.tight,
-            flex: 3,
+            flex: 4,
             child: Container(
               padding: const EdgeInsets.symmetric(
                 // vertical: 10,
@@ -69,40 +80,79 @@ class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
                     tileMode: TileMode.mirror,
                   ).createShader(bounds);
                 },
-                child: GridView.count(
-                  childAspectRatio: 0.75,
-                  crossAxisCount: 3,
-                  children: List.generate(15, (index) {
-                    return Column(
-                      children: [
-                        InkWell(
-                          child: Container(
-                            width: MediaQuery.of(context).size.width * 0.23,
-                            height: MediaQuery.of(context).size.width * 0.23,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .surfaceVariant
-                                  .withOpacity(0.4),
-                            ),
-                            child: Center(
-                              child: Image.asset(
-                                'assets/icons/${categories[index]}.png',
-                                scale: 1.1,
+                child: FutureBuilder(
+                  future: categories,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      // 데이터가 아직 준비되지 않은 경우에 대한 UI
+                      return const Expanded(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      );
+                    } else if (snapshot.hasError) {
+                      // 에러 발생 시에 대한 UI
+                      return Text('Error: ${snapshot.error}');
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      // 데이터가 비어 있는 경우에 대한 UI
+                      return const Text('No data available.');
+                    } else {
+                      // 데이터를 사용하여 ListView.builder 생성
+                      List<String> categories = snapshot.data!;
+                      return GridView.count(
+                        childAspectRatio: 0.75,
+                        crossAxisCount: 3,
+                        children: List.generate(categories.length, (index) {
+                          return Column(
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  context
+                                      .read<SelectedAppliance>()
+                                      .select(categories[index]);
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            const NewApplianceCategoryEach()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                  );
+                                },
+                                borderRadius: BorderRadius.circular(20),
+                                child: Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.22,
+                                  height:
+                                      MediaQuery.of(context).size.width * 0.22,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(20),
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .surfaceVariant
+                                        .withOpacity(0.4),
+                                  ),
+                                  child: Center(
+                                    child: Image.asset(
+                                      'assets/icons/${categories[index]}.png',
+                                      scale: 1.15,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                        Text(
-                          categories[index],
-                        ),
-                        // const SizedBox(
-                        //   height: 10,
-                        // ),
-                      ],
-                    );
-                  }),
+                              Text(
+                                categories[index],
+                              ),
+                              // const SizedBox(
+                              //   height: 10,
+                              // ),
+                            ],
+                          );
+                        }),
+                      );
+                    }
+                  },
                 ),
               ),
             ),
