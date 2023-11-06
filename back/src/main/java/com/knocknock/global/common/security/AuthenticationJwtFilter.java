@@ -83,6 +83,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
             log.info("userDetails 의 email ------------->{}", userDetails.getUsername());
             log.info("그냥 email ------------->{}", email);
+            log.info("일치 여부 ------------->{}", email.equals(userDetails.getUsername()));
             equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), email);
             // 액세스 토큰의 유효성 검증
             validateAccessToken(accessToken, userDetails);
