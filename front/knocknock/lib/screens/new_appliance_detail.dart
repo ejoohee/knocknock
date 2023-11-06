@@ -4,6 +4,7 @@ import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/screens/compare_list.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
 
@@ -85,6 +86,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                   return const Expanded(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         CircularProgressIndicator(),
                       ],
@@ -313,6 +315,12 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                     KnockButton(
                       onPressed: () {
                         // 버튼 클릭 시 실행할 동작
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const CompareList()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                        );
                       },
                       bColor: Theme.of(context).colorScheme.primary,
                       fColor: Theme.of(context).colorScheme.onPrimary,

@@ -189,8 +189,8 @@ class ModelService {
   // 내가 보유한 가전 목록 조회
   Future<List<MyModelTile>> findMyApplianceList(String category) async {
     List<MyModelTile> myApplianceList = [];
-
-    final url = Uri.parse('$baseUrl/model?category=$category');
+    print(category);
+    final url = Uri.parse('$baseUrl/model/my?category=$category');
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
@@ -199,9 +199,9 @@ class ModelService {
       url,
       headers: headers,
     );
-
+    print("내가전목록 응답 : ${response.statusCode}");
     if (response.statusCode == 200) {
-      final List<dynamic> models = jsonDecode(response.body);
+      final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
         myApplianceList.add(MyModelTile.fromJson(model));
       }
