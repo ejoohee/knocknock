@@ -139,7 +139,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {
-        if (!userDetailsUsername.equals(tokenUsername)) {
+        if (!userDetailsUsername.contains(tokenUsername)) {
             throw new IllegalArgumentException(SecurityExceptionMessage.MISMATCH_TOKEN_EMAIL.getMsg());
         }
     }
