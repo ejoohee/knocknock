@@ -80,6 +80,15 @@ public class ModelController {
         return ResponseEntity.ok(myModelService.findMyModel(myModelId));
     }
 
+    @Operation(
+            summary = "등록한 내 가전제품과 비교하기?",
+            description = "등록한 내 가전제품과 가전제품을 비교합니다."
+    )
+    @GetMapping("/comparison/{modelId}/my/{myModelId}")
+    public ResponseEntity<CompareModelAndMyModelResDto> compareModelAndMyModel(@PathVariable long modelId, @PathVariable long myModelId) {
+        return ResponseEntity.ok(modelService.compareModelAndMyModel(modelId, myModelId));
+    }
+
 
     @Operation(
             summary = "등록한 내 가전제품 삭제하기",
