@@ -89,9 +89,8 @@ class ModelService {
       url,
       headers: headers,
     );
-
     if (response.statusCode == 200) {
-      final dynamic model = jsonDecode(response.body);
+      final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       newModel = NewModelDetail.fromJson(model);
     } else if (response.statusCode == 401) {
       findNewModelDetail(modelId);
@@ -285,7 +284,7 @@ class ModelService {
   // 찜하기
   Future<String> addLike(int modelId) async {
     String message = '';
-
+    print('모델아이디 들어왔다 : $modelId');
     final url = Uri.parse('$baseUrl/model/like/$modelId');
     final token = await storage.read(key: "accessToken");
     final headers = {
@@ -296,12 +295,14 @@ class ModelService {
       url,
       headers: headers,
     );
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
-      message = responseBody['message'];
+    if (response.statusCode == 201) {
+      message = '${response.statusCode}';
     } else if (response.statusCode == 401) {
       addLike(modelId);
+    } else if (response.statusCode == 404) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      message = responseBody['message'];
     }
 
     //에러코드  403
@@ -309,10 +310,10 @@ class ModelService {
   }
 
   // 찜 취소
-  Future<String> cancelLike(int likeModelId) async {
+  Future<String> cancelLike(int modelId) async {
     String message = '';
 
-    final url = Uri.parse('$baseUrl/model/like/$likeModelId');
+    final url = Uri.parse('$baseUrl/model/like/$modelId');
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
@@ -324,10 +325,13 @@ class ModelService {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
-      message = responseBody['message'];
+      message = '${response.statusCode}';
     } else if (response.statusCode == 401) {
-      cancelLike(likeModelId);
+      cancelLike(modelId);
+    } else if (response.statusCode == 404) {
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+
+      message = responseBody['message'];
     }
 
     //에러코드  403,, 처리..

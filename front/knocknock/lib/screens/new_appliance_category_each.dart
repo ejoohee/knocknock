@@ -4,6 +4,7 @@ import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
+import 'package:knocknock/screens/new_appliance_detail.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:flutter_scroll_to_top/flutter_scroll_to_top.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
@@ -32,6 +33,32 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
   void initState() {
     super.initState();
     // modelListFuture = loadNewModelData(); // Initialize the future
+  }
+
+  // 찜 추가
+  Future<bool> addLike(int modelId) async {
+    late String response;
+
+    response = await modelService.addLike(modelId);
+    if (response == '201') {
+      return true;
+    } else {
+      //메세지 pop...
+    }
+    return false;
+  }
+
+  // 찜 삭제
+  Future<bool> deleteLike(int modelId) async {
+    late String response;
+
+    response = await modelService.cancelLike(modelId);
+    if (response == '200') {
+      return true;
+    } else {
+      //메세지 pop...
+    }
+    return false;
   }
 
   Future<List<NewModelTile>> loadNewModelData() async {
@@ -77,7 +104,10 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
       //     icon: const Icon(Icons.west_rounded),
       //   ),
       // ),
-      appBar: AppBarBack(title: selectedCategory),
+      appBar: AppBarBack(
+        title: selectedCategory,
+        page: const NewApplianceCategories(),
+      ),
       body: Padding(
           padding: const EdgeInsets.symmetric(
             horizontal: 30,
@@ -265,18 +295,27 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                         color: colors[
                                             modelList[index].modelGrade! - 1],
                                         bookmarkIcon: IconButton(
-                                            onPressed: () {
+                                            onPressed: () async {
                                               // 찜
-
-                                              if (modelList[index].isLiked!) {
-                                                modelService.addLike(
-                                                    modelList[index].modelId!);
+                                              if (!modelList[index].isLiked!) {
+                                                if (await addLike(
+                                                    modelList[index]
+                                                        .modelId!)) {
+                                                  setState(() {
+                                                    modelList[index].isLiked =
+                                                        true;
+                                                  });
+                                                }
                                               } else {
-                                                // //찜 취소 파라미터 그냥 modelId로
-                                                // modelService.cancelLike(
-                                                //     modelList[index].modelId!);
+                                                if (await deleteLike(
+                                                    modelList[index]
+                                                        .modelId!)) {
+                                                  setState(() {
+                                                    modelList[index].isLiked =
+                                                        false;
+                                                  });
+                                                }
                                               }
-                                              setState(() {});
                                             },
                                             icon: modelList[index].isLiked!
                                                 ? const Icon(
@@ -285,6 +324,19 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                     .favorite_border_rounded)),
                                         onTap: () {},
                                         child: ListTile(
+                                          onTap: () {
+                                            // 상세 페이지로 이동
+                                            context
+                                                .read<SelectedAppliance>()
+                                                .selectModel(
+                                                    modelList[index].modelId!);
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                            );
+                                          },
                                           leading: Image.asset(
                                               'assets/icons/$selectedCategory.png'),
                                           title:
@@ -311,7 +363,26 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                       color: colors[
                                           modelList[index].modelGrade! - 1],
                                       bookmarkIcon: IconButton(
-                                          onPressed: () {},
+                                          onPressed: () async {
+                                            // 찜
+                                            if (!modelList[index].isLiked!) {
+                                              if (await addLike(
+                                                  modelList[index].modelId!)) {
+                                                setState(() {
+                                                  modelList[index].isLiked =
+                                                      true;
+                                                });
+                                              }
+                                            } else {
+                                              if (await deleteLike(
+                                                  modelList[index].modelId!)) {
+                                                setState(() {
+                                                  modelList[index].isLiked =
+                                                      false;
+                                                });
+                                              }
+                                            }
+                                          },
                                           icon: modelList[index].isLiked!
                                               ? const Icon(
                                                   Icons.favorite_rounded)
@@ -319,6 +390,18 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                   .favorite_border_rounded)),
                                       onTap: () {},
                                       child: ListTile(
+                                        onTap: () {
+                                          context
+                                              .read<SelectedAppliance>()
+                                              .selectModel(
+                                                  modelList[index].modelId!);
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                          );
+                                        },
                                         leading: Image.asset(
                                             'assets/icons/$selectedCategory.png'),
                                         title:
