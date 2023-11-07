@@ -1,5 +1,6 @@
 package com.knocknock.domain.model.service;
 
+import com.knocknock.domain.model.constant.AwsS3ImgLink;
 import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.dao.MyModelRepository;
 import com.knocknock.domain.model.domain.Model;
@@ -100,7 +101,7 @@ public class MyModelServiceImpl implements MyModelService {
                 .modelName(model.getName())
                 .modelBrand(model.getBrand())
                 .modelGrade(model.getGrade())
-                .modelImg(model.getImg())
+                .modelImg(model.getImg().equals("https://images.samsung.com/kdp?$SRP_PRD_THUM_GRID_PNG$") ? model.getImg() : AwsS3ImgLink.getLink(model.getName()))
                 .usage1(model.getCategory().getUsage1())
                 .usageValue1(model.getUsageValue1())
                 .usageUnit1(model.getCategory().getUsageUnit1())
