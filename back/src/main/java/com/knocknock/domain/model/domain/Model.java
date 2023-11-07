@@ -9,6 +9,7 @@ import java.util.Date;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "Model")
 public class Model {
@@ -86,6 +87,7 @@ public class Model {
     void decreaseLikeCount(){
         this.likeCount--;
     }
+
 
 
 }
