@@ -85,7 +85,7 @@ public class ModelServiceImpl implements ModelService {
                 .modelName(model.getName())
                 .modelBrand(model.getBrand())
                 .modelGrade(model.getGrade())
-                .modelImg(model.getImg().equals("https://images.samsung.com/kdp?$SRP_PRD_THUM_GRID_PNG$") ? model.getImg() : AwsS3ImgLink.getLink(model.getName()))
+                .modelImg(model.getImg() == null ? null : AwsS3ImgLink.getLink(model.getName()))
                 .modelURL(model.getUrl())
                 .usage1(model.getCategory().getUsage1())
                 .usageValue1(model.getUsageValue1())
