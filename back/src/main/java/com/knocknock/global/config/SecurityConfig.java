@@ -45,6 +45,7 @@ public class SecurityConfig  {
             "/api/user/sign-up",
             "/api/user/reissue-token",
             "/api/user/login/google",
+            "/api/user/check/google",
 
         // email
             "/api/email/**",
