@@ -61,13 +61,16 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
     return false;
   }
 
-  Future<List<NewModelTile>> loadNewModelData() async {
-    selectedCategory = context.watch<SelectedAppliance>().category;
+  Future<List<NewModelTile>> loadNewModelData(
+    String type,
+    String keyword,
+    String category,
+  ) async {
     try {
       final loadedModelList = await modelService.findNewModelList(
-        type: '',
-        keyword: '',
-        category: selectedCategory,
+        type: type,
+        keyword: keyword,
+        category: category,
       );
       return loadedModelList;
     } catch (e) {
@@ -80,13 +83,33 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    modelListFuture = loadNewModelData();
+    selectedCategory = context.watch<SelectedAppliance>().category;
+    modelListFuture = loadNewModelData('', '', selectedCategory);
+  }
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String dropdownValue = '모델명';
+  String textValue = '';
+  TextEditingController keywordController = TextEditingController();
+
+  onSearch() async {
+    String keyword = keywordController.text;
+
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      String type = dropdownValue == '모델명' ? 'model' : 'brand';
+      // 여기에서 선택한 dropdownValue와 textValue를 사용하여 작업을 수행합니다.
+      print('Dropdown Value: $dropdownValue');
+      print('Text Value: $keyword');
+
+      setState(() {
+        modelListFuture = loadNewModelData(type, keyword, selectedCategory);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    String dropdownValue = '모델명';
-
     return Scaffold(
       // appBar: AppBar(
       //   centerTitle: true,
@@ -117,6 +140,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Form(
+                  key: _formKey,
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
                     child: Row(
@@ -181,6 +205,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                         Expanded(
                           flex: 2,
                           child: TextFormField(
+                            controller: keywordController,
                             decoration: InputDecoration(
                               contentPadding: const EdgeInsets.symmetric(
                                   vertical: 10, horizontal: 20),
@@ -190,7 +215,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                 fontWeight: FontWeight.w300,
                               ),
                               suffixIcon: IconButton(
-                                onPressed: () {},
+                                onPressed: onSearch,
                                 icon: const Icon(Icons.search),
                               ),
                               filled: true,
@@ -206,10 +231,6 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                 borderRadius: BorderRadius.circular(30),
                               ),
                             ),
-                            onSaved: (String? value) {
-                              // This optional block of code can be used to run
-                              // code when the user saves the form.
-                            },
                             validator: (String? value) {
                               return (value == null) ? '값을 입력하세요' : null;
                             },

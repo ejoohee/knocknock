@@ -174,11 +174,15 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                           horizontal: 30,
                         ),
                         height: 210,
+                        width: MediaQuery.of(context).size.width * 0.83,
                         decoration: BoxDecoration(
                           borderRadius:
                               const BorderRadius.all(Radius.circular(10)),
                           color: colors[model.modelGrade! - 1],
                         ),
+                        child: model.modelImg == null
+                            ? Image.asset('assets/images/not_found.png')
+                            : Image.network('${model.modelImg}'),
                       ),
                     ),
                     Expanded(
