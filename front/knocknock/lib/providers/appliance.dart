@@ -4,8 +4,8 @@ class SelectedAppliance with ChangeNotifier {
   String _category = '';
   String get category => _category;
 
-  String _modelName = '';
-  String get modelName => _modelName;
+  int _modelId = 0;
+  int get modelId => _modelId;
 
   void select(String category) {
     _category = category;
@@ -17,8 +17,8 @@ class SelectedAppliance with ChangeNotifier {
     notifyListeners();
   }
 
-  void selectModel(String model) {
-    _modelName = model;
+  void selectModel(int modelId) {
+    _modelId = modelId;
     notifyListeners();
   }
 }

@@ -93,6 +93,17 @@ flutter:
     - assets/images/electric.png
     - assets/images/neighborhood.png
     - assets/images/recycle.png
+    - assets/images/not_found.png
+    - assets/images/grade1.png
+    - assets/images/grade2.png
+    - assets/images/grade3.png
+    - assets/images/grade4.png
+    - assets/images/grade5.png
+
+  fonts:
+    - family: CustomIcon
+      fonts:
+        - asset: assets/fonts/CustomIcon.ttf
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.

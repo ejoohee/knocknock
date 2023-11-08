@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 class Tile extends StatelessWidget {
   final VoidCallback onTap;
+  final VoidCallback onLongPress;
+
   final Widget child;
   Color color;
   final bool isBookmarked;
@@ -10,6 +12,7 @@ class Tile extends StatelessWidget {
   Tile({
     super.key,
     required this.onTap,
+    required this.onLongPress,
     required this.child,
     this.color = const Color(0xFFEFEFEF),
     required this.isBookmarked,
@@ -20,6 +23,7 @@ class Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: SizedBox(
         height: 100,
         child: Card(
@@ -27,6 +31,7 @@ class Tile extends StatelessWidget {
           color: color,
           elevation: 8,
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (isBookmarked)
                 Column(
