@@ -18,14 +18,14 @@ public class UserSocialController {
     private final String ACCESS_TOKEN = "Authorization";
     private final UserSocialService userSocialService;
 
-    @Operation(
-            summary = "소셜 로그인 및 회원가입 서비스[백엔드용]",
-            description = "백엔드용 소셜 로그인 및 회원가입을 합니다."
-    )
-    @GetMapping("/login/google")
-    public ResponseEntity<SocialLoginResDto> googleBackLogin(@RequestParam String code) {
-        return ResponseEntity.ok(userSocialService.socialLogin(code));
-    }
+//    @Operation(
+//            summary = "소셜 로그인 및 회원가입 서비스[백엔드용]",
+//            description = "백엔드용 소셜 로그인 및 회원가입을 합니다."
+//    )
+//    @GetMapping("/login/google")
+//    public ResponseEntity<SocialLoginResDto> googleBackLogin(@RequestParam String code) {
+//        return ResponseEntity.ok(userSocialService.socialLogin(code));
+//    }
 
     @Operation(
             summary = "소셜 로그인 및 회원가입 서비스[프론트용]",
