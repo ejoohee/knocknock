@@ -1,12 +1,9 @@
 package com.knocknock.global.common.ocr;
 
 
-import com.knocknock.global.common.adobe.dto.CommitInfoDto;
-import com.knocknock.global.common.adobe.dto.DropBoxReqDto;
 import com.knocknock.global.common.ocr.dto.ImageInfoDto;
 import com.knocknock.global.common.ocr.dto.ImageRequestDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
