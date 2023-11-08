@@ -12,11 +12,13 @@ import 'package:knocknock/screens/manage_appliances.dart';
 import 'package:knocknock/screens/my_page.dart';
 import 'package:knocknock/screens/new_appliance_category_each.dart';
 import 'package:knocknock/screens/nickname_assign.dart';
+import 'package:knocknock/screens/sign_up_google.dart';
 import 'package:knocknock/screens/start_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:uni_links/uni_links.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,7 +55,6 @@ class MyApp extends StatelessWidget {
         ),
         home: const Login(),
       ),
-
     );
   }
 }
