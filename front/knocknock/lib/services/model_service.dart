@@ -199,7 +199,6 @@ class ModelService {
       url,
       headers: headers,
     );
-    print("내가전목록 응답 : ${response.statusCode}");
     if (response.statusCode == 200) {
       final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
@@ -215,8 +214,7 @@ class ModelService {
   // 내 가전 상세 조회
   Future<MyModelDetail> findMyApplianceDetail(int myModelId) async {
     late MyModelDetail myApplianceDetail;
-
-    final url = Uri.parse('$baseUrl/model/my/one/$myModelId');
+    final url = Uri.parse('$baseUrl/model/my/$myModelId');
     final token = await storage.read(key: "accessToken");
     final headers = {
       'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
@@ -225,9 +223,8 @@ class ModelService {
       url,
       headers: headers,
     );
-
     if (response.statusCode == 200) {
-      final dynamic appliance = jsonDecode(response.body);
+      final dynamic appliance = jsonDecode(utf8.decode(response.bodyBytes));
       myApplianceDetail = MyModelDetail.fromJson(appliance);
     } else if (response.statusCode == 401) {
       findMyApplianceDetail(myModelId);
@@ -284,7 +281,6 @@ class ModelService {
   // 찜하기
   Future<String> addLike(int modelId) async {
     String message = '';
-    print('모델아이디 들어왔다 : $modelId');
     final url = Uri.parse('$baseUrl/model/like/$modelId');
     final token = await storage.read(key: "accessToken");
     final headers = {

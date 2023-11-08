@@ -350,6 +350,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                   : const Icon(Icons
                                                       .favorite_border_rounded)),
                                           onTap: () {},
+                                          onLongPress: () {},
                                           child: ListTile(
                                             onTap: () {
                                               // 상세 페이지로 이동
@@ -418,6 +419,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                 : const Icon(Icons
                                                     .favorite_border_rounded)),
                                         onTap: () {},
+                                        onLongPress: () {},
                                         child: ListTile(
                                           onTap: () {
                                             context

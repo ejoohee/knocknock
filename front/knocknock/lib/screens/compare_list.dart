@@ -137,6 +137,7 @@ class _CompareListState extends State<CompareList> {
                                         builder: (context) => const Compare()),
                                   );
                                 },
+                                onLongPress: () {},
                                 color: Colors.grey.shade300,
                                 child: ListTile(
                                   titleAlignment: ListTileTitleAlignment.center,
