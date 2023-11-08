@@ -98,6 +98,7 @@ public class MyModelServiceImpl implements MyModelService {
                 .myModelId(myModelId)
                 .modelId(model.getId())
                 .category(model.getCategory().getName())
+                .modelNickname(myModel.getModelNickname())
                 .modelName(model.getName())
                 .modelBrand(model.getBrand())
                 .modelGrade(model.getGrade())
