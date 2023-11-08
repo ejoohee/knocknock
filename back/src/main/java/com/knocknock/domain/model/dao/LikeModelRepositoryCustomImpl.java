@@ -27,7 +27,7 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         QModel qModel = QModel.model;
         BooleanBuilder categoryOption = new BooleanBuilder();
         // 어떤 카테고리 인지 (null 이면 전체 조회)
-        if(category != null){
+        if(category != null && !category.equals("")){
             categoryOption.and(
                     qModel.category.id.in(
                             queryFactory.select(qCategory.id)
