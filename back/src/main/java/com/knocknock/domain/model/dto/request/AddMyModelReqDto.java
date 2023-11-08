@@ -7,8 +7,8 @@ import lombok.Setter;
 @Setter
 public class AddMyModelReqDto {
 
-    String modelName;
+    private String modelName;
 
-    String modelNickname;
+    private String modelNickname;
 
 }
