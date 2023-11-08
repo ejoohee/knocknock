@@ -6,4 +6,7 @@ import lombok.Data;
 public class GoogleLoginReqDto {
     private String email;
     private String nickname;
+    private String address;
+    private String password;
+
 }

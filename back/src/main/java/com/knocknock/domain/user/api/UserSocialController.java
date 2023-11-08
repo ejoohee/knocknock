@@ -1,5 +1,6 @@
 package com.knocknock.domain.user.api;
 
+import com.knocknock.domain.user.dto.request.CheckGoogleReqDto;
 import com.knocknock.domain.user.dto.request.GoogleLoginReqDto;
 import com.knocknock.domain.user.dto.request.UpdateAddressReqDto;
 import com.knocknock.domain.user.dto.response.SocialLoginResDto;
@@ -31,10 +32,22 @@ public class UserSocialController {
             summary = "소셜 로그인 및 회원가입 서비스[프론트용]",
             description = "프론트용 소셜 로그인 및 회원가입을 합니다."
     )
-    @PostMapping ("/login/google")
+    @PostMapping("/login/google")
     public ResponseEntity<SocialLoginResDto> googleFrontLogin(@RequestBody GoogleLoginReqDto reqDto) {
         return ResponseEntity.ok(userSocialService.socialFrontLogin(reqDto));
     }
+
+    @Operation(
+            summary = "소셜 이메일 확인 서비스[프론트용]",
+            description = "소셜 로그인 시 DB에 존재하는 회원인지 확인합니다."
+    )
+    @PostMapping("/check/google")
+    public ResponseEntity<Void> checkGoogleLogin(@RequestBody CheckGoogleReqDto reqDto) {
+        userSocialService.checkSocialLogin(reqDto);
+        // 예외를 던지지 않으면 유저가 존재하는 것이므로 200 OK 반환
+        return ResponseEntity.ok().build();
+    }
+
 
     @Operation(
             summary = "소셜 주소 설정",
