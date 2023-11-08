@@ -7,17 +7,17 @@ import lombok.Setter;
 @Setter
 public class CompareModelAndMyModelResDto {
 
-    String modelAName;
+    private String modelAName;
 
-    String modelBName;
+    private String modelBName;
 
-    Integer modelAGrade;
+    private Integer modelAGrade;
 
-    Integer modelBGrade;
+    private Integer modelBGrade;
     // 1년 단위
-    Long modelACo2;
-    Long modelBCo2;
+    private  Long modelACo2;
+    private Long modelBCo2;
 
-    Integer modelACost;
-    Integer modelBCost;
+    private Integer modelACost;
+    private Integer modelBCost;
 }

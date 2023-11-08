@@ -11,23 +11,23 @@ import javax.persistence.Column;
 @Builder
 public class AddModelReqDto {
 
-    Boolean error;
+    private Boolean error;
 
-    Integer grade;
+    private Integer grade;
 
-    String img;
+    private String img;
 
-    String url;
+    private String url;
 
-    Float usageValue1;
+    private Float usageValue1;
 
-    Float usageValue2;
+    private Float usageValue2;
 
-    Float usageValue3;
+    private Float usageValue3;
 
-    Integer co2;
+    private Integer co2;
 
-    Integer cost;
+    private Integer cost;
 
 
 }
