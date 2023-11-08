@@ -1,8 +1,13 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/sign_up.dart';
+import 'package:knocknock/screens/sign_up_google.dart';
 import 'package:knocknock/services/user_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uni_links/uni_links.dart';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -27,11 +32,78 @@ class _LoginState extends State<Login> {
   bool isLoading = false;
 
   // 구글 로그인 누르면 실행되는 함수
-  onGoogleLoginTap() async {
-    final url = Uri.parse(
-        "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?client_id=36630242297-dlq71h1k3vjocp2ai6i902uuu0lg4273.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fa508.co.kr%2Fapi%2Fuser%2Flogin%2Fgoogle&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow");
-    await launchUrl(url);
+  Future<UserCredential> signInWithGoogle() async {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      if (user == null) {
+      } else {}
+    });
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+    final result = await FirebaseAuth.instance.signInWithCredential(credential);
+    print(result.user!.email);
+    if (result.user != null) {
+      final email = result.user!.email;
+      final displayName = result.user!.displayName;
+      // 여기선 checkgoogle을 해서 회원가입이 된 이메일인지 판단
+      googleLogin(email!, displayName!);
+    }
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
+
+  googleLogin(String email, String nickname) async {
+    final response = await userService.googleCheckEmail(email);
+    if (response == 200) {
+      final response2 =
+          await userService.googleLogin(email, email, email, email);
+      if (response == 200) {
+        if (!mounted) return;
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
+      } else {
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text('알림'),
+              content: const Text('서버 연결 오류입니다'),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } else if (response == 404) {
+      if (!mounted) return;
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  SingUpGoogle(email: email, nickname: nickname)));
+    }
+  }
+  // // 구글 로그인 누르면 실행되는 함수
+  // onGoogleLoginTap() async {
+  //   final url = Uri.parse(
+  //       "https://accounts.google.com/o/oauth2/auth/oauthchooseaccount?client_id=36630242297-dlq71h1k3vjocp2ai6i902uuu0lg4273.apps.googleusercontent.com&redirect_uri=https%3A%2F%2Fa508.co.kr%2Fapi%2Fuser%2Flogin%2Fgoogle&response_type=code&scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&service=lso&o2v=1&theme=glif&flowName=GeneralOAuthFlow");
+  //   final response = await launchUrl(url);
+  // }
 
   // 비밀번호 찾기 누르면 나오는 modal
   void showFindPasswordDialog(BuildContext context) async {
@@ -420,7 +492,8 @@ class _LoginState extends State<Login> {
                         ),
                         const SizedBox(height: 30),
                         GestureDetector(
-                          onTap: onGoogleLoginTap,
+                          // onTap: onGoogleLoginTap,
+                          onTap: signInWithGoogle,
                           child: Container(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 12),
