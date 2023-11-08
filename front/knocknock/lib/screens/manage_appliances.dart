@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
-import 'package:knocknock/screens/take_picture.dart';
+import 'package:knocknock/screens/take_picture_screen.dart';
 
 class ManageAppliances extends StatefulWidget {
   const ManageAppliances({super.key});
