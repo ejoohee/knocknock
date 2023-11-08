@@ -310,4 +310,71 @@ class UserService {
     }
     return 500;
   }
+
+  // 11. 구글 로그인
+  Future<int> googleLogin(
+      String email, String password, String nickname, String address) async {
+    final url = Uri.parse('$baseUrl/user/login/google');
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {
+          "email": email,
+          "password": password,
+          "nickname": nickname,
+          "address": address,
+        },
+      ),
+    );
+
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> responseData =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      final String? token = responseData['accessToken'];
+      final String? refreshToken = responseData['refreshToken'];
+      final String? eamil = responseData['email'];
+      final String? userType = responseData['userType'];
+      final String? nickname = responseData['nickname'];
+      final String? address = responseData['address'];
+
+      if (token != null) {
+        await storage.write(key: "accessToken", value: token);
+        await storage.write(key: "refreshToken", value: refreshToken);
+        await storage.write(key: "email", value: eamil);
+        await storage.write(key: "userType", value: userType);
+        await storage.write(key: "nickname", value: nickname);
+        await storage.write(key: "address", value: address);
+        return 200; // 로그인 성공 및 토큰 생성 성공
+      }
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
+      return 400; // 로그인 실패 (유저없음, 패스워드 불일치)
+    }
+    return 500; // 서버 연결 오류
+  }
+
+  // 12. 구글 이메일 체크
+  Future<int> googleCheckEmail(String email) async {
+    final url = Uri.parse("$baseUrl/user/check/google");
+
+    final response = await http.post(
+      url,
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {
+          "email": email,
+        },
+      ),
+    );
+    print(response.body);
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      final response2 = await googleLogin(email, email, email, email);
+      return response2;
+    } else if (response.statusCode == 400 || response.statusCode == 404) {
+      return 404; // 로그인 실패 (유저없음, 패스워드 불일치)
+    }
+    return 500; // 서버 연결 오류
+  }
 }
