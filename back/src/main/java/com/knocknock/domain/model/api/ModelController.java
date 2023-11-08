@@ -1,6 +1,7 @@
 package com.knocknock.domain.model.api;
 
 import com.knocknock.domain.model.dto.request.AddMyModelReqDto;
+import com.knocknock.domain.model.dto.request.CheckModelByLabelImgReqDto;
 import com.knocknock.domain.model.dto.response.*;
 import com.knocknock.domain.model.service.LikeModelService;
 import com.knocknock.domain.model.service.ModelService;
@@ -48,6 +49,15 @@ public class ModelController {
     @GetMapping("/check")
     public ResponseEntity<CheckModelResDto> checkModelByModelName(@RequestParam("modelName")String modelName) {
         return ResponseEntity.ok(modelService.checkModelByModelName(modelName));
+    }
+
+    @Operation(
+            summary = "가전제품 라벨 이미지에서 모델명 텍스트 추출 후 확인용 조회하기",
+            description = "가전제품 모델명으로 해당하는 모델이 존재하는지 정보를 조회합니다."
+    )
+    @GetMapping("/check-img")
+    public ResponseEntity<CheckModelResDto> checkModelByRabelImg(@RequestBody CheckModelByLabelImgReqDto checkModelByLabelImgReqDto) {
+        return ResponseEntity.ok(modelService.checkModelByLabelImg(checkModelByLabelImgReqDto));
     }
 
 

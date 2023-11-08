@@ -6,11 +6,13 @@ import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.dao.MyModelRepository;
 import com.knocknock.domain.model.domain.Model;
 import com.knocknock.domain.model.domain.MyModel;
+import com.knocknock.domain.model.dto.request.CheckModelByLabelImgReqDto;
 import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.CompareModelAndMyModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
+import com.knocknock.global.common.ocr.OCRAPIWebClinet;
 import com.knocknock.global.common.openapi.OpenAPIWebClient;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @Transactional
@@ -34,6 +38,7 @@ public class ModelServiceImpl implements ModelService {
     private final LikeModelRepository likeModelRepository;
     private final JwtUtil jwtUtil;
     private final OpenAPIWebClient openAPIWebClient;
+    private final OCRAPIWebClinet ocrapiWebClinet;
 
     // 목록 조회
     @Override
@@ -114,6 +119,7 @@ public class ModelServiceImpl implements ModelService {
 
     @Override
     public CompareModelAndMyModelResDto compareModelAndMyModel(long modelId, long myModelId) {
+        log.info("[가전제품 비교] 가전제품 비교 요청.");
         CompareModelAndMyModelResDto dto = new CompareModelAndMyModelResDto();
         // 가전제품과 내 가전제품을 비교한다,,,?
         // 비교군
@@ -167,7 +173,45 @@ public class ModelServiceImpl implements ModelService {
 
         // 4. 각 항목(최대 3가지)
         //
+        log.info("[가전제품 비교] 가전제품 비교 성공.");
         return dto;
+    }
+
+    @Override
+    public CheckModelResDto checkModelByLabelImg(CheckModelByLabelImgReqDto checkModelByLabelImgReqDto) {
+        log.info("[가전제품 모델명 라벨 이미지에서 확인] 가전제품 모델명 라벨 이미지에서 확인.");
+        // ocr api 호출
+        // inferText 배열 받아오기
+        List<String> textList = ocrapiWebClinet.getTextListFromImg(checkModelByLabelImgReqDto.getRabelImg());
+        // 모델명에 해당하는 값을 db 조회로 확인?
+        String modelName = null;
+        for (String text : textList) {
+            // 디비에 있는 모델명 최소길이가 8
+            if(text.length() < 8) continue;
+            // 영어로 시작해야 함
+            if(!checkPattern(text)) continue;
+            if(modelRepository.findModelByName(text).isPresent()) {
+                modelName = text;
+                break;
+            }
+        }
+        if(modelName == null) {
+            log.error("[가전제품 모델명 라벨 이미지에서 확인] 모델명 인식 불가능!!!!!!!!!");
+            throw new ModelNotFoundException("사진에서 모델명을 인식할 수 없습니다.");
+        }
+
+        log.info("[가전제품 모델명 라벨 이미지에서 확인] 가전제품 모델명 라벨 이미지에서 확인 성공------->{}", modelName);
+        return checkModelByModelName(modelName);
+    }
+
+    // 정규표현식으로 모델명 패턴에 해당되는지 검사
+    private boolean checkPattern(String s) {
+        String regex = "^[A-Za-z][A-Za-z0-9]*$";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(s);
+
+        return matcher.matches();
     }
 
     //    @Scheduled(cron = "")

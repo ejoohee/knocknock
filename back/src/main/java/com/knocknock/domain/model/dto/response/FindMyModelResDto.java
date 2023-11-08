@@ -12,6 +12,7 @@ public class FindMyModelResDto {
     private Long myModelId;
     private Long modelId;
     private String category;
+    private String modelNickname;
     private String modelName;
     private String modelBrand;
     private Integer modelGrade;

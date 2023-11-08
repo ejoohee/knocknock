@@ -9,7 +9,6 @@ import java.util.Date;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "Model")
 public class Model {
@@ -32,7 +31,7 @@ public class Model {
     @Column(name = "model_grade", nullable = false)
     Integer grade;
 
-    @Column(name = "model_img", nullable = false)
+    @Column(name = "model_img")
     String img;
 
     @Column(name = "model_URL")

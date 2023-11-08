@@ -1,5 +1,6 @@
 package com.knocknock.domain.model.service;
 
+import com.knocknock.domain.model.dto.request.CheckModelByLabelImgReqDto;
 import com.knocknock.domain.model.dto.response.CheckModelResDto;
 import com.knocknock.domain.model.dto.response.CompareModelAndMyModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
@@ -16,5 +17,7 @@ public interface ModelService {
     CheckModelResDto checkModelByModelName(String modelName);
 
     CompareModelAndMyModelResDto compareModelAndMyModel(long modelId, long myModelId);
+
+    CheckModelResDto checkModelByLabelImg(CheckModelByLabelImgReqDto checkModelByLabelImgReqDto);
 
 }
