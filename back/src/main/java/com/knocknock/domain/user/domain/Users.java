@@ -40,6 +40,8 @@ public class Users {
     @Column
     private String address;
 
+    @Column
+    private String airStation;
 
     @Builder
     public Users(String email, String password, String nickname, String giroCode, String address, String userType) {
