@@ -6,6 +6,7 @@ import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.UserType;
 import com.knocknock.domain.user.domain.Users;
+import com.knocknock.domain.user.dto.request.GoogleLoginReqDto;
 import com.knocknock.domain.user.dto.request.UpdateAddressReqDto;
 import com.knocknock.domain.user.dto.response.SocialLoginResDto;
 import com.knocknock.domain.user.dto.response.UpdateAddressResDto;
@@ -52,6 +53,43 @@ public class UserSocialServiceImpl implements UserSocialService {
 
         String email = userResourceNode.get("email").asText();
         String nickname = userResourceNode.get("name").asText();
+        UserType isSocial = UserType.ROLE_SOCIAL;
+
+        String accessToken = jwtUtil.generateAccessToken(email);
+        String refreshToken = jwtUtil.generateRefreshToken(email);
+
+        // 이메일과 isSocial 값을 기반으로 사용자 찾기
+        Users user = userRepository.findByEmailAndUserType(email, isSocial)
+                .orElseGet(() -> {
+                    return userRepository.save(Users.builder()
+                            .email(email)
+                            .userType(isSocial.getValue())
+                            .nickname(nickname)
+                            .build());
+                });
+//         Redis에 refreshToken 저장
+//         회원의 이메일(ID)을 키로 저장
+        saveRefreshTokenToRedis(email, refreshToken);
+
+        // Spring Security Context에 인증 정보 저장
+        authenticateUser(user);
+
+        log.info("[소셜 유저 로그인] 로그인 성공 - 이메일: {}", email);
+        return SocialLoginResDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .email(email)
+                .userType(isSocial.getValue())
+                .address(user.getAddress())
+                .nickname(user.getNickname())
+                .build();
+    }
+
+    @Override
+    public SocialLoginResDto socialFrontLogin(GoogleLoginReqDto googleLoginReqDto) {
+
+        String email = googleLoginReqDto.getEmail();
+        String nickname = googleLoginReqDto.getNickname();
         UserType isSocial = UserType.ROLE_SOCIAL;
 
         String accessToken = jwtUtil.generateAccessToken(email);
