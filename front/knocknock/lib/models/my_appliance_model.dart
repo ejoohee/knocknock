@@ -78,13 +78,13 @@ class MyModelDetail {
   String? modelImg;
   String? modelNickname;
   String? usage1;
-  int? usageValue1;
+  double? usageValue1;
   String? usageUnit1;
   String? usage2;
-  int? usageValue2;
+  double? usageValue2;
   String? usageUnit2;
   String? usage3;
-  int? usageValue3;
+  double? usageValue3;
   String? usageUnit3;
   int? modelCo2;
   String? co2Unit;

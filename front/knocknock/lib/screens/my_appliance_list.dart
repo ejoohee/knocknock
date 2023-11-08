@@ -7,6 +7,7 @@ import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/my_appliance_detail.dart';
+import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +28,8 @@ class _MyApplianceListState extends State<MyApplianceList> {
   ];
   final ModelService modelService = ModelService();
   late Future<List<MyModelTile>> modelListFuture; // Future to load modelList
+
+  bool isEditing = false;
 
   Future<List<MyModelTile>> loadCompareModelData() async {
     try {
@@ -91,7 +94,8 @@ class _MyApplianceListState extends State<MyApplianceList> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const MyApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                      // 등록 페이지로 수정하기
+                                      const NewApplianceCategories()),
                             );
                           },
                           bColor: Theme.of(context).colorScheme.primary,
@@ -121,9 +125,14 @@ class _MyApplianceListState extends State<MyApplianceList> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          const MyApplianceDetail()),
+                                      builder: (context) => MyApplianceDetail(
+                                          myModelId: model.myModelId!)),
                                 );
+                              },
+                              onLongPress: () {
+                                setState(() {
+                                  isEditing = true;
+                                });
                               },
                               isBookmarked: true,
                               bookmarkIcon: IconButton(

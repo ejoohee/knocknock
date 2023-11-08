@@ -30,12 +30,11 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print('시작');
+    // print('시작');
     // modelDetail = loadModelDetail();
   }
 
   Future<NewModelDetail> loadModelDetail() async {
-    selectedModel = context.watch<SelectedAppliance>().modelId;
     final detail = await modelService.findNewModelDetail(selectedModel);
     return detail;
   }
@@ -43,6 +42,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    selectedModel = context.watch<SelectedAppliance>().modelId;
     modelDetail = loadModelDetail();
   }
 
@@ -168,21 +168,50 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                             blurRadius: 8,
                             offset: const Offset(0, 0))
                       ],
-                      child: Container(
-                        margin: const EdgeInsets.symmetric(
-                          vertical: 10,
-                          horizontal: 30,
-                        ),
-                        height: 210,
-                        width: MediaQuery.of(context).size.width * 0.83,
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          color: colors[model.modelGrade! - 1],
-                        ),
-                        child: model.modelImg == null
-                            ? Image.asset('assets/images/not_found.png')
-                            : Image.network('${model.modelImg}'),
+                      child: TweenAnimationBuilder(
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        curve: Curves.bounceInOut,
+                        duration: const Duration(milliseconds: 2000),
+                        builder: (context, value, child) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                            ),
+                            margin: const EdgeInsets.symmetric(
+                              vertical: 10,
+                            ),
+                            height: 210,
+                            width: MediaQuery.of(context).size.width * 0.83,
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10)),
+                              color: colors[model.modelGrade! - 1]
+                                  .withOpacity(value),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  flex: 1,
+                                  child: model.modelImg == null
+                                      ? Image.asset(
+                                          'assets/images/not_found.png')
+                                      : Image.network(
+                                          '${model.modelImg}',
+                                        ),
+                                ),
+                                Flexible(
+                                  flex: 1,
+                                  child: Image.asset(
+                                    'assets/images/grade${model.modelGrade}.png',
+                                    width: MediaQuery.of(context).size.width *
+                                        0.35,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ),
                     Expanded(
@@ -255,6 +284,42 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                                 // ),
                               ),
                               const Divider(),
+                              ListTile(
+                                leading: const Text(
+                                  "CO2 배출량",
+                                ),
+                                title: Text(
+                                  "${model.modelCo2}",
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                  textAlign: TextAlign.end,
+                                ),
+                                trailing: Text(
+                                  "${model.co2Unit}",
+                                ),
+                              ),
+                              const Divider(),
+                              model.modelCost != null
+                                  ? ListTile(
+                                      leading: const Text(
+                                        "에너지비용",
+                                      ),
+                                      title: Text(
+                                        "${model.modelCost}",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                        textAlign: TextAlign.end,
+                                      ),
+                                      trailing: Text(
+                                        "${model.costUnit}",
+                                      ),
+                                    )
+                                  : Container(),
+                              model.modelCost != null
+                                  ? const Divider()
+                                  : Container(),
                               ListTile(
                                 leading: Text(
                                   "${model.usage1}",
