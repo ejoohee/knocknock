@@ -182,7 +182,7 @@ public class ModelServiceImpl implements ModelService {
         log.info("[가전제품 모델명 라벨 이미지에서 확인] 가전제품 모델명 라벨 이미지에서 확인.");
         // ocr api 호출
         // inferText 배열 받아오기
-        List<String> textList = ocrapiWebClinet.getTextListFromImg(checkModelByLabelImgReqDto.getRabelImg());
+        List<String> textList = ocrapiWebClinet.getTextListFromImg(checkModelByLabelImgReqDto.getLabelImg());
         // 모델명에 해당하는 값을 db 조회로 확인?
         String modelName = null;
         for (String text : textList) {
