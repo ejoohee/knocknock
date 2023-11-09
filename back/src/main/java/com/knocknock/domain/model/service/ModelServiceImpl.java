@@ -113,6 +113,7 @@ public class ModelServiceImpl implements ModelService {
             log.error("[가전제품 모델명으로 조회] 조회 실패...해당하는 가전제품이 존재하지 않습니다.");
             throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
         }
+        checkModelResDto.setModelImg(checkModelResDto.getModelImg() == null ? null : AwsS3ImgLink.getLink(checkModelResDto.getModelName()));
         log.info("[가전제품 모델명으로 조회] 가전제품 모델명으로 조회 성공.");
         return checkModelResDto;
     }
