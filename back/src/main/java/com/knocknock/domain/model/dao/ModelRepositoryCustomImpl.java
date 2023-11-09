@@ -82,10 +82,9 @@ public class ModelRepositoryCustomImpl implements ModelRepositoryCustom{
         CheckModelResDto checkModelResDto = queryFactory
                 .select(Projections.bean(CheckModelResDto.class,
                         qModel.name.as("modelName"), qModel.brand.as("modelBrand")
-                        , qModel.img.as("modelImg"), qCategory.name.as("category")))
+                        , qModel.img.as("modelImg"), qModel.category.name.as("category")))
                 .from(qModel)
                 .join(qModel.category, qCategory)
-                .fetchJoin()
                 .where(
                         // 모델명과 일치하는 가전제품인지
                         qModel.name.eq(modelName)
