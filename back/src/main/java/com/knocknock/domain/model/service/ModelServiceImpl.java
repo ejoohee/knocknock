@@ -12,7 +12,7 @@ import com.knocknock.domain.model.dto.response.CompareModelAndMyModelResDto;
 import com.knocknock.domain.model.dto.response.FindModelListResDto;
 import com.knocknock.domain.model.dto.response.FindModelResDto;
 import com.knocknock.domain.model.exception.ModelNotFoundException;
-import com.knocknock.global.common.ocr.OCRAPIWebClinet;
+import com.knocknock.global.common.ocr.OCRAPIWebClient;
 import com.knocknock.global.common.openapi.OpenAPIWebClient;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +38,7 @@ public class ModelServiceImpl implements ModelService {
     private final LikeModelRepository likeModelRepository;
     private final JwtUtil jwtUtil;
     private final OpenAPIWebClient openAPIWebClient;
-    private final OCRAPIWebClinet ocrapiWebClinet;
+    private final OCRAPIWebClient ocrapiWebClient;
 
     // 목록 조회
     @Override
@@ -182,7 +182,7 @@ public class ModelServiceImpl implements ModelService {
         log.info("[가전제품 모델명 라벨 이미지에서 확인] 가전제품 모델명 라벨 이미지에서 확인.");
         // ocr api 호출
         // inferText 배열 받아오기
-        List<String> textList = ocrapiWebClinet.getTextListFromImg(checkModelByLabelImgReqDto.getLabelImg());
+        List<String> textList = ocrapiWebClient.getTextListFromImg(checkModelByLabelImgReqDto.getLabelImg());
         // 모델명에 해당하는 값을 db 조회로 확인?
         String modelName = null;
         for (String text : textList) {
@@ -195,6 +195,7 @@ public class ModelServiceImpl implements ModelService {
                 break;
             }
         }
+
         if(modelName == null) {
             log.error("[가전제품 모델명 라벨 이미지에서 확인] 모델명 인식 불가능!!!!!!!!!");
             throw new ModelNotFoundException("사진에서 모델명을 인식할 수 없습니다.");

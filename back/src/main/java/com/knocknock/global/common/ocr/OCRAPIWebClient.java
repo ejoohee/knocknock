@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component
-public class OCRAPIWebClinet {
+public class OCRAPIWebClient {
 
     private WebClient ocrWebClient;
 
