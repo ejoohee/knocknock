@@ -10,6 +10,6 @@ import lombok.*;
 public class CheckModelByLabelImgReqDto {
 
     // base64 인코딩된 값
-    private String rabelImg;
+    private String labelImg;
 
 }
