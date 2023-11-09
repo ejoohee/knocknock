@@ -76,7 +76,7 @@ public class MyModelServiceImpl implements MyModelService {
 
         // 현재 로그인한 회원의 user 기본키 가져오기
         Long userId = jwtUtil.getUserNo();
-        log.info("[내 가전제품 삭제] 현재 로그인한 회원의 userId -----> {}", userId);
+        log.info("[내 가전제품 목록 조회] 현재 로그인한 회원의 userId -----> {}", userId);
         return myModelRepository.findMyModelList(userId, category);
     }
 

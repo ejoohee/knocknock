@@ -135,7 +135,7 @@ public class ModelServiceImpl implements ModelService {
         }); // 비교 당하는 내 가전제품
 
         dto.setModelAName(model1.getName());
-        dto.setModelAName(myModel.getModelNickname());
+        dto.setModelBName(myModel.getModelNickname());
 
         // 1. 에너지 효율 등급
         dto.setModelAGrade(model1.getGrade());
