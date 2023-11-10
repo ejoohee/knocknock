@@ -19,3 +19,4 @@ public class FindLikeModelListResDto {
     private String modelBrand;
 
 }
+

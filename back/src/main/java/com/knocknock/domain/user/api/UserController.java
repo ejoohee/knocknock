@@ -4,10 +4,7 @@ import com.knocknock.domain.user.dto.password.FindPasswordReqDto;
 import com.knocknock.domain.user.dto.password.PasswordReqDto;
 import com.knocknock.domain.user.dto.password.UpdatePasswordReqDto;
 import com.knocknock.domain.user.dto.request.*;
-import com.knocknock.domain.user.dto.response.AdminUserResDto;
-import com.knocknock.domain.user.dto.response.LoginResDto;
-import com.knocknock.domain.user.dto.response.ReissueTokenResDto;
-import com.knocknock.domain.user.dto.response.UserResDto;
+import com.knocknock.domain.user.dto.response.*;
 import com.knocknock.domain.user.service.UserService;
 import com.knocknock.global.dto.MessageDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -187,6 +184,13 @@ public class UserController {
     }
 
 
-
+    @Operation(
+            summary = "내 주소 기반 가구평균 전력사용량 조회",
+            description = "내 주소 기반 가구평균 전력사용량을 해당 년월 기준으로 ~ 전 5달 까지 조회합니다."
+    )
+    @GetMapping("/powerUsage/houseAvg")
+    public ResponseEntity<List<FindPowerUsageHouseAvgResDto>> findPowerUsageHouseAvgList(@RequestParam("metro")String metro, @RequestParam("city")String city, @RequestParam("year")Integer year, @RequestParam("month")Integer month) {
+        return ResponseEntity.ok(userService.findPowerUsageHouseAvgList(metro, city, year, month));
+    }
 
 }

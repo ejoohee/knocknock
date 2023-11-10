@@ -15,9 +15,12 @@ public class CompareModelAndMyModelResDto {
 
     private Integer modelBGrade;
     // 1년 단위
-    private  Long modelACo2;
+    private Long modelACo2;
+
     private Long modelBCo2;
 
     private Integer modelACost;
+
     private Integer modelBCost;
+
 }
