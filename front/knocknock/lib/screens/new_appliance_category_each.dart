@@ -3,6 +3,7 @@ import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/screens/new_appliance_detail.dart';
 import 'package:knocknock/services/model_service.dart';
@@ -129,7 +130,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
       // ),
       appBar: AppBarBack(
         title: selectedCategory,
-        page: const NewApplianceCategories(),
+        page: const HomeScreen(),
       ),
       body: SafeArea(
         child: Padding(

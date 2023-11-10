@@ -287,7 +287,7 @@ class _LoginState extends State<Login> {
 
   // 로그인 버튼 누르면 실행되는 함수
   onLoginTap() async {
-    String email = emailController.text;
+    String email = emailController.text.trim();
     String password = passwordController.text;
 
     if (_formKey.currentState!.validate()) {
