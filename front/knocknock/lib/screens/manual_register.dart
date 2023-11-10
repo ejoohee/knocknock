@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/components/buttons.dart';
+import 'package:knocknock/models/my_appliance_model.dart';
+import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/screens/display_info_screen.dart';
+import 'package:knocknock/services/model_service.dart';
+import 'package:provider/provider.dart';
 import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
 
@@ -13,8 +18,39 @@ class ManualRegister extends StatefulWidget {
 const List<String> list = <String>['냉장고', '세탁기', '어쩌구', '저쩌구'];
 
 class _ManualRegisterState extends State<ManualRegister> {
+  ModelService modelService = ModelService();
   String dropdownValue = list.first;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final myController = TextEditingController();
+  late MyModelRegistering? info;
+
+  getModelInfo() async {
+    final modelName = myController.text.trim();
+    info = await modelService.findRegistering(modelName);
+    if (!mounted) return;
+    context.read<RegisterAppliance>().register(info);
+  }
+
+  failLoad() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          // Retrieve the text the that user has entered by using the
+          // TextEditingController.
+          content: Text('모델명을 조회할 수 없습니다.'),
+        );
+      },
+    );
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is removed from the widget tree.
+    myController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,20 +135,18 @@ class _ManualRegisterState extends State<ManualRegister> {
                         ),
                       ),
                       title: TextFormField(
+                        controller: myController,
                         decoration: const InputDecoration(
                           hintText: '모델명을 입력하세요.',
                           hintStyle: TextStyle(
                             fontWeight: FontWeight.w300,
                           ),
                         ),
-                        onSaved: (String? value) {
-                          // This optional block of code can be used to run
-                          // code when the user saves the form.
-                        },
-                        validator: (String? value) {
-                          return (value != null && value.contains('@'))
-                              ? 'Do not use the @ char.'
-                              : null;
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return '값을 입력해주세요.';
+                          }
+                          return null;
                         },
                       ),
                     ),
@@ -120,7 +154,18 @@ class _ManualRegisterState extends State<ManualRegister> {
                       height: 20,
                     ),
                     KnockButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        await getModelInfo();
+                        if (info == null) {
+                          failLoad();
+                        } else {
+                          await Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => const DisplayInfoScreen(),
+                            ),
+                          );
+                        }
+                      },
                       width: MediaQuery.of(context).size.width * 0.8,
                       height: MediaQuery.of(context).size.width * 0.16,
                       label: '조회하기',

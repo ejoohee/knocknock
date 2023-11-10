@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http_interceptor/http_interceptor.dart';
 import 'package:knocknock/constants/api.dart';
@@ -8,6 +9,17 @@ import 'package:knocknock/models/my_appliance_model.dart';
 
 const String baseUrl = Api.BASE_URL;
 const storage = FlutterSecureStorage();
+//이미지 base64 인코딩 바이트로 변환하는 메서드
+String encodeImage(String imagePath) {
+  // 이미지 파일을 바이너리 데이터로 읽기
+  File imageFile = File(imagePath);
+  List<int> imageBytes = imageFile.readAsBytesSync();
+
+  // 바이너리 데이터를 base64 문자열로 인코딩
+  String base64Image = base64Encode(imageBytes);
+
+  return base64Image;
+}
 
 class ModelService {
   final client = InterceptedClient.build(interceptors: [HttpInterceptor()]);
@@ -99,8 +111,44 @@ class ModelService {
     return newModel;
   }
 
+// 가전 등록 과정에서 이미지 전송하여 추출된 모델명으로 우선 조회
+  Future<MyModelRegistering?> findRegisteringByImage(String imagePath) async {
+    // late가 될까요???
+    late MyModelRegistering registeringModel;
+
+    String encodedImg = encodeImage(imagePath);
+
+    final url = Uri.parse('$baseUrl/model/check-img');
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      "Content-Type": "application/json",
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+    final response = await client.post(
+      url,
+      headers: headers,
+      body: jsonEncode(
+        {
+          "labelImg": encodedImg,
+        },
+      ),
+    );
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+      final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
+      registeringModel = MyModelRegistering.fromJson(model);
+    } else if (response.statusCode == 404) {
+      return null;
+    } else if (response.statusCode == 401) {
+      findRegisteringByImage(imagePath);
+    }
+
+    return registeringModel;
+  }
+
   // 가전 등록 과정에서 모델명으로 우선 조회
-  Future<MyModelRegistering> findRegistering(String modelName) async {
+  Future<MyModelRegistering?> findRegistering(String modelName) async {
     // late가 될까요???
     late MyModelRegistering registeringModel;
 
@@ -114,8 +162,10 @@ class ModelService {
       headers: headers,
     );
     if (response.statusCode == 200) {
-      final dynamic model = jsonDecode(response.body);
+      final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       registeringModel = MyModelRegistering.fromJson(model);
+    } else if (response.statusCode == 404) {
+      return null;
     } else if (response.statusCode == 401) {
       findRegistering(modelName);
     }
@@ -146,10 +196,12 @@ class ModelService {
     );
 
     if (response.statusCode == 201) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
       message = responseBody['message'];
     } else if (response.statusCode == 404) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
       message = responseBody['message'];
     } else if (response.statusCode == 401) {
       registerMyAppliance(modelName, modelNickname);

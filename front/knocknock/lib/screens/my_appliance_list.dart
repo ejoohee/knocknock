@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/common/custom_icon_icons.dart';
 import 'package:knocknock/components/buttons.dart';
-import 'package:knocknock/components/circle_clipper.dart';
 import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';

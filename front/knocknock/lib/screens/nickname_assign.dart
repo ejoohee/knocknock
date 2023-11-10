@@ -1,5 +1,11 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:knocknock/components/buttons.dart';
+import 'package:knocknock/models/my_appliance_model.dart';
+import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/screens/my_appliance_list.dart';
+import 'package:knocknock/services/model_service.dart';
+import 'package:provider/provider.dart';
 
 class NicknameAssign extends StatefulWidget {
   const NicknameAssign({super.key});
@@ -9,7 +15,67 @@ class NicknameAssign extends StatefulWidget {
 }
 
 class _NicknameAssignState extends State<NicknameAssign> {
+  ModelService modelService = ModelService();
+  late MyModelRegistering model;
+  final myController = TextEditingController();
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    model = context.watch<RegisterAppliance>().myModel!;
+    myController.text = '나의 ${model.category}'; // 초기값 설정
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  finalRegister(String nickname) async {
+    String modelName = model.modelName!;
+
+    final response =
+        await modelService.registerMyAppliance(modelName, nickname);
+    showPositive(response);
+  }
+
+  showPositive(String msg) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          // Retrieve the text the that user has entered by using the
+          // TextEditingController.
+          content: Text(msg),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          const MyApplianceList()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                );
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  showNegative() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return const AlertDialog(
+          // Retrieve the text the that user has entered by using the
+          // TextEditingController.
+          content: Text('등록 실패'),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,12 +84,35 @@ class _NicknameAssignState extends State<NicknameAssign> {
           30,
         ),
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const Text(
-              '별명을 지정할 수 있어요!',
-              style: TextStyle(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                AnimatedTextKit(
+                  animatedTexts: [
+                    WavyAnimatedText(
+                      '별명',
+                      textStyle: const TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                  isRepeatingAnimation: true,
+                  // onTap: () {
+                  //   print("Tap Event");
+                  // },
+                ),
+                const Text(
+                  '을 지정할 수 있어요!',
+                  style: TextStyle(
+                    fontSize: 24,
+                  ),
+                ),
+              ],
             ),
-            // Image(image: ),
+            Image.network(model.modelImg!),
             Form(
               key: _formKey,
               child: Column(
@@ -31,27 +120,34 @@ class _NicknameAssignState extends State<NicknameAssign> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: TextFormField(
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.edit_outlined),
-                        hintText: '나의땡땡땡',
+                      controller: myController,
+                      // initialValue: '나의 ${model.category}',
+                      decoration: InputDecoration(
+                        prefixIcon: const Icon(Icons.edit_outlined),
+                        hintText: '나의 ${model.category}',
                       ),
-                      onSaved: (String? value) {
-                        // This optional block of code can be used to run
-                        // code when the user saves the form.
+                      onChanged: (value) {
+                        myController.text = value;
                       },
                       validator: (String? value) {
-                        return (value!.length > 5) ? '5자 이내로 입력해주세요' : null;
+                        if (value == null || value.isEmpty) {
+                          return '값을 입력해주세요.';
+                        }
+                        return null;
                       },
                     ),
                   ),
                   const SizedBox(
-                    height: 20,
+                    height: 30,
                   ),
                   KnockButton(
                     onPressed: () {
                       // 버튼 클릭 시 실행할 동작
                       if (_formKey.currentState!.validate()) {
                         // Process data.
+
+                        // Process data.
+                        finalRegister(myController.text); // 컨트롤러의 값 출력
                       }
                     },
                     bColor: Theme.of(context).colorScheme.primary,
