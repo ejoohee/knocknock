@@ -1,9 +1,7 @@
 package com.knocknock.domain.user.service;
 
-import com.knocknock.domain.user.dao.LogoutAccessTokenRedisRepository;
-import com.knocknock.domain.user.dao.RefreshTokenRedisRepository;
-import com.knocknock.domain.user.dao.UserQueryDslRepository;
-import com.knocknock.domain.user.dao.UserRepository;
+import com.knocknock.domain.user.dao.*;
+import com.knocknock.domain.user.domain.CityCode;
 import com.knocknock.domain.user.domain.LogoutAccessToken;
 import com.knocknock.domain.user.domain.RefreshToken;
 import com.knocknock.domain.user.domain.Users;
@@ -18,6 +16,7 @@ import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
+import com.knocknock.global.common.kepco.KepcoAPIWebClient;
 import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
 import com.knocknock.global.util.JwtUtil;
@@ -30,6 +29,8 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,8 +39,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final KepcoAPIWebClient kepcoAPIWebClient;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final CityCodeRepository cityCodeRepository;
     private final UserRepository userRepository;
     private final UserQueryDslRepository userQueryDslRepository;
     private final RefreshTokenRedisRepository refreshTokenRepository;
@@ -535,6 +538,24 @@ public class UserServiceImpl implements UserService {
         return userQueryDslRepository.findByCondition(condition).stream()
                 .map(users -> AdminUserResDto.entityToDto(users))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(String metro, String city, Integer year, Integer month) {
+        log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 요청.");
+        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(metro, city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
+        List<FindPowerUsageHouseAvgResDto> dtoList = new ArrayList<>();
+        // 전 달 계산
+        LocalDate last = null;
+        // 년월으로 date
+        LocalDate date = LocalDate.of(year, month, 1);
+        for (int i = 4; i >= 0; i--) {
+            last = date.minusMonths(i);
+            dtoList.add(kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode()));
+
+        }
+        log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 성공.");
+        return dtoList;
     }
 
     @Transactional
