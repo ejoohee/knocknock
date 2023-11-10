@@ -7,6 +7,7 @@ import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/compare_list.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class NewApplianceDetail extends StatefulWidget {
   const NewApplianceDetail({super.key});
@@ -15,7 +16,8 @@ class NewApplianceDetail extends StatefulWidget {
   State<NewApplianceDetail> createState() => _NewApplianceDetailState();
 }
 
-class _NewApplianceDetailState extends State<NewApplianceDetail> {
+class _NewApplianceDetailState extends State<NewApplianceDetail>
+    with TickerProviderStateMixin {
   final ModelService modelService = ModelService();
   List<Color> colors = [
     ColorChart.first,
@@ -71,6 +73,18 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
     }
     return false;
   }
+
+  // 네트워크 이미지 기다리기
+  Future<String> loadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      return imageUrl;
+    } else {
+      throw Exception('Failed to load image');
+    }
+  }
+
+  final double _imageSize = 0.0; // 이미지의 크기를 제어할 변수
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +185,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                       child: TweenAnimationBuilder(
                         tween: Tween(begin: 0.0, end: 1.0),
                         curve: Curves.bounceInOut,
-                        duration: const Duration(milliseconds: 2000),
+                        duration: const Duration(milliseconds: 1800),
                         builder: (context, value, child) {
                           return Container(
                             padding: const EdgeInsets.symmetric(
@@ -188,28 +202,44 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
                               color: colors[model.modelGrade! - 1]
                                   .withOpacity(value),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: model.modelImg == null
-                                      ? Image.asset(
-                                          'assets/images/not_found.png')
-                                      : Image.network(
-                                          '${model.modelImg}',
+                            child: FutureBuilder<String>(
+                                future: loadImage(model.modelImg!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Container();
+                                  }
+
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        flex: 1,
+                                        child: model.modelImg == null
+                                            ? Image.asset(
+                                                'assets/images/not_found.png',
+                                                width: _imageSize,
+                                              )
+                                            : Image.network(
+                                                '${model.modelImg}',
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  print(
+                                                      'Error loading image: $error');
+                                                  return Image.asset(
+                                                      'assets/images/not_found.png');
+                                                },
+                                              ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Image.asset(
+                                          'assets/images/grade${model.modelGrade}.png',
                                         ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Image.asset(
-                                    'assets/images/grade${model.modelGrade}.png',
-                                    width: MediaQuery.of(context).size.width *
-                                        0.35,
-                                  ),
-                                ),
-                              ],
-                            ),
+                                      ),
+                                    ],
+                                  );
+                                }),
                           );
                         },
                       ),

@@ -5,6 +5,7 @@ import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/services/model_service.dart';
+import 'package:http/http.dart' as http;
 
 class MyApplianceDetail extends StatefulWidget {
   final int myModelId;
@@ -45,6 +46,15 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
       myModelDetail = loadMyModelDetail();
     }
     setState(() {});
+  }
+
+  Future<String> loadImage(String imageUrl) async {
+    final response = await http.get(Uri.parse(imageUrl));
+    if (response.statusCode == 200) {
+      return imageUrl;
+    } else {
+      throw Exception('Failed to load image');
+    }
   }
 
   @override
@@ -166,28 +176,46 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                               color: colors[model.modelGrade! - 1]
                                   .withOpacity(value),
                             ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  flex: 1,
-                                  child: model.modelImg == null
-                                      ? Image.asset(
-                                          'assets/images/not_found.png')
-                                      : Image.network(
-                                          '${model.modelImg}',
+                            child: FutureBuilder(
+                                future: loadImage(model.modelImg!),
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Container();
+                                  }
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Flexible(
+                                        flex: 1,
+                                        child: model.modelImg == null
+                                            ? Image.asset(
+                                                'assets/images/not_found.png')
+                                            : Image.network(
+                                                '${model.modelImg}',
+                                                errorBuilder: (context, error,
+                                                    stackTrace) {
+                                                  // 에러가 발생할 때 실행할 코드를 여기에 추가하세요.
+                                                  print(
+                                                      'Error loading image: $error');
+                                                  return Image.asset(
+                                                      'assets/images/not_found.png');
+                                                },
+                                              ),
+                                      ),
+                                      Flexible(
+                                        flex: 1,
+                                        child: Image.asset(
+                                          'assets/images/grade${model.modelGrade}.png',
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width *
+                                              0.35,
                                         ),
-                                ),
-                                Flexible(
-                                  flex: 1,
-                                  child: Image.asset(
-                                    'assets/images/grade${model.modelGrade}.png',
-                                    width: MediaQuery.of(context).size.width *
-                                        0.35,
-                                  ),
-                                ),
-                              ],
-                            ),
+                                      ),
+                                    ],
+                                  );
+                                }),
                           );
                         },
                       ),
