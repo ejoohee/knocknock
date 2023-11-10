@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:knocknock/color_schemes.g.dart';
 import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
 
 import 'package:knocknock/screens/home_screen.dart';
 
@@ -31,6 +32,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => SelectedAppliance()),
         ChangeNotifierProvider(create: (_) => RegisterAppliance()),
+        ChangeNotifierProvider(create: (_) => CurrentPageIndex()),
       ],
       child: const MyApp(),
     ),

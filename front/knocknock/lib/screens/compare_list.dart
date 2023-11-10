@@ -4,8 +4,12 @@ import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/compare.dart';
+import 'package:knocknock/screens/home_screen.dart';
+import 'package:knocknock/screens/new_appliance_detail.dart';
 import 'package:knocknock/services/model_service.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
 
 class CompareList extends StatefulWidget {
@@ -48,6 +52,7 @@ class _CompareListState extends State<CompareList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBack(title: '비교하기', page: NewApplianceDetail()),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(
@@ -98,11 +103,13 @@ class _CompareListState extends State<CompareList> {
                           KnockButton(
                             onPressed: () {
                               // 버튼 클릭 시 실행할 동작
+                              context.read<CurrentPageIndex>().move(2);
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
-                                        const CompareList()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                        const HomeScreen()), // SignUpPage는 회원가입 페이지 위젯입니다.
                               );
                             },
                             bColor: Theme.of(context).colorScheme.primary,

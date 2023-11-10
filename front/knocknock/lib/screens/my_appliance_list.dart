@@ -5,6 +5,7 @@ import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/my_appliance_detail.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/services/model_service.dart';
@@ -88,14 +89,16 @@ class _MyApplianceListState extends State<MyApplianceList> {
                         ),
                         KnockButton(
                           onPressed: () {
+                            if (!mounted) return;
+                            context.read<CurrentPageIndex>().move(2);
                             // 버튼 클릭 시 실행할 동작
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      // 등록 페이지로 수정하기
-                                      const NewApplianceCategories()),
-                            );
+                            // Navigator.push(
+                            //   context,
+                            //   MaterialPageRoute(
+                            //       builder: (context) =>
+                            //           // 등록 페이지로 수정하기
+                            //           const NewApplianceCategories()),
+                            // );
                           },
                           bColor: Theme.of(context).colorScheme.primary,
                           fColor: Theme.of(context).colorScheme.onPrimary,

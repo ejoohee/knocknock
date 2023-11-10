@@ -5,6 +5,8 @@ import 'package:knocknock/providers/my_appliance.dart';
 import 'package:knocknock/screens/display_info_screen.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
+import 'package:knocknock/screens/home_screen.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 
 class ManualRegister extends StatefulWidget {
   const ManualRegister({super.key});
@@ -52,6 +54,10 @@ class _ManualRegisterState extends State<ManualRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBack(
+        title: '직접 입력하기',
+        page: HomeScreen(),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 30,
