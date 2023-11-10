@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/log_in.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:knocknock/screens/my_page.dart';
@@ -271,7 +272,7 @@ class _MyInfoModifyState extends State<MyInfoModify> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: const AppBarBack(title: "", page: MyPage()),
+      appBar: const AppBarBack(title: "", page: HomeScreen()),
       body: Stack(
         children: [
           SingleChildScrollView(

@@ -5,7 +5,9 @@ import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/compare_list.dart';
+import 'package:knocknock/screens/new_appliance_category_each.dart';
 import 'package:knocknock/services/model_service.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
 
 class NewApplianceDetail extends StatefulWidget {
@@ -75,6 +77,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: const AppBarBack(title: '상세조회', page: NewApplianceCategoryEach()),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 30),

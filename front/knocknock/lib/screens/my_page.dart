@@ -1,9 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knocknock/providers/page_index.dart';
+import 'package:knocknock/screens/average_electronic.dart';
 import 'package:knocknock/screens/log_in.dart';
 import 'package:knocknock/screens/my_info_modify.dart';
 import 'package:knocknock/services/user_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
+import 'package:provider/provider.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -147,6 +150,8 @@ class _MyPageState extends State<MyPage> {
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const SizedBox(
               height: 50,
@@ -192,55 +197,66 @@ class _MyPageState extends State<MyPage> {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/images/appliance.png'),
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
                       const Text(
                         '가전',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       )
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 35,
-                  ),
-                  decoration: BoxDecoration(
-                    border: BorderDirectional(
-                      start: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
-                      ),
-                      bottom: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
+                GestureDetector(
+                  onTap: () {
+                    if (!mounted) return;
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const AverageElectronic()));
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                      vertical: 35,
+                    ),
+                    decoration: BoxDecoration(
+                      border: BorderDirectional(
+                        start: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 0.8,
+                        ),
+                        bottom: BorderSide(
+                          color: Colors.grey.shade300,
+                          width: 0.8,
+                        ),
                       ),
                     ),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/electric.png'),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: 150,
+                          height: 150,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/electric.png'),
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
-                      ),
-                      const Text(
-                        '전력 소비',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
+                        const Text(
+                          '전력 소비량',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -273,13 +289,14 @@ class _MyPageState extends State<MyPage> {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/images/neighborhood.png'),
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
                       const Text(
                         '우리 동네 정보',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       )
@@ -311,13 +328,14 @@ class _MyPageState extends State<MyPage> {
                         decoration: const BoxDecoration(
                           image: DecorationImage(
                             image: AssetImage('assets/images/recycle.png'),
+                            fit: BoxFit.contain,
                           ),
                         ),
                       ),
                       const Text(
                         '폐 가전 수거 정보',
                         style: TextStyle(
-                          fontSize: 20,
+                          fontSize: 18,
                           fontWeight: FontWeight.w600,
                         ),
                       )
@@ -327,7 +345,7 @@ class _MyPageState extends State<MyPage> {
               ],
             ),
             const SizedBox(
-              height: 80,
+              height: 50,
             ),
             TextButton(
               onPressed: () {
