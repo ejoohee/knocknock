@@ -1,6 +1,6 @@
 package com.knocknock.domain.greenProduct.api;
 
-import com.knocknock.domain.greenProduct.domain.GreenProduct;
+import com.knocknock.domain.greenProduct.dto.response.GreenProductDataResDto;
 import com.knocknock.domain.greenProduct.service.GreenProductService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -24,12 +24,16 @@ public class GreenProductController {
             description = "모델명이나 회사명으로 녹생 인증 제품인지 확인합니다."
     )
     @GetMapping("/search")
-    public ResponseEntity<List<GreenProduct>> searchProducts(@RequestParam String keyword) {
-        List<GreenProduct> products = greenProductService.searchByProductNameOrCompanyName(keyword);
-        return ResponseEntity.ok(products);
+    public ResponseEntity<List<GreenProductDataResDto>> searchProducts(@RequestParam String keyword) {
+        List<GreenProductDataResDto> dto = greenProductService.searchByProductNameOrCompanyName(keyword);
+        return ResponseEntity.ok(dto);
     }
 
 
+    @Operation(
+            summary = "녹색 인증 제품 저장 및 업데이트용",
+            description = "녹색 인증 제품 저장 및 업데이트합니다."
+    )
     @GetMapping("")
     public ResponseEntity<Void> fetchAndStoreGreenProducts() {
         try {

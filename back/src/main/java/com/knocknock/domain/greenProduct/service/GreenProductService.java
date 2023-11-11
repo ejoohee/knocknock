@@ -1,6 +1,7 @@
 package com.knocknock.domain.greenProduct.service;
 
 import com.knocknock.domain.greenProduct.domain.GreenProduct;
+import com.knocknock.domain.greenProduct.dto.response.GreenProductDataResDto;
 import com.knocknock.domain.greenProduct.dto.response.GreenProductResDto;
 
 import java.util.List;
@@ -13,8 +14,8 @@ public interface GreenProductService {
 
     GreenProduct buildGreenProduct(GreenProductResDto.GreenProductData data);
 
-    List<GreenProduct> searchByProductNameOrCompanyName(String keyword);
-//    List<GreenProductResDto> searchByProductNameOrCompanyName(String keyword);
+    List<GreenProductDataResDto> searchByProductNameOrCompanyName(String keyword);
+
 }
 
 
