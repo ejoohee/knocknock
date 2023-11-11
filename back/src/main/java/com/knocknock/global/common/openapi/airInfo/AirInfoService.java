@@ -8,12 +8,24 @@ import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.json.Json;
 import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
+import javax.xml.crypto.dsig.XMLObject;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -111,8 +123,6 @@ public class AirInfoService {
 
         jsonObject = items.getJsonObject(0);
         log.info("jsonObejct : {}", jsonObject);
-//        log.info("하나뽑아와 : {}", jsonObject.get("mangName"));
-        log.info(" 스트링만 : {}", jsonObject.getString("mangName")); // 이렇게 뽑아야 따옴표없이 스트링만 뽑아옴
 
         return AirInfoResDto.jsonToDto(jsonObject);
 
@@ -120,20 +130,6 @@ public class AirInfoService {
 
 
         // 9. 전달받은 데이터 확인!
-        // JSON 파싱을 위한 JsonParser 선언
-//        JSONParser jsonParser = new JSONParser();
-
-        // JSON 데이터를 넣어 JSON Object로 만들기
-//        JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
-//        JSONObject response = (JSONObject) jsonObject.get("response"); // JSONOBject로 형변환 해주지않으면 그냥 STring(Object)가 되어서 키로 값을 못뽑아옴
-//        JSONObject body = (JSONObject) response.get("body");
-//        // 배열 추출
-//        JSONArray items = (JSONArray) body.get("items");
-//        JSONObject item = (JSONObject)items.get(0);
-//
-//        log.info("item ; {}", item);
-//
-//        return AirInfoResDto.jsonToDto(item);
 
     }
 
@@ -281,11 +277,6 @@ public class AirInfoService {
         JsonArray items = jsonObject.getJsonArray("items");
         jsonObject = items.getJsonObject(0);
 
-//        JSONObject jsonObject = (JSONObject) jsonParser.parse(sb.toString());
-//        JSONObject response = (JSONObject) jsonObject.get("response");
-//        JSONObject body = (JSONObject) response.get("body");
-//        JSONArray items = (JSONArray) body.get("items");
-//        JSONObject item = (JSONObject) items.get(0);
 
         // 가져온 stationName을 유저의 airStation에 저장해준다
 
@@ -301,12 +292,12 @@ public class AirInfoService {
         urlBuilder.append("&" + URLEncoder.encode("countPerPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지당 출력될 개수를 지정*/
         urlBuilder.append("&" + URLEncoder.encode("currentPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*출력될 페이지 번호*/
 
-        URL url = new URL(urlBuilder.toString());
-
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
+//        URL url = new URL(urlBuilder.toString());
+//
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//
+//        conn.setRequestMethod("GET");
+//        conn.setRequestProperty("Content-type", "application/json");
 
 //        System.out.println("Response code: " + conn.getResponseCode());
 
@@ -314,27 +305,80 @@ public class AirInfoService {
 //            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 //        else
 //            br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-//
-//        StringBuilder sb = new StringBuilder();
-//
+
+//        sb = new StringBuilder();
 //        String line;
 //        while ((line = br.readLine()) != null) {
 //            sb.append(line);
 //        }
-
+//
 //        br.close();
+//        conn.disconnect();
 
+//        stringReader = new StringReader(sb.toString());
+//        log.info("stringReader : {}", stringReader);
 
-        conn.disconnect();
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+        Document document = null;
+        try {
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            document = documentBuilder.parse(urlBuilder.toString());
 
-//        System.out.println(sb.toString());
+            document.getDocumentElement().normalize();
 
+            // NewAddressListResponse 잘나왔음
+            log.info("ROOT ELEMENT : {}", document.getDocumentElement().getNodeName());
+
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        } catch (SAXException e) {
+            throw new RuntimeException(e);
+        }
+
+        NodeList nodeList = document.getElementsByTagName("newAddressListAreaCd");
+        log.info("파싱할 리스트 수 : {}", nodeList.getLength());
+
+        for(int i=0; i<nodeList.getLength(); i++) {
+            Node node = nodeList.item(i);
+
+            Element element = (Element) node;
+            log.info("도로명주소 : {}", getTagValue("lnmAdres", element));
+            log.info("지번주소 : {}", getTagValue("rnAdres", element));
+
+            pickDong(getTagValue("lnmAdres", element));
+        }
 
 
 
         return null;
     }
 
+    private static String getTagValue(String tag, Element element) {
+        NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
 
+        Node nodeValue = (Node)nodeList.item(0);
+        if(nodeValue == null)
+            return null;
+
+        return nodeValue.getNodeValue();
+    }
+
+    private static String pickDong(String lnmAdres) {
+        StringBuilder dong = new StringBuilder();
+
+        String[] list = lnmAdres.split(" ");
+        for(String tmp : list) {
+            if(tmp.startsWith("(")) {
+                dong.append(tmp);
+                break;
+            }
+        }
+
+        dong.delete(0, 1);
+        dong.delete(dong.length()-1, dong.length());
+
+        log.info("동 : {}", dong);
+        return dong.toString();
+    }
 
 }
