@@ -100,7 +100,7 @@ flutter:
     - assets/images/grade3.png
     - assets/images/grade4.png
     - assets/images/grade5.png
-
+    - assets/images/green.png
   fonts:
     - family: CustomIcon
       fonts:
