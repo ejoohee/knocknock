@@ -6,9 +6,11 @@ import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/providers/page_index.dart';
+import 'package:knocknock/screens/main_page.dart';
 import 'package:knocknock/screens/my_appliance_detail.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/services/model_service.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
 
 class MyApplianceList extends StatefulWidget {
@@ -46,16 +48,47 @@ class _MyApplianceListState extends State<MyApplianceList> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     modelListFuture = loadCompareModelData();
+    updateCategoryEntries();
+  }
+
+  final Set<String> uniqueCategories = <String>{};
+
+  void updateCategoryEntries() {
+    // 모델 데이터를 가져와서 각 모델의 카테고리를 uniqueCategories에 추가
+    modelListFuture.then((modelList) {
+      for (MyModelTile model in modelList) {
+        uniqueCategories.add(model.category!);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final List<DropdownMenuEntry<String>> categoryEntries =
+        <DropdownMenuEntry<String>>[];
+
+    for (final String category in uniqueCategories) {
+      categoryEntries
+          .add(DropdownMenuEntry<String>(value: category, label: category));
+    }
     return Scaffold(
+      appBar: const AppBarBack(
+        title: '내 가전 모아보기',
+        page: MainPage(),
+      ),
       body: Padding(
-        padding: const EdgeInsets.all(30.0),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 30,
+        ),
         child: Column(
           children: [
-            const Row(),
+            DropdownMenu<String>(
+              dropdownMenuEntries: categoryEntries,
+              enableFilter: true,
+              inputDecorationTheme: const InputDecorationTheme(
+                border: UnderlineInputBorder(),
+              ),
+            ),
             FutureBuilder(
               future: modelListFuture,
               builder: (context, snapshot) {
@@ -114,71 +147,118 @@ class _MyApplianceListState extends State<MyApplianceList> {
                 } else {
                   List<MyModelTile> modelList = snapshot.data!;
                   return Expanded(
-                    child: ListView.builder(
-                      itemCount: modelList.length,
-                      itemBuilder: (context, index) {
-                        final model = modelList[index];
-                        // heading(등급)넣어주기 위한 조건
+                    child: ShaderMask(
+                      shaderCallback: (Rect bounds) {
+                        return LinearGradient(
+                          //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
+                          begin: Alignment.center,
+                          end: Alignment.topCenter,
+                          colors: [
+                            Colors.white,
+                            Colors.white.withOpacity(0.01)
+                          ],
+                          stops: const [0.92, 1],
+                          tileMode: TileMode.mirror,
+                        ).createShader(bounds);
+                      },
+                      child: ListView.builder(
+                        itemCount: modelList.length,
+                        itemBuilder: (context, index) {
+                          final model = modelList[index];
+                          // heading(등급)넣어주기 위한 조건
 
-                        return Column(
-                          children: [
-                            Tile(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MyApplianceDetail(
-                                          myModelId: model.myModelId!)),
-                                );
-                              },
-                              onLongPress: () {
-                                setState(() {
-                                  isEditing = true;
-                                });
-                              },
-                              isBookmarked: true,
-                              bookmarkIcon: IconButton(
-                                onPressed: () {},
-                                icon: model.addAtPin != null
-                                    ? const Icon(
-                                        CustomIcon.pin_1,
-                                        color: Colors.red,
-                                      )
-                                    : Container(),
+                          return Column(
+                            children: [
+                              const SizedBox(
+                                height: 12,
                               ),
-                              child: ListTile(
-                                leading: ExcludeSemantics(
-                                  child: CircleAvatar(
-                                    radius: 35,
-                                    backgroundColor:
-                                        colors[model.modelGrade! - 1],
-                                    child: Text(
-                                      '${model.modelGrade!}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 40,
-                                      ),
+                              InkWell(
+                                borderRadius: BorderRadius.circular(15),
+                                onLongPress: () {
+                                  setState(() {
+                                    isEditing = !isEditing;
+                                  });
+                                },
+                                child: Tile(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              MyApplianceDetail(
+                                                  myModelId: model.myModelId!)),
+                                    );
+                                  },
+                                  onLongPress: () {
+                                    setState(() {
+                                      isEditing = !isEditing;
+                                    });
+                                  },
+                                  isBookmarked: isEditing,
+                                  bookmarkIcon: Padding(
+                                    padding: const EdgeInsets.only(left: 5),
+                                    child: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 18,
+                                        ),
+                                        IconButton(
+                                            onPressed: () {},
+                                            icon: Icon(
+                                              // CustomIcon.trashcan,
+                                              Icons.delete_forever_rounded,
+                                              size: 40,
+                                              color: Colors.red[600],
+                                              fill: 0.2,
+                                            )),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                title: Text(
-                                  model.modelNickname!,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w700,
+                                  child: ListTile(
+                                    leading: ExcludeSemantics(
+                                      child: CircleAvatar(
+                                        radius: 35,
+                                        backgroundColor:
+                                            colors[model.modelGrade! - 1],
+                                        child: Text(
+                                          '${model.modelGrade!}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 40,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    title: Row(
+                                      children: [
+                                        Text(
+                                          model.modelNickname!,
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 10,
+                                        ),
+                                        if (model.addAtPin != null)
+                                          const Icon(
+                                            CustomIcon.pin_1,
+                                            size: 18,
+                                          ),
+                                      ],
+                                    ),
+                                    subtitle: Text(
+                                        '제품군 : ${model.category!}\n업체명 : ${model.modelBrand!}'),
+                                    isThreeLine: true,
+                                    titleAlignment:
+                                        ListTileTitleAlignment.center,
                                   ),
                                 ),
-                                subtitle: Text(
-                                    '제품군 : ${model.category!}\n업체명 : ${model.modelBrand!}'),
-                                isThreeLine: true,
-                                titleAlignment: ListTileTitleAlignment.center,
                               ),
-                            ),
-                            const SizedBox(
-                              height: 15,
-                            )
-                          ],
-                        );
-                      },
+                            ],
+                          );
+                        },
+                      ),
                     ),
                   );
                 }
