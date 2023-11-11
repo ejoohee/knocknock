@@ -51,7 +51,9 @@ public class SecurityConfig  {
             "/api/email/**",
 
         // model
-
+            
+        // airInfo
+            "/api/air-info/**" // 임시
 
 
     };
