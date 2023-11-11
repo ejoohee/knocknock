@@ -83,4 +83,10 @@ public class Users {
         this.giroCode = giroCode == null ? this.giroCode : giroCode;
     }
 
+    /**
+     * 대기정보 측정소 저장 서비스
+     */
+    public void updateAirStation(String stationName) {
+        this.airStation = stationName; // 얘는 우리가 건드리는거라 null일 때 가 없음
+    }
 }

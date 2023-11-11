@@ -1,6 +1,9 @@
 package com.knocknock.global.common.openapi.airInfo;
 
 import com.knocknock.domain.user.dao.UserRepository;
+import com.knocknock.domain.user.domain.Users;
+import com.knocknock.domain.user.exception.UserExceptionMessage;
+import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.openapi.airInfo.dto.AirInfoReqDto;
 import com.knocknock.global.common.openapi.airInfo.dto.AirInfoResDto;
 import com.knocknock.global.common.openapi.airInfo.dto.TmPointDto;
@@ -8,6 +11,7 @@ import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -50,6 +54,44 @@ public class AirInfoService {
 
     private final String API_KEY = "XymYPoqUHNl0U%2Fuo0Tbs6LJ5VZQfWjXVfWjMBAfEnBFI8fSenYRRca0X%2B%2FRrmACkJYcS4WlJvNyf1NA4adMJvA%3D%3D";
     private final String GET_STATION_URL = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc";
+
+    @Transactional // 유저업데이트라서 붙였는데 맞낭
+    public void connectLogic(String token) throws IOException {
+        // 1. 토큰에서 주소를 뽑아온다.
+        Long userId = jwtUtil.getUserNo();
+
+        Users loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> {
+                    log.error("[AIR_INFO] 로그인 후 사용 가능.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        String address = loginUser.getAddress();
+        log.info("[AIR_INFO] 로그인 사용자의 주소 뽑아오기 성공!, {}", address);
+
+        // 2. 유저의 주소를 pickStationByAddress에 넣어서 읍면동을 뽑아온다.
+        String dong = pickDongNameByAddress(address);
+        log.info("[AIR_INFO] 로그인 사용자의 읍면동 주소 뽑아오기 성공! {}", dong);
+
+        // 여기서 null이 뽑혔으면 선택하게 해야함...
+
+        // 3. tm-point 뽑아낸다.
+        TmPointDto pointDto = getTmPoint(dong);
+        log.info("[AIR_INFO] tm-point 뽑아오기 성공! {}", pointDto.getTmX());
+
+        // 4. tm-point를 이용해서 측정소를 뽑아낸다.
+        String stationName = getStationName(pointDto);
+        log.info("[AIR_INFO] 측정소 뽑아오기 성공 ! {}", stationName);
+
+        // 5. 측정소를 해당 유저의 airStation에 저장해준다.
+        loginUser.updateAirStation(stationName);
+        userRepository.save(loginUser);
+
+        // 6. 앞으로 getAirInfoByRegion을 할 떄 유저의 airStation 을 이용해서 ㄱㄱ
+
+
+    }
+
 
     public AirInfoResDto getAirInfoByRegion(AirInfoReqDto reqDto) throws IOException {
         // 1. URL을 만들기 위한 StringBuilder
@@ -284,39 +326,12 @@ public class AirInfoService {
         return jsonObject.getString("stationName");
     }
 
-    public String pickStationByAddress(String address) throws IOException {
+    public String pickDongNameByAddress(String address) throws IOException {
         urlBuilder = new StringBuilder("http://openapi.epost.go.kr/postal/retrieveNewAdressAreaCdService/retrieveNewAdressAreaCdService/getNewAddressListAreaCd"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + API_KEY); /*Service Key*/
-//        urlBuilder.append("&" + URLEncoder.encode("searchSe","UTF-8") + "=" + URLEncoder.encode("dong", "UTF-8")); /*dong : 동(읍/면)명road :도로명[default]post : 우편번호*/
         urlBuilder.append("&" + URLEncoder.encode("srchwrd","UTF-8") + "=" + URLEncoder.encode(address, "UTF-8")); /*검색어*/
         urlBuilder.append("&" + URLEncoder.encode("countPerPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지당 출력될 개수를 지정*/
         urlBuilder.append("&" + URLEncoder.encode("currentPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*출력될 페이지 번호*/
-
-//        URL url = new URL(urlBuilder.toString());
-//
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//        conn.setRequestMethod("GET");
-//        conn.setRequestProperty("Content-type", "application/json");
-
-//        System.out.println("Response code: " + conn.getResponseCode());
-
-//        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300)
-//            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//        else
-//            br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-
-//        sb = new StringBuilder();
-//        String line;
-//        while ((line = br.readLine()) != null) {
-//            sb.append(line);
-//        }
-//
-//        br.close();
-//        conn.disconnect();
-
-//        stringReader = new StringReader(sb.toString());
-//        log.info("stringReader : {}", stringReader);
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         Document document = null;
@@ -336,8 +351,9 @@ public class AirInfoService {
         }
 
         NodeList nodeList = document.getElementsByTagName("newAddressListAreaCd");
-        log.info("파싱할 리스트 수 : {}", nodeList.getLength());
+        log.info("파싱할 리스트 수 : {}", nodeList.getLength()); // 나는 countPerPage를 1로 해서 1이 나와야함
 
+        String dong = null; // 결과 저장할 '동'변수
         for(int i=0; i<nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
 
@@ -345,14 +361,15 @@ public class AirInfoService {
             log.info("도로명주소 : {}", getTagValue("lnmAdres", element));
             log.info("지번주소 : {}", getTagValue("rnAdres", element));
 
-            pickDong(getTagValue("lnmAdres", element));
+            dong = saveDong(getTagValue("lnmAdres", element));
         }
 
-
-
-        return null;
+        return dong;
     }
 
+    /**
+     * xml에서 원하는 태그의 value를 뽑아냅니다.
+     */
     private static String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
 
@@ -363,7 +380,10 @@ public class AirInfoService {
         return nodeValue.getNodeValue();
     }
 
-    private static String pickDong(String lnmAdres) {
+    /**
+     * 도로명 주소에서 '('이하의 ~동을 뽑아옵니다.
+     */
+    private static String saveDong(String lnmAdres) {
         StringBuilder dong = new StringBuilder();
 
         String[] list = lnmAdres.split(" ");
