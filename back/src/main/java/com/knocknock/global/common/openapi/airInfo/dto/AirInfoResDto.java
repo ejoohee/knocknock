@@ -55,7 +55,8 @@ public class AirInfoResDto {
                 .아황산가스농도(Optional.ofNullable(object.getString("so2Value")).orElse(null))
                 .이산화질소농도(Optional.ofNullable(object.getString("no2Value")).orElse(null))
                 .통합대기환경수치(Optional.ofNullable(object.getString("khaiValue")).orElse(null))
-                .통합대기환경지수(Optional.ofNullable(object.get("khaiGrade")).map(Object::toString).orElse(null))
+//                .통합대기환경지수(Optional.ofNullable(object.get("khaiGrade")).map(Object::toString).orElse(null))
+                .통합대기환경지수(object.get("khaiGrade") == null ? null : object.getString("khaiGrade"))
                 .build();
     }
 
