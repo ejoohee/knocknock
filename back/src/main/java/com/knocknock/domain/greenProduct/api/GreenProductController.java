@@ -21,7 +21,7 @@ public class GreenProductController {
 
     @Operation(
             summary = "녹색 인증 제품 확인",
-            description = "모델명이나 회사명으로 녹생 인증 제품인지 확인합니다."
+            description = "모델명이나 회사명으로 녹색 인증 제품인지 확인합니다."
     )
     @GetMapping("/search")
     public ResponseEntity<List<GreenProductDataResDto>> searchProducts(@RequestParam String keyword) {
@@ -34,7 +34,7 @@ public class GreenProductController {
             summary = "녹색 인증 제품 저장 및 업데이트용",
             description = "녹색 인증 제품 저장 및 업데이트합니다."
     )
-    @GetMapping("")
+    @GetMapping("/save")
     public ResponseEntity<Void> fetchAndStoreGreenProducts() {
         try {
             greenProductService.fetchAndStoreProductData();

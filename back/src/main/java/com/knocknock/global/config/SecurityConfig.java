@@ -50,6 +50,9 @@ public class SecurityConfig  {
         // email
             "/api/email/**",
 
+        // greenproduct
+        "/api/greenproduct/save",
+
         // model
             
         // airInfo
