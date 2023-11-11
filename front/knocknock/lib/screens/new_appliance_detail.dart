@@ -10,6 +10,7 @@ import 'package:knocknock/services/model_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 class NewApplianceDetail extends StatefulWidget {
   const NewApplianceDetail({super.key});
@@ -91,10 +92,13 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(title: '상세조회', page: NewApplianceCategoryEach()),
+      appBar: const AppBarBack(
+        title: '상세조회',
+        page: NewApplianceCategoryEach(),
+      ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 30),
+          padding: const EdgeInsets.symmetric(vertical: 0),
           child: FutureBuilder<NewModelDetail>(
               future: modelDetail,
               builder: (context, snapshot) {
@@ -128,22 +132,99 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                 final model = snapshot.data;
                 return Column(
                   children: [
-                    Stack(
-                      children: [
-                        const Center(
-                          child: Text(
-                            "상세조회",
-                            style: TextStyle(
-                              fontSize: 25, // 아이콘은 약 1.5배하자
-                              fontWeight: FontWeight.w700,
-                            ),
+                    InnerShadow(
+                      shadows: [
+                        Shadow(
+                            color: Colors.black.withOpacity(0.4),
+                            blurRadius: 8,
+                            offset: const Offset(0, 0))
+                      ],
+                      child: Stack(
+                        alignment: Alignment.topRight,
+                        children: [
+                          TweenAnimationBuilder(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            curve: Curves.bounceInOut,
+                            duration: const Duration(milliseconds: 1800),
+                            builder: (context, value, child) {
+                              return Container(
+                                margin: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                height: 210,
+                                width: MediaQuery.of(context).size.width * 0.83,
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(10)),
+                                  color: colors[model!.modelGrade! - 1]
+                                      .withOpacity(value),
+                                ),
+                                child: FutureBuilder<String>(
+                                    future: loadImage(model.modelImg!),
+                                    builder: (context, snapshot) {
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.waiting) {
+                                        return Container();
+                                      }
+
+                                      return Stack(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(
+                                                30, 15, 30, 25),
+                                            child: Image.asset(
+                                              'assets/images/grade${model.modelGrade}.png',
+                                            ),
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.end,
+                                            children: [
+                                              model.modelImg == null
+                                                  ? Padding(
+                                                      padding:
+                                                          const EdgeInsets.all(
+                                                              20.0),
+                                                      child: Image.asset(
+                                                        'assets/images/not_found.png',
+                                                        width: _imageSize,
+                                                      ),
+                                                    )
+                                                  : Padding(
+                                                      padding:
+                                                          model.category == 'TV'
+                                                              ? const EdgeInsets
+                                                                  .fromLTRB(
+                                                                  0, 50, 20, 50)
+                                                              : const EdgeInsets
+                                                                  .symmetric(
+                                                                  vertical: 38,
+                                                                ),
+                                                      child: Image.network(
+                                                        '${model.modelImg}',
+                                                        errorBuilder: (context,
+                                                            error, stackTrace) {
+                                                          print(
+                                                              'Error loading image: $error');
+                                                          return Image.asset(
+                                                              'assets/images/not_found.png');
+                                                        },
+                                                      ),
+                                                    ),
+                                            ],
+                                          ),
+                                        ],
+                                      );
+                                    }),
+                              );
+                            },
                           ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconButton(
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 3,
+                              vertical: 12,
+                            ),
+                            child: IconButton(
                                 onPressed: () async {
                                   // 찜
                                   if (!model.isLiked!) {
@@ -163,88 +244,16 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                 icon: !model!.isLiked!
                                     ? const Icon(
                                         Icons.favorite_border_rounded,
-                                        size: 36,
-                                        color: Colors.red,
+                                        size: 30,
+                                        color: Colors.white,
                                       )
-                                    : const Icon(
+                                    : Icon(
                                         Icons.favorite_rounded,
-                                        size: 36,
-                                        color: Colors.red,
+                                        size: 30,
+                                        color: Colors.red[100],
                                       )),
-                            const SizedBox(
-                              width: 40,
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                    InnerShadow(
-                      shadows: [
-                        Shadow(
-                            color: Colors.black.withOpacity(0.4),
-                            blurRadius: 8,
-                            offset: const Offset(0, 0))
-                      ],
-                      child: TweenAnimationBuilder(
-                        tween: Tween(begin: 0.0, end: 1.0),
-                        curve: Curves.bounceInOut,
-                        duration: const Duration(milliseconds: 1800),
-                        builder: (context, value, child) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                            ),
-                            margin: const EdgeInsets.symmetric(
-                              vertical: 10,
-                            ),
-                            height: 210,
-                            width: MediaQuery.of(context).size.width * 0.83,
-                            decoration: BoxDecoration(
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(10)),
-                              color: colors[model.modelGrade! - 1]
-                                  .withOpacity(value),
-                            ),
-                            child: FutureBuilder<String>(
-                                future: loadImage(model.modelImg!),
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Container();
-                                  }
-
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: model.modelImg == null
-                                            ? Image.asset(
-                                                'assets/images/not_found.png',
-                                                width: _imageSize,
-                                              )
-                                            : Image.network(
-                                                '${model.modelImg}',
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  print(
-                                                      'Error loading image: $error');
-                                                  return Image.asset(
-                                                      'assets/images/not_found.png');
-                                                },
-                                              ),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Image.asset(
-                                          'assets/images/grade${model.modelGrade}.png',
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }),
-                          );
-                        },
+                          ),
+                        ],
                       ),
                     ),
                     Expanded(
@@ -436,7 +445,9 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                     ),
                     KnockButton(
                       onPressed: () {
-                        // 버튼 클릭 시 실행할 동작
+                        print(model.modelURL);
+                        // final Uri url = Uri.parse(model.modelURL!);
+                        // await launchUrl(url);
                       },
                       bColor: Theme.of(context).colorScheme.secondaryContainer,
                       fColor:
@@ -445,7 +456,10 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                       height:
                           MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
                       label: "구매하러 가기 🔗", // 버튼에 표시할 텍스트
-                    )
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
                   ],
                 );
               }),
