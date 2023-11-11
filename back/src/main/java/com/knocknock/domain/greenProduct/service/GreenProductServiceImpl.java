@@ -28,7 +28,7 @@ public class GreenProductServiceImpl implements GreenProductService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
 
-    @Scheduled(cron = "0  0 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
     public void scheduledFetchAndStoreProductData() {
         fetchAndStoreProductData();
     }
