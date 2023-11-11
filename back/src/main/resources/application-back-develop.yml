@@ -12,6 +12,12 @@ spring:
       token-uri: https://oauth2.googleapis.com/token
       resource-uri: https://www.googleapis.com/oauth2/v2/userinfo
 
+  api:
+    base:
+      url: https://www.greenproduct.go.kr/open-api/open-api/rest/GreenProductInformationInquiryService2.do
+    cert:
+      key: b7c7f3a73086bec7f2f39445f24e478cfbc8068389d38f66a1848c5c062f128f
+
   jpa:
     properties:
       hibernate:
@@ -29,10 +35,10 @@ spring:
       enabled: true
 
   datasource:
-#    url: -------------------------------develop 용
-#    hikari:
-#      jdbc-url: jdbc:h2:tcp://localhost/~/knocknock
-    url: jdbc:h2:mem:testdb
+    #    url: -------------------------------develop 용
+    hikari:
+      jdbc-url: jdbc:h2:tcp://localhost/~/knocknock
+    #    url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -43,7 +49,7 @@ spring:
       type.descriptor.sql: trace # sql의 데이터까지 다 보이게
 
   redis:
-#    host: redis ----------------------------- 요건 develop용 
+    #    host: redis ----------------------------- 요건 develop용
     host: localhost
     port: 6379
 
@@ -62,7 +68,6 @@ spring:
 
   jackson:
     time-zone: Asia/Seoul
-
 
 server:
   error:

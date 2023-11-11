@@ -16,6 +16,12 @@ spring:
       token-uri: https://oauth2.googleapis.com/token
       resource-uri: https://www.googleapis.com/oauth2/v2/userinfo
 
+  api:
+    base:
+      url: https://www.greenproduct.go.kr/open-api/open-api/rest/GreenProductInformationInquiryService2.do
+    cert:
+      key: b7c7f3a73086bec7f2f39445f24e478cfbc8068389d38f66a1848c5c062f128f
+
   jpa:
     properties:
       hibernate:
