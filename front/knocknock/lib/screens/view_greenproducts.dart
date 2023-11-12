@@ -96,26 +96,95 @@ class _ViewGreenProductsState extends State<ViewGreenProducts> {
               itemCount: searchResult.length,
               itemBuilder: (BuildContext context, int index) {
                 var product = searchResult[index];
-                return Column(
-                  children: [
-                    ListTile(
-                      leading: Image.asset("assets/images/green.png"),
-                      title: Text("제품명: ${product['prodMdel']}" ?? '모델 정보 없음'),
-                      subtitle:
-                          Text("업체명: ${product['prodVcnm']}" ?? '제조사 정보 없음'),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          onTrailingTap(product);
-                        },
-                        child: const Icon(
-                          Icons.more_horiz,
+                return ExpansionTile(
+                  leading: Image.asset("assets/images/green.png"),
+                  title: Text("제품명: ${product['prodMdel']}" ?? '모델 정보 없음'),
+                  subtitle: Text("업체명: ${product['prodVcnm']}" ?? '제조사 정보 없음'),
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 5, horizontal: 30),
+                      child: Text(
+                        '「환경기술 및 환경산업 지원법」 제 17조 제 1항에 따라 같은 용도의 다른 제품에 비해 제품의 환경성을 개선한 제품',
+                        textAlign: TextAlign.justify,
+                        style: TextStyle(
+                          color: Colors.green[900],
                         ),
                       ),
                     ),
-                    const Divider(
-                      indent: 20,
-                      endIndent: 20,
-                    )
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ListTile(
+                          leading: const Text('ㆍ모델명',
+                              style: TextStyle(
+                                fontSize: 13,
+                              )),
+                          title: Text(
+                            '${product['prodMdel']}',
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ListTile(
+                          leading: const Text(
+                            'ㆍ업체명',
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                          title: Text(
+                            '${product['prodVcnm']}',
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ListTile(
+                          leading: const Text(
+                            'ㆍ인증 발급',
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                          title: Text(
+                            '${product['prodRsdt']}',
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ListTile(
+                          leading: const Text(
+                            'ㆍ인증 만료',
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                          title: Text(
+                            '${product['prodRedt']}',
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          )),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: ListTile(
+                          leading: const Text(
+                            'ㆍ인증 사유',
+                            style: TextStyle(
+                              fontSize: 13,
+                            ),
+                          ),
+                          title: Text(
+                            '${product['prodInrs']}',
+                            textAlign: TextAlign.end,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          )),
+                    ),
                   ],
                 );
               },
