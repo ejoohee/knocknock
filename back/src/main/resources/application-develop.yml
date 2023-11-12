@@ -102,3 +102,7 @@ springfox:
   documentation:
     swagger:
       use-model-v3: false
+api:
+  waste:
+    secret-key: L9671BZMB8IUF5EKCMCPWQ4PU8XHWJ1HSYPLJRH6TWCG4
+    url: https://www.recycling-info.or.kr/sds/JsonApi.do?PID=REA06&YEAR=2021&USRID=qocksdlf123&KEY=%s
