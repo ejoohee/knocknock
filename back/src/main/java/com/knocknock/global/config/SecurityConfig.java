@@ -50,11 +50,15 @@ public class SecurityConfig  {
         // email
             "/api/email/**",
 
+        // greenproduct
+        "/api/greenproduct/save",
+
         // model
             
         // airInfo
-//            "/api/air-info/**" // 임시
-
+            "/api/air-info/**", // 임시
+        // waste
+            "/api/waste/**",
 
     };
 

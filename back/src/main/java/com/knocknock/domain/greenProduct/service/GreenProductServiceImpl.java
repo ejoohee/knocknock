@@ -34,7 +34,7 @@ public class GreenProductServiceImpl implements GreenProductService {
     private final RestTemplate restTemplate = new RestTemplate();
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
 
-    @Scheduled(cron = "0 0 15 * * *") // 매일 자정에 실행
+    @Scheduled(cron = "0 0 1 * * *") // 매일 오전 1시에 실행
     public void scheduledFetchAndStoreProductData() {
         fetchAndStoreProductData();
     }
@@ -42,7 +42,7 @@ public class GreenProductServiceImpl implements GreenProductService {
     @Override
     @Transactional(readOnly = true)
     public void fetchAndStoreProductData() {
-        int i = 379000; // 초기 인덱스 설정
+        int i = 370000; // 초기 인덱스 설정
         while (true) {
             String prodIxid = "KR" + i;
             Map<String, String> uriVariables = new HashMap<>();
