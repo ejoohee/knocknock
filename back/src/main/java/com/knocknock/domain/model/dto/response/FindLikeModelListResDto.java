@@ -14,6 +14,8 @@ public class FindLikeModelListResDto {
 
     private Long modelId;
 
+    private String category;
+
     private String modelName;
 
     private String modelBrand;
