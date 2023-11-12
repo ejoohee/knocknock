@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -539,17 +542,42 @@ public enum StationType {
     private String regionDetail;
     private String address;
 
-//    public static StationName findStationName(String stationName) {
-//        for(StationName stationNameType : StationName.values()) {
-//            if(stationNameType.getRegionDetail().contains(stationName))
-//                return stationNameType;
-//        }
-//
-//        return null;
-//    }
+    StationType(String region, String regionDetail) {
+        this.region = region;
+        this.regionDetail = regionDetail;
+    }
 
-//    public static StationName findStationName(String address) {
-//
-//    }
+    StationType(String regionDetail) {
+        this.regionDetail = regionDetail;
+    }
+
+
+    /**
+     * 해당 지역의 측정소 목록을 반환한다.
+     */
+    public static List<StationType> getStationListByRegion(String region) {
+        List<StationType> stationList = new ArrayList<>();
+
+        for(StationType station : StationType.values()) {
+            if(station.region.contains(region)) {
+                stationList.add(station);
+            }
+        }
+
+        return stationList;
+    }
+
+    /**
+     * 해당 지역의 측정소 목록중에 세부 주소가 같은 측정소 한개를 반환한다.
+     */
+    public static StationType getStation(List<StationType> stationList, String regionDetail) {
+        for(StationType station : stationList) {
+            if(station.regionDetail.contains(regionDetail)) {
+                return station;
+            }
+        }
+
+        return null;
+    }
 
 }

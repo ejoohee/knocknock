@@ -51,13 +51,14 @@ public class SecurityConfig  {
             "/api/email/**",
 
         // greenproduct
-        "/api/greenproduct/save",
+            "/api/greenproduct/save",
 
         // model
             
         // airInfo
-            "/api/air-info/**", // 임시
-        // waste
+//            "/api/air-info/**", // 임시
+
+            // waste
             "/api/waste/**",
 
     };

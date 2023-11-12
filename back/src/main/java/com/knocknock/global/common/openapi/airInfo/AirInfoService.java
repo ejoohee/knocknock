@@ -1,13 +1,18 @@
 package com.knocknock.global.common.openapi.airInfo;
 
 import com.knocknock.domain.user.dao.UserRepository;
-import com.knocknock.global.common.openapi.airInfo.dto.AirInfoReqDto;
+import com.knocknock.domain.user.domain.Users;
+import com.knocknock.domain.user.exception.UserExceptionMessage;
+import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.global.common.openapi.airInfo.dto.AirInfoResDto;
+import com.knocknock.global.common.openapi.airInfo.dto.AirStationDto;
 import com.knocknock.global.common.openapi.airInfo.dto.TmPointDto;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -19,13 +24,9 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
-import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,6 +34,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -51,7 +53,128 @@ public class AirInfoService {
     private final String API_KEY = "XymYPoqUHNl0U%2Fuo0Tbs6LJ5VZQfWjXVfWjMBAfEnBFI8fSenYRRca0X%2B%2FRrmACkJYcS4WlJvNyf1NA4adMJvA%3D%3D";
     private final String GET_STATION_URL = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc";
 
-    public AirInfoResDto getAirInfoByRegion(AirInfoReqDto reqDto) throws IOException {
+    /**
+     * 대기오염 측정소 직접 목록에서 선택하기
+     */
+    @Transactional
+    public AirStationDto selectAirStation(String token, StationType stationType) {
+        String email = jwtUtil.getLoginEmail(token);
+        log.info("[대기오염 측정소 직접 선택하기] email : {}", email);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[대기오염 측정소 직접 선택하기] 로그인 후 이용 가능");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        loginUser.updateAirStation(stationType.getRegionDetail());
+        userRepository.save(loginUser);
+
+        log.info("[대기오염 측정소 직접 선택하기] 완료");
+
+        return AirStationDto.builder()
+                .email(email)
+                .dong(loginUser.getAddress())
+                .airStation(stationType.getRegionDetail())
+                .build();
+    }
+
+    /**
+     * 프론트에서 findStationListByRegion -> findStationByRegionDetail -> selectAirStation 순으로 처리
+     */
+    public List<StationType> findStationListByRegion(String region) {
+        return StationType.getStationListByRegion(region);
+    }
+
+    /**
+     * 프론트에서 findStationListByRegion -> findStationByRegionDetail -> selectAirStation 순으로 처리
+     */
+    public StationType findStationByRegionDetail(List<StationType> stationList, String regionDetail) {
+        return StationType.getStation(stationList, regionDetail);
+    }
+
+    /**
+     * 회원가입, 또는 주소 변경시 사용자의 주소정보를 이용하여 측정소를 찾아 저장합니다.
+     */
+    @Transactional // 유저업데이트라서 붙였는데 맞낭
+    public AirStationDto saveAirStation(String email) throws IOException {
+        log.info("[대기오염 측정소 찾아서 저장하기] 로직에 들어왔습니다.");
+
+        // 1. 토큰에서 주소를 뽑아온다.
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[AIR_INFO] 로그인 후 사용 가능.");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        String[] addressList = loginUser.getAddress().split(" ");
+        String address = null;
+
+        char tmp = addressList[addressList.length -1].charAt(0);
+        if(tmp >= '0' && tmp <= '9') {
+            log.info("주소에 숫자가 있어서 누적 저장했어요");
+            address = addressList[addressList.length - 2] + addressList[addressList.length - 1];
+        } else {
+            log.info("주소에 숫자가 없어서 하나만 저장했어요");
+            address = addressList[addressList.length - 1];
+        }
+
+        log.info("[AIR_INFO] 로그인 사용자의 주소 뽑아오기 성공!, {}", address);
+
+        // 2. 유저의 주소를 pickStationByAddress에 넣어서 읍면동을 뽑아온다.
+        String dong = pickDongNameByAddress(address);
+        log.info("[AIR_INFO] 로그인 사용자의 읍면동 주소 뽑아오기 성공! {}", dong);
+
+        // 여기서 null이 뽑혔으면 선택하게 해야함...
+        if(dong == null) {
+            // 도로명 띄어쓰기 되있을슈있어..
+            dong = address;
+        }
+
+        // 3. tm-point 뽑아낸다.
+        TmPointDto pointDto = getTmPoint(dong);
+        log.info("[AIR_INFO] tm-point 뽑아오기 성공! {}", pointDto.getTmX());
+
+        // 4. tm-point를 이용해서 측정소를 뽑아낸다.
+        String stationName = getStationName(pointDto);
+        log.info("[AIR_INFO] 측정소 뽑아오기 성공 ! {}", stationName);
+
+        // 5. 측정소를 해당 유저의 airStation에 저장해준다.
+        loginUser.updateAirStation(stationName);
+        userRepository.save(loginUser);
+
+        log.info("[대기오염 측정소 찾아서 저장하기] 해당 유저에게 저장완료. 유저 : {}, 측정소 : {}", loginUser.getEmail(), stationName);
+
+        return AirStationDto.builder()
+                .email(loginUser.getEmail())
+                .dong(dong)
+                .airStation(stationName)
+                .build();
+
+        // 6. 앞으로 getAirInfoByRegion을 할 떄 유저의 airStation 을 이용해서 ㄱㄱ
+    }
+
+
+    public AirInfoResDto getAirInfoByRegion(String token) throws IOException {
+
+        // 로그인 사용자의 측정소 뽑아오기
+        String email = jwtUtil.getLoginEmail(token);
+        log.info("[대기정보 조회] email : {}", email);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[대기정보 조회] 로그인 후 사용 가능");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        String stationName = loginUser.getAirStation();
+        log.info("[대기정보 조회] {} 측정소 대기 정보 조회", stationName);
+
+        if(stationName == null) {
+            log.error("[대기정보 조회] 측정소가 등록되어 있지 않습니다. 측정소 등록을 시작합니다..");
+            stationName = saveAirStation(email).getAirStation();
+        }
+
         // 1. URL을 만들기 위한 StringBuilder
         urlBuilder = new StringBuilder("http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"); /*URL*/
 
@@ -60,7 +183,7 @@ public class AirInfoService {
         urlBuilder.append("&" + URLEncoder.encode("returnType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*xml 또는 json*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*한 페이지 결과 수*/ // 가장 실시간 정보만 받아오도록 1설정
         urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("stationName", "UTF-8") + "=" + URLEncoder.encode(reqDto.getStationName(), "UTF-8")); /*측정소 이름*/
+        urlBuilder.append("&" + URLEncoder.encode("stationName", "UTF-8") + "=" + URLEncoder.encode(stationName, "UTF-8")); /*측정소 이름*/
         urlBuilder.append("&" + URLEncoder.encode("dataTerm", "UTF-8") + "=" + URLEncoder.encode("DAILY", "UTF-8")); /*요청 데이터기간(1일: DAILY, 1개월: MONTH, 3개월: 3MONTH)*/
         urlBuilder.append("&" + URLEncoder.encode("ver", "UTF-8") + "=" + URLEncoder.encode("1.3", "UTF-8")); /*버전별 상세 결과 참고*/
 
@@ -108,7 +231,7 @@ public class AirInfoService {
                 try {
                     Thread.sleep(1000);
 
-                    getAirInfoByRegion(reqDto);
+                    getAirInfoByRegion(token);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -132,7 +255,6 @@ public class AirInfoService {
         // 9. 전달받은 데이터 확인!
 
     }
-
 
     public TmPointDto getTmPoint(String address) throws IOException {
         // 1. URL 문자열 생성
@@ -161,7 +283,6 @@ public class AirInfoService {
         else
             br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
 
-
         // 6. 저장된 데이터를 한줄씩 읽어 StringBuilder 객체로 저장
         sb = new StringBuilder();
         String line;
@@ -174,10 +295,6 @@ public class AirInfoService {
         conn.disconnect();
 
         // 8. 전달받은 데이터 확인
-//        System.out.println(sb.toString());
-        // JSON 파싱
-        // try - catch로 변경
-
         stringReader = new StringReader(sb.toString());
 //        jsonObject = null;
 
@@ -186,11 +303,6 @@ public class AirInfoService {
             try {
                 jsonReader = Json.createReader(stringReader);
                 jsonObject = jsonReader.readObject();
-
-//                response = (JSONObject) jsonObject.get("response");
-//                body = (JSONObject) response.get("body");
-//                items = (JSONArray) body.get("items");
-//                item = (JSONObject) items.get(0);
 
                 success = false;
             } catch (JsonParsingException e) {
@@ -275,8 +387,11 @@ public class AirInfoService {
 
         jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
         JsonArray items = jsonObject.getJsonArray("items");
+
+        log.info("items : {}", items);
         jsonObject = items.getJsonObject(0);
 
+        log.info("[측정소 뽑아오기] 뽑힌 측정소 : {}", jsonObject.getString("stationName"));
 
         // 가져온 stationName을 유저의 airStation에 저장해준다
 
@@ -284,39 +399,12 @@ public class AirInfoService {
         return jsonObject.getString("stationName");
     }
 
-    public String pickStationByAddress(String address) throws IOException {
+    public String pickDongNameByAddress(String address) throws IOException {
         urlBuilder = new StringBuilder("http://openapi.epost.go.kr/postal/retrieveNewAdressAreaCdService/retrieveNewAdressAreaCdService/getNewAddressListAreaCd"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + API_KEY); /*Service Key*/
-//        urlBuilder.append("&" + URLEncoder.encode("searchSe","UTF-8") + "=" + URLEncoder.encode("dong", "UTF-8")); /*dong : 동(읍/면)명road :도로명[default]post : 우편번호*/
         urlBuilder.append("&" + URLEncoder.encode("srchwrd","UTF-8") + "=" + URLEncoder.encode(address, "UTF-8")); /*검색어*/
         urlBuilder.append("&" + URLEncoder.encode("countPerPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지당 출력될 개수를 지정*/
         urlBuilder.append("&" + URLEncoder.encode("currentPage","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*출력될 페이지 번호*/
-
-//        URL url = new URL(urlBuilder.toString());
-//
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//
-//        conn.setRequestMethod("GET");
-//        conn.setRequestProperty("Content-type", "application/json");
-
-//        System.out.println("Response code: " + conn.getResponseCode());
-
-//        if(conn.getResponseCode() >= 200 && conn.getResponseCode() <= 300)
-//            br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-//        else
-//            br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-
-//        sb = new StringBuilder();
-//        String line;
-//        while ((line = br.readLine()) != null) {
-//            sb.append(line);
-//        }
-//
-//        br.close();
-//        conn.disconnect();
-
-//        stringReader = new StringReader(sb.toString());
-//        log.info("stringReader : {}", stringReader);
 
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         Document document = null;
@@ -327,7 +415,7 @@ public class AirInfoService {
             document.getDocumentElement().normalize();
 
             // NewAddressListResponse 잘나왔음
-            log.info("ROOT ELEMENT : {}", document.getDocumentElement().getNodeName());
+//            log.info("ROOT ELEMENT : {}", document.getDocumentElement().getNodeName());
 
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
@@ -336,8 +424,9 @@ public class AirInfoService {
         }
 
         NodeList nodeList = document.getElementsByTagName("newAddressListAreaCd");
-        log.info("파싱할 리스트 수 : {}", nodeList.getLength());
+        log.info("파싱할 리스트 수 : {}", nodeList.getLength()); // 나는 countPerPage를 1로 해서 1이 나와야함
 
+        String dong = null; // 결과 저장할 '동'변수
         for(int i=0; i<nodeList.getLength(); i++) {
             Node node = nodeList.item(i);
 
@@ -345,14 +434,15 @@ public class AirInfoService {
             log.info("도로명주소 : {}", getTagValue("lnmAdres", element));
             log.info("지번주소 : {}", getTagValue("rnAdres", element));
 
-            pickDong(getTagValue("lnmAdres", element));
+            dong = saveDong(getTagValue("lnmAdres", element));
         }
 
-
-
-        return null;
+        return dong;
     }
 
+    /**
+     * xml에서 원하는 태그의 value를 뽑아냅니다.
+     */
     private static String getTagValue(String tag, Element element) {
         NodeList nodeList = element.getElementsByTagName(tag).item(0).getChildNodes();
 
@@ -363,7 +453,10 @@ public class AirInfoService {
         return nodeValue.getNodeValue();
     }
 
-    private static String pickDong(String lnmAdres) {
+    /**
+     * 도로명 주소에서 '('이하의 ~동을 뽑아옵니다.
+     */
+    private static String saveDong(String lnmAdres) {
         StringBuilder dong = new StringBuilder();
 
         String[] list = lnmAdres.split(" ");
