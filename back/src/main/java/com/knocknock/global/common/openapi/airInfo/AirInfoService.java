@@ -10,6 +10,7 @@ import com.knocknock.global.common.openapi.airInfo.dto.TmPointDto;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -92,21 +93,32 @@ public class AirInfoService {
         return StationType.getStation(stationList, regionDetail);
     }
 
+    /**
+     * 회원가입, 또는 주소 변경시 사용자의 주소정보를 이용하여 측정소를 찾아 저장합니다.
+     */
     @Transactional // 유저업데이트라서 붙였는데 맞낭
-    public AirStationDto saveAirStation(String token) throws IOException {
+    public AirStationDto saveAirStation(String email) throws IOException {
         log.info("[대기오염 측정소 찾아서 저장하기] 로직에 들어왔습니다.");
 
         // 1. 토큰에서 주소를 뽑아온다.
-        Long userId = jwtUtil.getUserNo();
-
-        Users loginUser = userRepository.findById(userId)
+        Users loginUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     log.error("[AIR_INFO] 로그인 후 사용 가능.");
                     return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
         String[] addressList = loginUser.getAddress().split(" ");
-        String address = addressList[addressList.length - 1];
+        String address = null;
+
+        char tmp = addressList[addressList.length -1].charAt(0);
+        if(tmp >= '0' && tmp <= '9') {
+            log.info("주소에 숫자가 있어서 누적 저장했어요");
+            address = addressList[addressList.length - 2] + addressList[addressList.length - 1];
+        } else {
+            log.info("주소에 숫자가 없어서 하나만 저장했어요");
+            address = addressList[addressList.length - 1];
+        }
+
         log.info("[AIR_INFO] 로그인 사용자의 주소 뽑아오기 성공!, {}", address);
 
         // 2. 유저의 주소를 pickStationByAddress에 넣어서 읍면동을 뽑아온다.
@@ -115,6 +127,7 @@ public class AirInfoService {
 
         // 여기서 null이 뽑혔으면 선택하게 해야함...
         if(dong == null) {
+            // 도로명 띄어쓰기 되있을슈있어..
             dong = address;
         }
 
@@ -131,7 +144,6 @@ public class AirInfoService {
         userRepository.save(loginUser);
 
         log.info("[대기오염 측정소 찾아서 저장하기] 해당 유저에게 저장완료. 유저 : {}, 측정소 : {}", loginUser.getEmail(), stationName);
-
 
         return AirStationDto.builder()
                 .email(loginUser.getEmail())
@@ -160,7 +172,7 @@ public class AirInfoService {
 
         if(stationName == null) {
             log.error("[대기정보 조회] 측정소가 등록되어 있지 않습니다. 측정소 등록을 시작합니다..");
-            stationName = saveAirStation(token).getAirStation();
+            stationName = saveAirStation(email).getAirStation();
         }
 
         // 1. URL을 만들기 위한 StringBuilder
@@ -244,7 +256,6 @@ public class AirInfoService {
 
     }
 
-
     public TmPointDto getTmPoint(String address) throws IOException {
         // 1. URL 문자열 생성
         urlBuilder = new StringBuilder(GET_STATION_URL + "/getTMStdrCrdnt"); /*URL*/
@@ -272,7 +283,6 @@ public class AirInfoService {
         else
             br = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
 
-
         // 6. 저장된 데이터를 한줄씩 읽어 StringBuilder 객체로 저장
         sb = new StringBuilder();
         String line;
@@ -285,10 +295,6 @@ public class AirInfoService {
         conn.disconnect();
 
         // 8. 전달받은 데이터 확인
-//        System.out.println(sb.toString());
-        // JSON 파싱
-        // try - catch로 변경
-
         stringReader = new StringReader(sb.toString());
 //        jsonObject = null;
 
@@ -297,11 +303,6 @@ public class AirInfoService {
             try {
                 jsonReader = Json.createReader(stringReader);
                 jsonObject = jsonReader.readObject();
-
-//                response = (JSONObject) jsonObject.get("response");
-//                body = (JSONObject) response.get("body");
-//                items = (JSONArray) body.get("items");
-//                item = (JSONObject) items.get(0);
 
                 success = false;
             } catch (JsonParsingException e) {
@@ -386,6 +387,8 @@ public class AirInfoService {
 
         jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
         JsonArray items = jsonObject.getJsonArray("items");
+
+        log.info("items : {}", items);
         jsonObject = items.getJsonObject(0);
 
         log.info("[측정소 뽑아오기] 뽑힌 측정소 : {}", jsonObject.getString("stationName"));

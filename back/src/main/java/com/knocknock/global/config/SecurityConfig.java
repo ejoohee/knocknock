@@ -53,7 +53,7 @@ public class SecurityConfig  {
         // model
             
         // airInfo
-            "/api/air-info/**" // 임시
+//            "/api/air-info/**" // 임시
 
 
     };

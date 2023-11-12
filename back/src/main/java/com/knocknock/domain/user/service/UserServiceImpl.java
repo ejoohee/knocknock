@@ -17,6 +17,7 @@ import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
 import com.knocknock.global.common.kepco.KepcoAPIWebClient;
+import com.knocknock.global.common.openapi.airInfo.AirInfoService;
 import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
 import com.knocknock.global.util.JwtUtil;
@@ -29,6 +30,7 @@ import org.springframework.stereotype.Service;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -49,20 +51,7 @@ public class UserServiceImpl implements UserService {
     private final LogoutAccessTokenRedisRepository logoutAccessTokenRepository;
     private final RedisTemplate<String, Object> redisTemplate;
 
-//    /**
-//     * 이메일 중복 체크
-//     * 회원가입 이전에 이메일을 중복 체크합니다. --> sendEmail에서 처리
-//     * 회원가입이 가능하면(중복X) true / 불가능(중복)하면 false
-//     */
-//    @Transactional(readOnly = true)
-//    @Override
-//    public Boolean checkEmail(String email) {
-//        if(userRepository.existsByEmail(email))
-//            return false; // 이미 존재하는 이메일이면 false를 반환
-//
-//        // 회원가입 가능하면 true를 반환
-//        return true;
-//    }
+    private final AirInfoService airInfoService; // 회원가입, 주소변경 시 대기정보 측정소 저장을 위해 가져왔어여
 
     /**
      * 회원가입 정보의 유효성을 확인합니다.
@@ -106,7 +95,6 @@ public class UserServiceImpl implements UserService {
             throw new UserException(UserExceptionMessage.SIGN_UP_NOT_VALID.getMessage());
         }
 
-//        log.info("[유저 회원가입] 이메일 인증 코드 발송 요청.");
         ValueOperations<String, Object> valueOperations = redisTemplate.opsForValue();
 
         // 이메일 인증 여부 확인
@@ -119,6 +107,15 @@ public class UserServiceImpl implements UserService {
         // 패스워드 암호화
         userReqDto.setPassword(passwordEncoder.encode(userReqDto.getPassword()));
         log.info("[유저 회원가입] 패스워드 암호화 완료.");
+
+        //------------------------------------231112 추가---------------------------------------------
+        // 사용자의 주소를 이용하여 대기정보 측정소 찾아서 저장하기
+        log.info("[유저 회원가입] 대기 측정소 정보 조회 시작");
+        try {
+            airInfoService.saveAirStation(email);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         Users user = userRepository.save(userReqDto.dtoToEntity());
         log.info("[유저 회원가입] 유저 생성 완료!!! 회원가입이 완료되었습니다!");
@@ -338,6 +335,14 @@ public class UserServiceImpl implements UserService {
 
         loginUser.updateUser(updateUserReqDto.getNickname(), updateUserReqDto.getAddress(), updateUserReqDto.getGiroCode());
         userRepository.save(loginUser);
+
+        // 사용자의 주소를 이용하여 대기정보 측정소 찾아서 다시 저장하기
+        log.info("[내 정보 수정] 대기 측정소 정보 조회 시작");
+        try {
+            airInfoService.saveAirStation(loginUser.getEmail());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         log.info("[내 정보 수정] 정보 수정 완료.");
 

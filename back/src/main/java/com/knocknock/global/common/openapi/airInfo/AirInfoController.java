@@ -20,14 +20,14 @@ public class AirInfoController {
     private final AirInfoService airInfoService;
 
 
-    @Operation(
-            summary = "로그인 사용자의 대기 측정소를 자동으로 찾아서 저장합니다.",
-            description = "회원가입시 또는 주소 정보가 업데이트 될 때마다 자동 실행합니다."
-    )
-    @PutMapping
-    public ResponseEntity<AirStationDto> saveAirStation(@RequestHeader(ACCESS_TOKEN) String token) throws IOException {
-        return ResponseEntity.ok(airInfoService.saveAirStation(token));
-    }
+//    @Operation(
+//            summary = "로그인 사용자의 대기 측정소를 자동으로 찾아서 저장합니다. --> 백에서 자동 실행",
+//            description = "회원가입시 또는 주소 정보가 업데이트 될 때마다 자동 실행합니다."
+//    )
+//    @PutMapping
+//    public ResponseEntity<AirStationDto> saveAirStation(String email) throws IOException {
+//        return ResponseEntity.ok(airInfoService.saveAirStation(email));
+//    }
 
     @Operation(
             summary = "로그인 사용자의 실시간 대기 정보를 조회합니다.",
@@ -38,32 +38,32 @@ public class AirInfoController {
         return ResponseEntity.ok(airInfoService.getAirInfoByRegion(token));
     }
 
-    @Operation(
-            summary = "시도 정보로 대기 측정소 목록을 불러옵니다.(테스트중)",
-            description = "시도 정보를 입력하여 해당 지역의 측정소 목록을 반환합니다."
-    )
-    @GetMapping("/selectList")
-    public ResponseEntity<List<StationType>> findStationListByRegion(String region) {
-        return ResponseEntity.ok(airInfoService.findStationListByRegion(region));
-    }
-
-    @Operation(
-            summary = "시군구 정보로 특정 측정소를 반환합니다.(테스트중)",
-            description = "시군구 정보를 입력하여 일치하는 측정소를 반환합니다."
-    )
-    @GetMapping("/selectOne")
-    public ResponseEntity<StationType> findStationByRegionDetail(List<StationType> stationList, String regionDetail) {
-        return ResponseEntity.ok(airInfoService.findStationByRegionDetail(stationList, regionDetail));
-    }
-
-    @Operation(
-            summary = "로그인 사용자가 대기 측정소를 직접 선택하여 저장합니다.(테스트중)",
-            description = "로그인 사용자가 측정소 목록중에 희망하는 측정소를 직접 선택할 수 있습니다."
-    )
-    @PutMapping("/selectOne")
-    public ResponseEntity<AirStationDto> selectAirStation(@RequestHeader(ACCESS_TOKEN) String token, StationType stationType) {
-        return ResponseEntity.ok(airInfoService.selectAirStation(token, stationType));
-    }
+//    @Operation(
+//            summary = "시도 정보로 대기 측정소 목록을 불러옵니다.(테스트중)",
+//            description = "시도 정보를 입력하여 해당 지역의 측정소 목록을 반환합니다."
+//    )
+//    @GetMapping("/selectList")
+//    public ResponseEntity<List<StationType>> findStationListByRegion(String region) {
+//        return ResponseEntity.ok(airInfoService.findStationListByRegion(region));
+//    }
+//
+//    @Operation(
+//            summary = "시군구 정보로 특정 측정소를 반환합니다.(테스트중)",
+//            description = "시군구 정보를 입력하여 일치하는 측정소를 반환합니다."
+//    )
+//    @GetMapping("/selectOne")
+//    public ResponseEntity<StationType> findStationByRegionDetail(List<StationType> stationList, String regionDetail) {
+//        return ResponseEntity.ok(airInfoService.findStationByRegionDetail(stationList, regionDetail));
+//    }
+//
+//    @Operation(
+//            summary = "로그인 사용자가 대기 측정소를 직접 선택하여 저장합니다.(테스트중)",
+//            description = "로그인 사용자가 측정소 목록중에 희망하는 측정소를 직접 선택할 수 있습니다."
+//    )
+//    @PutMapping("/selectOne")
+//    public ResponseEntity<AirStationDto> selectAirStation(@RequestHeader(ACCESS_TOKEN) String token, StationType stationType) {
+//        return ResponseEntity.ok(airInfoService.selectAirStation(token, stationType));
+//    }
 
 //    @GetMapping("/tm-point")
 //    public ResponseEntity<TmPointDto> getTmPoint(String address) throws IOException {
