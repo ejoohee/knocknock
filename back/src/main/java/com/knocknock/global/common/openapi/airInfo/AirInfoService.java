@@ -4,8 +4,8 @@ import com.knocknock.domain.user.dao.UserRepository;
 import com.knocknock.domain.user.domain.Users;
 import com.knocknock.domain.user.exception.UserExceptionMessage;
 import com.knocknock.domain.user.exception.UserNotFoundException;
-import com.knocknock.global.common.openapi.airInfo.dto.AirInfoReqDto;
 import com.knocknock.global.common.openapi.airInfo.dto.AirInfoResDto;
+import com.knocknock.global.common.openapi.airInfo.dto.AirStationDto;
 import com.knocknock.global.common.openapi.airInfo.dto.TmPointDto;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,9 @@ import javax.json.JsonArray;
 import javax.json.JsonObject;
 import javax.json.JsonReader;
 import javax.json.stream.JsonParsingException;
-import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -37,6 +33,7 @@ import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -55,8 +52,50 @@ public class AirInfoService {
     private final String API_KEY = "XymYPoqUHNl0U%2Fuo0Tbs6LJ5VZQfWjXVfWjMBAfEnBFI8fSenYRRca0X%2B%2FRrmACkJYcS4WlJvNyf1NA4adMJvA%3D%3D";
     private final String GET_STATION_URL = "http://apis.data.go.kr/B552584/MsrstnInfoInqireSvc";
 
+    /**
+     * 대기오염 측정소 직접 목록에서 선택하기
+     */
+    @Transactional
+    public AirStationDto selectAirStation(String token, StationType stationType) {
+        String email = jwtUtil.getLoginEmail(token);
+        log.info("[대기오염 측정소 직접 선택하기] email : {}", email);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[대기오염 측정소 직접 선택하기] 로그인 후 이용 가능");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        loginUser.updateAirStation(stationType.getRegionDetail());
+        userRepository.save(loginUser);
+
+        log.info("[대기오염 측정소 직접 선택하기] 완료");
+
+        return AirStationDto.builder()
+                .email(email)
+                .dong(loginUser.getAddress())
+                .airStation(stationType.getRegionDetail())
+                .build();
+    }
+
+    /**
+     * 프론트에서 findStationListByRegion -> findStationByRegionDetail -> selectAirStation 순으로 처리
+     */
+    public List<StationType> findStationListByRegion(String region) {
+        return StationType.getStationListByRegion(region);
+    }
+
+    /**
+     * 프론트에서 findStationListByRegion -> findStationByRegionDetail -> selectAirStation 순으로 처리
+     */
+    public StationType findStationByRegionDetail(List<StationType> stationList, String regionDetail) {
+        return StationType.getStation(stationList, regionDetail);
+    }
+
     @Transactional // 유저업데이트라서 붙였는데 맞낭
-    public void connectLogic(String token) throws IOException {
+    public AirStationDto saveAirStation(String token) throws IOException {
+        log.info("[대기오염 측정소 찾아서 저장하기] 로직에 들어왔습니다.");
+
         // 1. 토큰에서 주소를 뽑아온다.
         Long userId = jwtUtil.getUserNo();
 
@@ -66,7 +105,8 @@ public class AirInfoService {
                     return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
-        String address = loginUser.getAddress();
+        String[] addressList = loginUser.getAddress().split(" ");
+        String address = addressList[addressList.length - 1];
         log.info("[AIR_INFO] 로그인 사용자의 주소 뽑아오기 성공!, {}", address);
 
         // 2. 유저의 주소를 pickStationByAddress에 넣어서 읍면동을 뽑아온다.
@@ -74,6 +114,9 @@ public class AirInfoService {
         log.info("[AIR_INFO] 로그인 사용자의 읍면동 주소 뽑아오기 성공! {}", dong);
 
         // 여기서 null이 뽑혔으면 선택하게 해야함...
+        if(dong == null) {
+            dong = address;
+        }
 
         // 3. tm-point 뽑아낸다.
         TmPointDto pointDto = getTmPoint(dong);
@@ -87,13 +130,39 @@ public class AirInfoService {
         loginUser.updateAirStation(stationName);
         userRepository.save(loginUser);
 
+        log.info("[대기오염 측정소 찾아서 저장하기] 해당 유저에게 저장완료. 유저 : {}, 측정소 : {}", loginUser.getEmail(), stationName);
+
+
+        return AirStationDto.builder()
+                .email(loginUser.getEmail())
+                .dong(dong)
+                .airStation(stationName)
+                .build();
+
         // 6. 앞으로 getAirInfoByRegion을 할 떄 유저의 airStation 을 이용해서 ㄱㄱ
-
-
     }
 
 
-    public AirInfoResDto getAirInfoByRegion(AirInfoReqDto reqDto) throws IOException {
+    public AirInfoResDto getAirInfoByRegion(String token) throws IOException {
+
+        // 로그인 사용자의 측정소 뽑아오기
+        String email = jwtUtil.getLoginEmail(token);
+        log.info("[대기정보 조회] email : {}", email);
+
+        Users loginUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    log.error("[대기정보 조회] 로그인 후 사용 가능");
+                    return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
+                });
+
+        String stationName = loginUser.getAirStation();
+        log.info("[대기정보 조회] {} 측정소 대기 정보 조회", stationName);
+
+        if(stationName == null) {
+            log.error("[대기정보 조회] 측정소가 등록되어 있지 않습니다. 측정소 등록을 시작합니다..");
+            stationName = saveAirStation(token).getAirStation();
+        }
+
         // 1. URL을 만들기 위한 StringBuilder
         urlBuilder = new StringBuilder("http://apis.data.go.kr/B552584/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty"); /*URL*/
 
@@ -102,7 +171,7 @@ public class AirInfoService {
         urlBuilder.append("&" + URLEncoder.encode("returnType", "UTF-8") + "=" + URLEncoder.encode("JSON", "UTF-8")); /*xml 또는 json*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*한 페이지 결과 수*/ // 가장 실시간 정보만 받아오도록 1설정
         urlBuilder.append("&" + URLEncoder.encode("pageNo", "UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지번호*/
-        urlBuilder.append("&" + URLEncoder.encode("stationName", "UTF-8") + "=" + URLEncoder.encode(reqDto.getStationName(), "UTF-8")); /*측정소 이름*/
+        urlBuilder.append("&" + URLEncoder.encode("stationName", "UTF-8") + "=" + URLEncoder.encode(stationName, "UTF-8")); /*측정소 이름*/
         urlBuilder.append("&" + URLEncoder.encode("dataTerm", "UTF-8") + "=" + URLEncoder.encode("DAILY", "UTF-8")); /*요청 데이터기간(1일: DAILY, 1개월: MONTH, 3개월: 3MONTH)*/
         urlBuilder.append("&" + URLEncoder.encode("ver", "UTF-8") + "=" + URLEncoder.encode("1.3", "UTF-8")); /*버전별 상세 결과 참고*/
 
@@ -150,7 +219,7 @@ public class AirInfoService {
                 try {
                     Thread.sleep(1000);
 
-                    getAirInfoByRegion(reqDto);
+                    getAirInfoByRegion(token);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -319,6 +388,7 @@ public class AirInfoService {
         JsonArray items = jsonObject.getJsonArray("items");
         jsonObject = items.getJsonObject(0);
 
+        log.info("[측정소 뽑아오기] 뽑힌 측정소 : {}", jsonObject.getString("stationName"));
 
         // 가져온 stationName을 유저의 airStation에 저장해준다
 
@@ -342,7 +412,7 @@ public class AirInfoService {
             document.getDocumentElement().normalize();
 
             // NewAddressListResponse 잘나왔음
-            log.info("ROOT ELEMENT : {}", document.getDocumentElement().getNodeName());
+//            log.info("ROOT ELEMENT : {}", document.getDocumentElement().getNodeName());
 
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
