@@ -47,6 +47,7 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         return likeModelList.stream().map((likeModel) -> FindLikeModelListResDto.builder()
                         .likeModelId(likeModel.getId())
                         .modelId(likeModel.getModel().getId())
+                        .category(category)
                         .modelName(likeModel.getModel().getName())
                         .modelBrand(likeModel.getModel().getBrand())
                         .build()
