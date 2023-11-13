@@ -4,6 +4,7 @@ import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/average_electronic.dart';
 import 'package:knocknock/screens/log_in.dart';
 import 'package:knocknock/screens/my_info_modify.dart';
+import 'package:knocknock/screens/waste_info.dart';
 import 'package:knocknock/services/user_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
@@ -18,6 +19,12 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   UserService userService = UserService();
   TextEditingController passwordController = TextEditingController();
+
+  onWasteInfoTap() async {
+    if (!mounted) return;
+    Navigator.pushReplacement(
+        context, MaterialPageRoute(builder: (context) => const WasteInfo()));
+  }
 
   onCheckTap() async {
     String password = passwordController.text;
@@ -322,13 +329,16 @@ class _MyPageState extends State<MyPage> {
                   ),
                   child: Column(
                     children: [
-                      Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/recycle.png'),
-                            fit: BoxFit.contain,
+                      GestureDetector(
+                        onTap: onWasteInfoTap,
+                        child: Container(
+                          width: 150,
+                          height: 150,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/recycle.png'),
+                              fit: BoxFit.contain,
+                            ),
                           ),
                         ),
                       ),
