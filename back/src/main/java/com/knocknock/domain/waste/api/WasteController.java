@@ -18,6 +18,11 @@ public class WasteController {
 
     @PostMapping("")
     public ResponseEntity<List<WasteResDto>> searchByAddress(@RequestBody WasteReqDto wasteReqDto){
-        return ResponseEntity.ok(wasteService.SearchByAddress(wasteReqDto));
+        return ResponseEntity.ok(wasteService.searchByAddress(wasteReqDto));
+    }
+
+    @PostMapping("/save")
+    public void saveWasteEntity(){
+        wasteService.saveWasteEntity();
     }
 }
