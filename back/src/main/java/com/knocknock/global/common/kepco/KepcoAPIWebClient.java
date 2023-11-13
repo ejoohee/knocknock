@@ -47,20 +47,28 @@ public class KepcoAPIWebClient {
                         .build())
                 .retrieve().bodyToMono(String.class);
         log.info("response ----> {}", response.block());
-        // json 파싱
-        StringReader stringReader = new StringReader(response.block());
-        JsonReader jsonReader = Json.createReader(stringReader);
-        JsonObject jsonObject = jsonReader.readObject();
-        JsonArray jsonArray = jsonObject.getJsonArray("data");
-        jsonObject = jsonArray.getJsonObject(0);
-        // 필요한 정보 가져오기
-        return FindPowerUsageHouseAvgResDto.builder()
-                .year(year)
-                .month(month)
-                .powerUsage(Float.valueOf(String.valueOf(jsonObject.getJsonNumber("powerUsage"))))
-                .bill(jsonObject.getInt("bill"))
-                .build();
-
+        try {
+            // json 파싱
+            StringReader stringReader = new StringReader(response.block());
+            JsonReader jsonReader = Json.createReader(stringReader);
+            JsonObject jsonObject = jsonReader.readObject();
+            JsonArray jsonArray = jsonObject.getJsonArray("data");
+            jsonObject = jsonArray.getJsonObject(0);
+            // 필요한 정보 가져오기
+            return FindPowerUsageHouseAvgResDto.builder()
+                    .year(year)
+                    .month(month)
+                    .powerUsage(Float.valueOf(String.valueOf(jsonObject.getJsonNumber("powerUsage"))))
+                    .bill(jsonObject.getInt("bill"))
+                    .build();
+        }catch (Exception e) {
+            return FindPowerUsageHouseAvgResDto.builder()
+                    .year(year)
+                    .month(month)
+                    .powerUsage(null)
+                    .bill(null)
+                    .build();
+        }
     }
 
 }
