@@ -16,7 +16,7 @@ public interface MyModelRepository extends JpaRepository<MyModel, Long>, MyModel
     @Query(value = "DELETE FROM MyModel mm WHERE mm.user.userId = :userId AND mm.model.id = :modelId")
     void deleteByUserAndModel(long userId, long modelId);
 
-    @Query(value = "SELECT mm FROM MyModel mm JOIN FETCH Model WHERE mm.user.userId = :userId AND mm.model.name = :modelName")
+    @Query(value = "SELECT mm FROM MyModel mm JOIN FETCH mm.model WHERE mm.user.userId = :userId AND mm.model.name = :modelName")
     Optional<MyModel> findByUserAndModel(long userId, String modelName);
 
     // 내가 등록한 가전제품 목록 조회

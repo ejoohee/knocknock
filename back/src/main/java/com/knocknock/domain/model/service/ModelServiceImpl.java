@@ -109,7 +109,9 @@ public class ModelServiceImpl implements ModelService {
     @Transactional(readOnly = true)
     public CheckModelResDto checkModelByModelName(String modelName) {
         // 현재 로그인한 회원의 user 기본키 가져오기
-        Long userId = jwtUtil.getUserNo();
+//        Long userId = jwtUtil.getUserNo();
+        Long userId = 4L;
+
         // 내 가전제품에 이미 등록되었는지 검사
         if(myModelRepository.findByUserAndModel(userId, modelName).isPresent()){
             log.error("[가전제품 모델명으로 조회] 내 가전제품에 이미 등록된 가전제품입니다.");
