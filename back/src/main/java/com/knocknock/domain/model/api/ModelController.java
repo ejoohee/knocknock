@@ -104,9 +104,9 @@ public class ModelController {
             summary = "등록한 내 가전제품 삭제하기",
             description = "등록한 내 가전제품을 삭제합니다."
     )
-    @DeleteMapping("/my/{modelId}")
-    public ResponseEntity<MessageDto> deleteMyModel(@PathVariable long modelId) {
-        myModelService.deleteMyModel(modelId);
+    @DeleteMapping("/my/{myModelId}")
+    public ResponseEntity<MessageDto> deleteMyModel(@PathVariable long myModelId) {
+        myModelService.deleteMyModel(myModelId);
         return ResponseEntity.ok(MessageDto.message("내 가전제품 삭제 완료"));
     }
 

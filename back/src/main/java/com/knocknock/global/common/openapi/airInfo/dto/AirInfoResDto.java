@@ -4,24 +4,13 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 import java.util.Optional;
 
 @Data
 @Builder
 public class AirInfoResDto {
 
-//    private String dataTime;
-//    private String pm10Value; // 미세먼지 농도
-//    private String pm25Value; // 초미세먼지 농도
-//    private String o3Value; // 오존 농도
-//    private String coValue; // 일산화탄소 농도
-//    private String so2Value; // 아황산가스 농도
-//    private String no2Value; // 이산화질소 농도
-//    private String khaiValue; // 통합대기환경수치
-//    private String khaiGrade; // 통합대기환경지수
-
-//    private String 측정상태; // 측정자료 상태정보(점검및교정, 장비점검, 자료이상, 통신장애)
+    private String 측정상태; // 측정자료 상태정보(점검및교정, 장비점검, 자료이상, 통신장애)
     private String 시간;
     private String 미세먼지농도;
     private String 초미세먼지농도;
@@ -33,15 +22,14 @@ public class AirInfoResDto {
     private String 통합대기환경지수;
 
     public static AirInfoResDto jsonToDto(JsonObject object) {
-//        JsonValue pm25Flag = object.get("pm25Flag");
-//        System.out.println("jsonValue : " + pm25Flag);
-//        System.out.println(pm25Flag == null);
-//        System.out.println(pm25Flag.equals(null));
-        // null인데도 계속 ㅠㅠㅠ
+//        Object pm25Flag = object.get("pm25Flag");
+//        System.out.println("jsonValue : " + pm25Flag); // null
+//        System.out.println(pm25Flag == null);          // false
+//        System.out.println(pm25Flag.equals(null));     // false
+        // null인데도 계속 false 나옴 -->>> object.isNull("pm25Flag") 로 해야 true가 나온다 !!!
 
-        // 정상작동을 하더라도 null이 나오는 경우가 있어서 Optional로 대체
         return AirInfoResDto.builder()
-//                .측정상태(!object.get("pm25Flag").equals(null) ? null : object.getString("pm25Flag"))
+                .측정상태(object.isNull("pm25Flag") ? "정상측정" : object.getString("pm25Flag"))
                 .시간(Optional.ofNullable(object.getString("dataTime")).orElse(null))
                 .미세먼지농도(Optional.ofNullable(object.getString("pm10Value")).orElse(null))
                 .초미세먼지농도(Optional.ofNullable(object.getString("pm25Value")).orElse(null))
@@ -50,10 +38,8 @@ public class AirInfoResDto {
                 .아황산가스농도(Optional.ofNullable(object.getString("so2Value")).orElse(null))
                 .이산화질소농도(Optional.ofNullable(object.getString("no2Value")).orElse(null))
                 .통합대기환경수치(Optional.ofNullable(object.getString("khaiValue")).orElse(null))
-//                .통합대기환경지수(Optional.ofNullable(object.get("khaiGrade")).map(Object::toString).orElse(null))
-                .통합대기환경지수(object.get("khaiGrade") == null ? null : object.getString("khaiGrade"))
+                .통합대기환경지수(object.isNull("khaiGrade") ? null : object.getString("khaiGrade"))
                 .build();
     }
-
 
 }
