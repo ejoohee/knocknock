@@ -108,11 +108,20 @@ public class ModelServiceImpl implements ModelService {
     @Override
     @Transactional(readOnly = true)
     public CheckModelResDto checkModelByModelName(String modelName) {
+        // 현재 로그인한 회원의 user 기본키 가져오기
+        Long userId = jwtUtil.getUserNo();
+        // 내 가전제품에 이미 등록되었는지 검사
+        if(myModelRepository.findByUserAndModel(userId, modelName).isPresent()){
+            log.error("[가전제품 모델명으로 조회] 내 가전제품에 이미 등록된 가전제품입니다.");
+            throw new IllegalArgumentException("내 가전제품에 이미 등록된 가전제품입니다.");
+        }
+
         CheckModelResDto checkModelResDto = modelRepository.checkModelByModelName(modelName);
         if(checkModelResDto == null) {
             log.error("[가전제품 모델명으로 조회] 조회 실패...해당하는 가전제품이 존재하지 않습니다.");
             throw new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
         }
+
         checkModelResDto.setModelImg(checkModelResDto.getModelImg() == null ? null : AwsS3ImgLink.getLink(checkModelResDto.getModelName()));
         log.info("[가전제품 모델명으로 조회] 가전제품 모델명으로 조회 성공.");
         return checkModelResDto;
