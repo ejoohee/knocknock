@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -555,10 +556,24 @@ public class UserServiceImpl implements UserService {
         LocalDate last = null;
         // 년월으로 date
         LocalDate date = LocalDate.of(year, month, 1);
+        FindPowerUsageHouseAvgResDto dto;
+        float tmpPowerUsage = 0F;
+        int tmpBill = 0;
         for (int i = 4; i >= 0; i--) {
             last = date.minusMonths(i);
-            dtoList.add(kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode()));
-
+            dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
+            if(tmpBill == 0 && dto.getBill() != null) {
+                tmpPowerUsage = dto.getPowerUsage();
+                tmpBill = dto.getBill();
+            }
+            dtoList.add(dto);
+        }
+        // 2023년 9, 10, 11월 데이터가 없음,,,
+        for (int i = 0; i <= 4; i++) {
+            if(dtoList.get(i).getPowerUsage() == null) {
+                dtoList.get(i).setPowerUsage(tmpPowerUsage + dtoList.get(i).getMonth());
+                dtoList.get(i).setBill(tmpBill + dtoList.get(i).getYear());
+            }
         }
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 성공.");
         return dtoList;
