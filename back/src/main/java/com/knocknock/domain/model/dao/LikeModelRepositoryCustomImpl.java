@@ -29,7 +29,7 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         // 어떤 카테고리 인지 (null 이면 전체 조회)
         if(category != null && !category.equals("")){
             categoryOption.and(
-                    qModel.category.id.in(
+                    qLikeModel.model.category.id.in(
                             queryFactory.select(qCategory.id)
                                     .from(qCategory)
                                     .where(qCategory.name.eq(category))
