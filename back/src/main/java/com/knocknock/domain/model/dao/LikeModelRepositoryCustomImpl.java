@@ -38,7 +38,11 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         List<LikeModel> likeModelList = queryFactory
                 .select(qLikeModel)
                 .from(qLikeModel)
-                .join(qLikeModel.model)
+                // a.b, b
+                .join(qLikeModel.model, qModel)
+                .fetchJoin()
+                // b.c, c
+                .join(qModel.category, qCategory)
                 .fetchJoin()
                 .where(
                         qLikeModel.user.userId.eq(userId),
