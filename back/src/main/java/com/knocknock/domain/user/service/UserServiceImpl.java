@@ -1,5 +1,6 @@
 package com.knocknock.domain.user.service;
 
+import com.knocknock.domain.user.constants.MetroName;
 import com.knocknock.domain.user.dao.*;
 import com.knocknock.domain.user.domain.CityCode;
 import com.knocknock.domain.user.domain.LogoutAccessToken;
@@ -548,7 +549,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(String metro, String city, Integer year, Integer month) {
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 요청.");
-        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(metro, city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
+        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(MetroName.getConverted(metro), city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
         List<FindPowerUsageHouseAvgResDto> dtoList = new ArrayList<>();
         // 전 달 계산
         LocalDate last = null;
