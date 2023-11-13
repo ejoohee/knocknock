@@ -89,7 +89,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	// json
 	implementation group: 'org.glassfish', name: 'javax.json', version: '1.0.4'
-
+	implementation 'org.json:json:20210307'
 	// config 클래스 자동으로 생성
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 }
