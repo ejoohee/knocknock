@@ -10,7 +10,6 @@ import com.knocknock.global.common.openapi.airInfo.dto.TmPointDto;
 import com.knocknock.global.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -67,7 +66,7 @@ public class AirInfoService {
                     return new UserNotFoundException(UserExceptionMessage.USER_NOT_FOUND.getMessage());
                 });
 
-        loginUser.updateAirStation(stationType.getRegionDetail());
+        loginUser.updateAirStation(stationType.getStationName());
         userRepository.save(loginUser);
 
         log.info("[대기오염 측정소 직접 선택하기] 완료");
@@ -75,7 +74,7 @@ public class AirInfoService {
         return AirStationDto.builder()
                 .email(email)
                 .dong(loginUser.getAddress())
-                .airStation(stationType.getRegionDetail())
+                .airStation(stationType.getStationName())
                 .build();
     }
 
@@ -131,6 +130,41 @@ public class AirInfoService {
             dong = address;
         }
 
+        // tmPoint 뽑아내기전에 해당 동이름으로 측정소있냐 체크 후 저장하기
+        List<StationType> stationList = StationType.getStationListByDong(dong);
+        log.info("해당 동 이름으로 측정소가 있나여? {}개", stationList.size());
+        if(stationList.size() == 1) {
+            StationType station = stationList.get(0);
+
+            log.info("측정소 1개 반환. 유저에게 저장할게요. 측정소 : {}", station);
+
+            loginUser.updateAirStation(station.getStationName());
+            userRepository.save(loginUser);
+
+            return AirStationDto.builder()
+                    .email(loginUser.getEmail())
+                    .dong(dong)
+                    .airStation(station.getStationName())
+                    .build();
+        }
+        // 같은 동이 여러개면... null이여도 어차피 포문 안돌아가서 ㄱㅊ
+        else {
+            for(StationType station : stationList) {
+                if(station.getRegion().contains(addressList[0]) ||
+                    station.getStationRegion().contains(addressList[0])) {
+
+                    loginUser.updateAirStation(station.getStationName());
+                    userRepository.save(loginUser);
+
+                    return AirStationDto.builder()
+                            .email(loginUser.getEmail())
+                            .dong(dong)
+                            .airStation(station.getStationName())
+                            .build();
+                }
+            }
+        }
+
         // 3. tm-point 뽑아낸다.
         TmPointDto pointDto = getTmPoint(dong);
         log.info("[AIR_INFO] tm-point 뽑아오기 성공! {}", pointDto.getTmX());
@@ -153,7 +187,6 @@ public class AirInfoService {
 
         // 6. 앞으로 getAirInfoByRegion을 할 떄 유저의 airStation 을 이용해서 ㄱㄱ
     }
-
 
     public AirInfoResDto getAirInfoByRegion(String token) throws IOException {
 
@@ -323,15 +356,11 @@ public class AirInfoService {
         jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
         JsonArray items = jsonObject.getJsonArray("items");
 
-        log.info("items : {}", items);
         jsonObject = items.getJsonObject(0);
 
         return TmPointDto.jsonToDto(jsonObject);
     }
 
-    // 유저의 address를 가져와서
-    // 가장 가까운 대기측정소로 스왑해주는 메서드
-    // 외부 api 이용할거임
     public String getStationName(TmPointDto point) throws IOException {
         urlBuilder = new StringBuilder(GET_STATION_URL + "/getNearbyMsrstnList"); /*URL*/
         urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + API_KEY); /*Service Key*/
@@ -392,9 +421,6 @@ public class AirInfoService {
         jsonObject = items.getJsonObject(0);
 
         log.info("[측정소 뽑아오기] 뽑힌 측정소 : {}", jsonObject.getString("stationName"));
-
-        // 가져온 stationName을 유저의 airStation에 저장해준다
-
 
         return jsonObject.getString("stationName");
     }
