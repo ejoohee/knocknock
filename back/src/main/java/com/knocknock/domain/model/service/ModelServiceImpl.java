@@ -152,7 +152,7 @@ public class ModelServiceImpl implements ModelService {
         dto.setModelBName(myModel.getModelNickname());
 
         dto.setModelAImg(model1.getImg() == null ? null : AwsS3ImgLink.getLink(model1.getName()));
-        dto.setModelAImg(model2.getImg() == null ? null : AwsS3ImgLink.getLink(model2.getName()));
+        dto.setModelBImg(model2.getImg() == null ? null : AwsS3ImgLink.getLink(model2.getName()));
         // 1. 에너지 효율 등급
         dto.setModelAGrade(model1.getGrade());
         dto.setModelBGrade(model2.getGrade());
