@@ -1,4 +1,4 @@
-package com.knocknock.global.common.ocr.dto;
+package com.knocknock.global.common.external.ocr.dto;
 
 import lombok.*;
 

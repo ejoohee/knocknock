@@ -1,7 +1,9 @@
-package com.knocknock.global.common.kepco;
+package com.knocknock.global.common.external.kepco;
 
 import com.knocknock.domain.user.dto.response.FindPowerUsageHouseAvgResDto;
+import com.knocknock.global.common.external.constants.ExternalApiBaseUrl;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -19,10 +21,14 @@ public class KepcoAPIWebClient {
 
     private WebClient kepcoWebClient;
 
+    @Value("${spring.kepco.api-key}")
+    private String kepcoApiKey;
+
+
     @PostConstruct
     public void init() {
         kepcoWebClient = WebClient.builder()
-                .baseUrl("https://bigdata.kepco.co.kr/openapi/v1/powerUsage/houseAve.do")
+                .baseUrl(ExternalApiBaseUrl.KEPCO_POWER_AVG.getUrl())
                 .build();
     }
 
@@ -43,7 +49,7 @@ public class KepcoAPIWebClient {
                         .queryParam("month", m)
                         .queryParam("metroCd", metroCd)
                         .queryParam("cityCd", cityCd)
-                        .queryParam("apiKey", "2c6Tz02F144P97y0F9JuX495Zo8E7J14jYoCiAq5")
+                        .queryParam("apiKey", kepcoApiKey)
                         .build())
                 .retrieve().bodyToMono(String.class);
         log.info("response ----> {}", response.block());

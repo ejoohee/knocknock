@@ -17,7 +17,7 @@ import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
-import com.knocknock.global.common.kepco.KepcoAPIWebClient;
+import com.knocknock.global.common.external.kepco.KepcoAPIWebClient;
 import com.knocknock.global.common.openapi.airInfo.AirInfoService;
 import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service

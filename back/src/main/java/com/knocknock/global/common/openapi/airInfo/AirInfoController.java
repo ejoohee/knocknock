@@ -1,14 +1,12 @@
 package com.knocknock.global.common.openapi.airInfo;
 
 import com.knocknock.global.common.openapi.airInfo.dto.AirInfoResDto;
-import com.knocknock.global.common.openapi.airInfo.dto.AirStationDto;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

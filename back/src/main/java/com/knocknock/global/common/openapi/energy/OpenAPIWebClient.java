@@ -1,4 +1,4 @@
-package com.knocknock.global.common.openapi;
+package com.knocknock.global.common.openapi.energy;
 
 
 import com.knocknock.domain.category.dao.CategoryRepository;
@@ -6,16 +6,17 @@ import com.knocknock.domain.category.domain.Category;
 import com.knocknock.domain.model.dao.ModelRepository;
 import com.knocknock.domain.model.domain.Model;
 import com.knocknock.domain.model.dto.request.AddModelReqDto;
+import com.knocknock.global.common.external.constants.ExternalApiBaseUrl;
 import com.knocknock.global.common.openapi.constants.CategoryURL;
 import com.knocknock.global.common.openapi.constants.CategoryUsageType;
 import com.knocknock.global.util.CrawlingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.TimeoutException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
@@ -23,7 +24,6 @@ import javax.json.*;
 import javax.json.stream.JsonParsingException;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +33,12 @@ import java.util.List;
 public class OpenAPIWebClient {
 
     private WebClient authWebClient;
+
+    @Value("${spring.energy.auth}")
+    private String energyAuth;
+
+    @Value("${spring.energy.serviceKey}")
+    private String energyKey;
 
     private final CategoryRepository categoryRepository;
     private final ModelRepository modelRepository;
@@ -46,8 +52,8 @@ public class OpenAPIWebClient {
     public void init() {
         // 한국에너지공단_에너지소비효율 등급 제품 정보 api 호출용
         authWebClient = WebClient.builder()
-                .baseUrl("https://api.odcloud.kr/api/15083315/v1/uddi:e2de2c4d-e81b-421d-94bc-ad0f9cf70c44")
-                .defaultHeader(HttpHeaders.AUTHORIZATION, "Infuser yB6pw3v/aprz92U8l42QpEk0LDn7RQF8i0VTp+VjfJ8TbUGnfHD/y53/qlG22MQd/NDKJGKATwxGRWPJjTujIQ==")
+                .baseUrl(ExternalApiBaseUrl.ENERGY_PRODUCT_LIST_INFO.getUrl())
+                .defaultHeader(HttpHeaders.AUTHORIZATION, energyAuth)
                 .build();
     }
 
@@ -187,8 +193,8 @@ public class OpenAPIWebClient {
 //        noAuthWebClient = WebClient.builder()
 //                .baseUrl("http://apis.data.go.kr/B553530/eep/EEP_19_LIST")
 //                .build();
-        StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/B553530/eep/"+url); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "="+"yB6pw3v%2Faprz92U8l42QpEk0LDn7RQF8i0VTp%2BVjfJ8TbUGnfHD%2Fy53%2FqlG22MQd%2FNDKJGKATwxGRWPJjTujIQ%3D%3D"); /*Service Key*/
+        StringBuilder urlBuilder = new StringBuilder(ExternalApiBaseUrl.ENERGY_PRODUCT_INFO +url); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "="+ energyKey); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*검색건수(기본값: 10, 최소: 1, 최대: 100)*/
         urlBuilder.append("&" + URLEncoder.encode("apiType","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*결과형식(xml/json)*/
@@ -254,8 +260,8 @@ public class OpenAPIWebClient {
         // totalCount가 0이면 삼성전자 제품이 아니라는 의미
         int tot = Integer.valueOf(jsonObject.getString("totalCount"));
         if(tot == 0) return null;
-        urlBuilder = new StringBuilder("http://apis.data.go.kr/B553530/eep/"+url); /*URL*/
-        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "="+"yB6pw3v%2Faprz92U8l42QpEk0LDn7RQF8i0VTp%2BVjfJ8TbUGnfHD%2Fy53%2FqlG22MQd%2FNDKJGKATwxGRWPJjTujIQ%3D%3D"); /*Service Key*/
+        urlBuilder = new StringBuilder(ExternalApiBaseUrl.ENERGY_PRODUCT_INFO+url); /*URL*/
+        urlBuilder.append("?" + URLEncoder.encode("serviceKey","UTF-8") + "=" + energyKey); /*Service Key*/
         urlBuilder.append("&" + URLEncoder.encode("pageNo","UTF-8") + "=" + URLEncoder.encode("1", "UTF-8")); /*페이지 번호*/
         urlBuilder.append("&" + URLEncoder.encode("numOfRows","UTF-8") + "=" + URLEncoder.encode(String.valueOf(tot), "UTF-8")); /*검색건수(기본값: 10, 최소: 1, 최대: 100)*/
         urlBuilder.append("&" + URLEncoder.encode("apiType","UTF-8") + "=" + URLEncoder.encode("json", "UTF-8")); /*결과형식(xml/json)*/
