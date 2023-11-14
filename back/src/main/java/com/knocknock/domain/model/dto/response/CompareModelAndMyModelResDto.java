@@ -11,6 +11,10 @@ public class CompareModelAndMyModelResDto {
 
     private String modelBName;
 
+    private String modelAImg;
+
+    private String modelBImg;
+
     private Integer modelAGrade;
 
     private Integer modelBGrade;
