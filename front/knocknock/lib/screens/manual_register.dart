@@ -90,44 +90,6 @@ class _ManualRegisterState extends State<ManualRegister> {
                   children: [
                     ListTile(
                       leading: const Text(
-                        '제품군 : ',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      title: DropdownButton<String>(
-                        dropdownColor:
-                            Theme.of(context).colorScheme.surfaceVariant,
-                        value: dropdownValue,
-                        icon: const Icon(Icons.arrow_drop_down),
-                        isExpanded: true,
-                        elevation: 16,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Theme.of(context).colorScheme.surfaceTint,
-                        ),
-                        underline: Container(
-                          height: 2,
-                          color: Theme.of(context).colorScheme.surfaceTint,
-                        ),
-                        onChanged: (String? value) {
-                          // This is called when the user selects an item.
-                          setState(() {
-                            dropdownValue = value!;
-                          });
-                        },
-                        items:
-                            list.map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                    ListTile(
-                      leading: const Text(
                         '모델명 : ',
                         style: TextStyle(
                           fontSize: 18,

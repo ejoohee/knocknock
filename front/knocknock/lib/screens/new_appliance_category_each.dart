@@ -297,6 +297,7 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                 const Duration(milliseconds: 1500),
                             builder: (context, properties) {
                               return ListView.builder(
+                                key: const PageStorageKey<String>('value'),
                                 itemCount: modelList.length,
                                 shrinkWrap: true,
                                 itemBuilder: (context, index) {
@@ -322,76 +323,6 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                           color: colors[
                                               modelList[index].modelGrade! - 1],
                                           bookmarkIcon: IconButton(
-                                              onPressed: () async {
-                                                // 찜
-                                                if (!modelList[index]
-                                                    .isLiked!) {
-                                                  if (await addLike(
-                                                      modelList[index]
-                                                          .modelId!)) {
-                                                    setState(() {
-                                                      modelList[index].isLiked =
-                                                          true;
-                                                    });
-                                                  }
-                                                } else {
-                                                  if (await deleteLike(
-                                                      modelList[index]
-                                                          .modelId!)) {
-                                                    setState(() {
-                                                      modelList[index].isLiked =
-                                                          false;
-                                                    });
-                                                  }
-                                                }
-                                              },
-                                              icon: modelList[index].isLiked!
-                                                  ? const Icon(
-                                                      Icons.favorite_rounded)
-                                                  : const Icon(Icons
-                                                      .favorite_border_rounded)),
-                                          onTap: () {},
-                                          onLongPress: () {},
-                                          child: ListTile(
-                                            onTap: () {
-                                              // 상세 페이지로 이동
-                                              context
-                                                  .read<SelectedAppliance>()
-                                                  .selectModel(modelList[index]
-                                                      .modelId!);
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
-                                              );
-                                            },
-                                            leading: Image.asset(
-                                                'assets/icons/$selectedCategory.png'),
-                                            title: Text(
-                                                modelList[index].modelName!),
-                                            subtitle: Text(
-                                                modelList[index].modelBrand!),
-                                            trailing: const Icon(
-                                              Icons.chevron_right_rounded,
-                                              size: 35,
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 10,
-                                        )
-                                      ],
-                                    );
-                                  }
-                                  // divide할 필요없으면 그냥 카드
-                                  return Column(
-                                    children: [
-                                      Tile(
-                                        isBookmarked: true,
-                                        color: colors[
-                                            modelList[index].modelGrade! - 1],
-                                        bookmarkIcon: IconButton(
                                             onPressed: () async {
                                               // 찜
                                               if (!modelList[index].isLiked!) {
@@ -415,10 +346,85 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                               }
                                             },
                                             icon: modelList[index].isLiked!
-                                                ? const Icon(
-                                                    Icons.favorite_rounded)
-                                                : const Icon(Icons
-                                                    .favorite_border_rounded)),
+                                                ? Icon(Icons.favorite_rounded,
+                                                    color: Colors.grey[600])
+                                                : Icon(Icons.favorite_rounded,
+                                                    color: Colors.grey[600]),
+                                          ),
+                                          onTap: () {},
+                                          onLongPress: () {},
+                                          child: ListTile(
+                                            onTap: () {
+                                              // 상세 페이지로 이동
+                                              context
+                                                  .read<SelectedAppliance>()
+                                                  .selectModel(modelList[index]
+                                                      .modelId!);
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                              );
+                                            },
+                                            leading: Image.asset(
+                                                'assets/icons/$selectedCategory.png'),
+                                            title: Text(
+                                              modelList[index].modelName!,
+                                              style: TextStyle(
+                                                  color: Colors.grey[800]),
+                                            ),
+                                            subtitle: Text(
+                                              modelList[index].modelBrand!,
+                                              style: TextStyle(
+                                                  color: Colors.grey[600]),
+                                            ),
+                                            trailing: Icon(
+                                                Icons.chevron_right_rounded,
+                                                size: 35,
+                                                color: Colors.grey[700]),
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 10,
+                                        )
+                                      ],
+                                    );
+                                  }
+                                  // divide할 필요없으면 그냥 카드
+                                  return Column(
+                                    children: [
+                                      Tile(
+                                        isBookmarked: true,
+                                        color: colors[
+                                            modelList[index].modelGrade! - 1],
+                                        bookmarkIcon: IconButton(
+                                          onPressed: () async {
+                                            // 찜
+                                            if (!modelList[index].isLiked!) {
+                                              if (await addLike(
+                                                  modelList[index].modelId!)) {
+                                                setState(() {
+                                                  modelList[index].isLiked =
+                                                      true;
+                                                });
+                                              }
+                                            } else {
+                                              if (await deleteLike(
+                                                  modelList[index].modelId!)) {
+                                                setState(() {
+                                                  modelList[index].isLiked =
+                                                      false;
+                                                });
+                                              }
+                                            }
+                                          },
+                                          icon: modelList[index].isLiked!
+                                              ? Icon(Icons.favorite_rounded,
+                                                  color: Colors.grey[600])
+                                              : Icon(Icons.favorite_rounded,
+                                                  color: Colors.grey[600]),
+                                        ),
                                         onTap: () {},
                                         onLongPress: () {},
                                         child: ListTile(
@@ -436,13 +442,20 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                           },
                                           leading: Image.asset(
                                               'assets/icons/$selectedCategory.png'),
-                                          title:
-                                              Text(modelList[index].modelName!),
+                                          title: Text(
+                                            modelList[index].modelName!,
+                                            style: TextStyle(
+                                                color: Colors.grey[800]),
+                                          ),
                                           subtitle: Text(
-                                              modelList[index].modelBrand!),
-                                          trailing: const Icon(
+                                            modelList[index].modelBrand!,
+                                            style: TextStyle(
+                                                color: Colors.grey[600]),
+                                          ),
+                                          trailing: Icon(
                                             Icons.chevron_right_rounded,
                                             size: 35,
+                                            color: Colors.grey[700],
                                           ),
                                         ),
                                       ),

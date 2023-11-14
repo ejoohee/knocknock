@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/my_appliance_list.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
@@ -48,11 +50,12 @@ class _NicknameAssignState extends State<NicknameAssign> {
           actions: <Widget>[
             TextButton(
               onPressed: () {
+                context.read<CurrentPageIndex>().move(3);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) =>
-                          const MyApplianceList()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                          const HomeScreen()), // SignUpPage는 회원가입 페이지 위젯입니다.
                 );
               },
               child: const Text('확인'),
@@ -76,6 +79,7 @@ class _NicknameAssignState extends State<NicknameAssign> {
     );
   }
 
+  String textContent = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -112,7 +116,13 @@ class _NicknameAssignState extends State<NicknameAssign> {
                 ),
               ],
             ),
+            const SizedBox(
+              height: 10,
+            ),
             Image.network(model.modelImg!),
+            const SizedBox(
+              height: 10,
+            ),
             Form(
               key: _formKey,
               child: Column(
@@ -120,15 +130,44 @@ class _NicknameAssignState extends State<NicknameAssign> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20.0),
                     child: TextFormField(
-                      controller: myController,
+                      // controller: myController,
                       // initialValue: '나의 ${model.category}',
-                      decoration: InputDecoration(
-                        prefixIcon: const Icon(Icons.edit_outlined),
-                        hintText: '나의 ${model.category}',
-                      ),
+                      initialValue: '나의 ${model.category}',
                       onChanged: (value) {
-                        myController.text = value;
+                        setState(() => textContent = value);
                       },
+                      maxLength: 8,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                        prefixIcon: const Icon(Icons.edit_outlined),
+                        // hintText: textContent,
+                        filled: true,
+                        fillColor:
+                            Theme.of(context).colorScheme.secondaryContainer,
+
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.primary),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide:
+                              const BorderSide(color: Colors.transparent),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.error),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.onError),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+
                       validator: (String? value) {
                         if (value == null || value.isEmpty) {
                           return '값을 입력해주세요.';
@@ -147,7 +186,7 @@ class _NicknameAssignState extends State<NicknameAssign> {
                         // Process data.
 
                         // Process data.
-                        finalRegister(myController.text); // 컨트롤러의 값 출력
+                        finalRegister(textContent); // 컨트롤러의 값 출력
                       }
                     },
                     bColor: Theme.of(context).colorScheme.primary,

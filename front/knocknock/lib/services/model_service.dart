@@ -74,8 +74,6 @@ class ModelService {
       headers: headers,
     );
 
-    print('응답 받았다 ${response.statusCode}');
-
     if (response.statusCode == 200) {
       final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
@@ -133,8 +131,7 @@ class ModelService {
         },
       ),
     );
-    print(response.statusCode);
-    print(response.body);
+
     if (response.statusCode == 200) {
       final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       registeringModel = MyModelRegistering.fromJson(model);
@@ -226,10 +223,12 @@ class ModelService {
     );
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
       message = responseBody['message'];
     } else if (response.statusCode == 404) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
       message = responseBody['message'];
     } else if (response.statusCode == 401) {
       deleteMyAppliance(myModelId);
@@ -241,7 +240,6 @@ class ModelService {
   // 내가 보유한 가전 목록 조회
   Future<List<MyModelTile>> findMyApplianceList(String category) async {
     List<MyModelTile> myApplianceList = [];
-    print(category);
     final url = Uri.parse('$baseUrl/model/my?category=$category');
     final token = await storage.read(key: "accessToken");
     final headers = {
@@ -303,6 +301,32 @@ class ModelService {
     return response.statusCode;
   }
 
+  // 비교할 가전 둘 반환(새 가전 : A, 내 가전 : B)
+  Future<ModelsCompared> findComparingSubjects(
+      int modelId, int myModelId) async {
+    late ModelsCompared modelAB;
+    final url = Uri.parse('$baseUrl/model/comparison/$modelId/my/$myModelId');
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+    final response = await client.get(
+      url,
+      headers: headers,
+    );
+
+    print(response.statusCode);
+    print(response.body);
+    if (response.statusCode == 200) {
+      final dynamic appliances = jsonDecode(utf8.decode(response.bodyBytes));
+      modelAB = ModelsCompared.fromJson(appliances);
+    } else if (response.statusCode == 401) {
+      findComparingSubjects(modelId, myModelId);
+    }
+
+    return modelAB;
+  }
+
   // 찜한 가전 목록 조회
   Future<List<LikedModel>> findLikedModel(String category) async {
     List<LikedModel> likedModelList = [];
@@ -316,9 +340,8 @@ class ModelService {
       url,
       headers: headers,
     );
-
     if (response.statusCode == 200) {
-      final List<dynamic> models = jsonDecode(response.body);
+      final List<dynamic> models = jsonDecode(utf8.decode(response.bodyBytes));
       for (var model in models) {
         likedModelList.add(LikedModel.fromJson(model));
       }
@@ -348,7 +371,8 @@ class ModelService {
     } else if (response.statusCode == 401) {
       addLike(modelId);
     } else if (response.statusCode == 404) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
 
       message = responseBody['message'];
     }
@@ -377,7 +401,8 @@ class ModelService {
     } else if (response.statusCode == 401) {
       cancelLike(modelId);
     } else if (response.statusCode == 404) {
-      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      Map<String, dynamic> responseBody =
+          jsonDecode(utf8.decode(response.bodyBytes));
 
       message = responseBody['message'];
     }

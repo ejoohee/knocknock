@@ -4,6 +4,7 @@ import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/main_page.dart';
 import 'package:knocknock/screens/my_appliance_list.dart';
 import 'package:knocknock/screens/my_info_modify.dart';
+import 'package:knocknock/screens/my_lists.dart';
 import 'package:knocknock/screens/my_page.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/screens/take_picture_screen.dart';
@@ -58,6 +59,9 @@ class _HomeScreenState extends State<HomeScreen> {
           if (index == 2) {
             await loadCam();
           }
+          if (index == 3) {
+            setState(() {});
+          }
         },
         destinations: const <Widget>[
           NavigationDestination(icon: Icon(Icons.home), label: '홈'),
@@ -96,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }
             },
           ),
-          const MyApplianceList(),
+          const MyLists(),
           const MyPage(),
         ],
       ),

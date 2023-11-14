@@ -41,7 +41,6 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
   }
 
   Future<MyModelDetail> loadMyModelDetail() async {
-    print('내가전 상세 들어는 왔냐');
     final detail = await modelService.findMyApplianceDetail(widget.myModelId);
     title = detail.modelNickname!;
     isPinned = detail.addAtPin != null;
@@ -55,7 +54,8 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
   pin(int myModelId) async {
     int response = await modelService.pinMyAppliance(widget.myModelId);
     if (response == 200) {
-      myModelDetail = loadMyModelDetail();
+      // myModelDetail = loadMyModelDetail();
+      isPinned = !isPinned;
     }
     setState(() {});
   }
@@ -82,15 +82,15 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                   pin(id);
                 },
                 icon: isLoading || !isPinned
-                    ? const Icon(
+                    ? Icon(
                         CustomIcon.pin_outline,
                         size: 25,
-                        color: Colors.red,
+                        color: Colors.blueGrey[200],
                       )
-                    : const Icon(
+                    : Icon(
                         CustomIcon.pin_1,
                         size: 25,
-                        color: Colors.red,
+                        color: Colors.red[800],
                       )),
           ],
         ),
@@ -415,10 +415,10 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                       width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
                       height:
                           MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
-                      label: "새로운 가전 구경하러 가기", // 버튼에 표시할 텍스트
+                      label: "새로운 가전 구경하러 가기 ▷▶", // 버튼에 표시할 텍스트
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 30,
                     ),
                   ],
                 );

@@ -191,15 +191,24 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                                       ),
                                                     )
                                                   : Padding(
-                                                      padding:
-                                                          model.category == 'TV'
-                                                              ? const EdgeInsets
-                                                                  .fromLTRB(
-                                                                  0, 50, 20, 50)
-                                                              : const EdgeInsets
-                                                                  .symmetric(
-                                                                  vertical: 38,
-                                                                ),
+                                                      padding: () {
+                                                        if (model.category ==
+                                                            'TV') {
+                                                          return const EdgeInsets
+                                                              .fromLTRB(
+                                                              0, 50, 20, 40);
+                                                        } else if (model
+                                                                .category ==
+                                                            '진공청소기') {
+                                                          return const EdgeInsets
+                                                              .fromLTRB(
+                                                              0, 50, 40, 40);
+                                                        } else {
+                                                          return const EdgeInsets
+                                                              .symmetric(
+                                                              vertical: 38);
+                                                        }
+                                                      }(),
                                                       child: Image.network(
                                                         '${model.modelImg}',
                                                         errorBuilder: (context,
@@ -458,7 +467,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                       label: "구매하러 가기 🔗", // 버튼에 표시할 텍스트
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 20,
                     ),
                   ],
                 );
