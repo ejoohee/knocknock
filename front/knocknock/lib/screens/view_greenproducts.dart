@@ -52,7 +52,6 @@ class _ViewGreenProductsState extends State<ViewGreenProducts> {
     return Scaffold(
       appBar: const AppBarBack(
         title: '녹색 제품 정보',
-        page: HomeScreen(),
       ),
       body: Column(
         children: [
@@ -98,8 +97,8 @@ class _ViewGreenProductsState extends State<ViewGreenProducts> {
                 var product = searchResult[index];
                 return ExpansionTile(
                   leading: Image.asset("assets/images/green.png"),
-                  title: Text("제품명: ${product['prodMdel']}" ?? '모델 정보 없음'),
-                  subtitle: Text("업체명: ${product['prodVcnm']}" ?? '제조사 정보 없음'),
+                  title: Text("제품명: ${product['prodMdel']}"),
+                  subtitle: Text("업체명: ${product['prodVcnm']}"),
                   children: <Widget>[
                     Padding(
                       padding: const EdgeInsets.symmetric(

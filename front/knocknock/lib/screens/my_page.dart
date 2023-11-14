@@ -22,8 +22,20 @@ class _MyPageState extends State<MyPage> {
 
   onWasteInfoTap() async {
     if (!mounted) return;
-    Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (context) => const WasteInfo()));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const WasteInfo(),
+      ),
+    );
+  }
+
+  onAverageElectronTap() async {
+    if (!mounted) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AverageElectronic(),
+      ),
+    );
   }
 
   onCheckTap() async {
@@ -219,13 +231,7 @@ class _MyPageState extends State<MyPage> {
                   ),
                 ),
                 GestureDetector(
-                  onTap: () {
-                    if (!mounted) return;
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AverageElectronic()));
-                  },
+                  onTap: onAverageElectronTap,
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,

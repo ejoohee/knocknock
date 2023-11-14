@@ -37,7 +37,6 @@ class _AverageElectronicState extends State<AverageElectronic> {
     return Scaffold(
       appBar: const AppBarBack(
         title: '전력 소비량',
-        page: HomeScreen(),
       ),
       body: Column(
         children: [

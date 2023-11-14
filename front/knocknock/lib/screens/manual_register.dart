@@ -56,7 +56,6 @@ class _ManualRegisterState extends State<ManualRegister> {
     return Scaffold(
       appBar: const AppBarBack(
         title: '직접 입력하기',
-        page: HomeScreen(),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(

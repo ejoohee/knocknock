@@ -22,9 +22,8 @@ class _GreenDetailInfoState extends State<GreenDetailInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarBack(
+      appBar: const AppBarBack(
         title: '녹색 제품 상세 정보',
-        page: ViewGreenProducts(info: widget.info, keyword: widget.keyword),
       ),
       body: Column(
         children: [

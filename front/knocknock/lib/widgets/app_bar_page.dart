@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class AppBarBack extends StatelessWidget implements PreferredSizeWidget {
+class AppBarPage extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  const AppBarBack({Key? key, required this.title}) : super(key: key);
+  final Widget page;
+  const AppBarPage({Key? key, required this.title, required this.page})
+      : super(key: key);
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -21,6 +23,11 @@ class AppBarBack extends StatelessWidget implements PreferredSizeWidget {
             icon: const Icon(Icons.keyboard_backspace_rounded),
             onPressed: () {
               Navigator.of(context).pop();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => page,
+                ),
+              );
             },
             tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
           );
@@ -43,12 +50,6 @@ class AppBarBack extends StatelessWidget implements PreferredSizeWidget {
             onChanged: (value) {
               context.read<ThemeProvider>().toggleTheme();
             }),
-        // IconButton(
-        //   icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode),
-        //   onPressed: () {
-        //     context.read<ThemeProvider>().toggleTheme();
-        //   },
-        // ),
       ],
     );
   }

@@ -61,4 +61,23 @@ class OuterService {
       throw Exception('Failed to load data');
     }
   }
+
+  Future<Map<String, dynamic>> kakaoLocation(String address) async {
+    final url = Uri.parse(
+        'https://dapi.kakao.com/v2/local/search/address.json?query=$address');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'KakaoAK c426176f98b75e0b35993994c273ef01',
+      },
+    );
+    if (response.statusCode == 200) {
+      final Map<String, dynamic> data =
+          jsonDecode(utf8.decode(response.bodyBytes));
+      print(data);
+      return data;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
 }
