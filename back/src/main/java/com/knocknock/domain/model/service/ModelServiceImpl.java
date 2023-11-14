@@ -134,7 +134,10 @@ public class ModelServiceImpl implements ModelService {
         CompareModelAndMyModelResDto dto = new CompareModelAndMyModelResDto();
         // 가전제품과 내 가전제품을 비교한다,,,?
         // 비교군
-        Model model1 = modelRepository.findModelById(modelId).orElseThrow(); // 비교 하려는 가전제품
+        Model model1 = modelRepository.findModelById(modelId).orElseThrow(() -> {
+            log.error("[내 가전제품과 다른 가전제품 비교] 조회 실패...해당하는 가전제품이 존재하지 않습니다.");
+            return new ModelNotFoundException("해당하는 가전제품이 존재하지 않습니다.");
+        }); // 비교 하려는 가전제품
         MyModel myModel = myModelRepository.findById(myModelId).orElseThrow(() -> {
             log.error("[내 가전제품과 다른 가전제품 비교] 조회 실패...내가 등록한 가전제품에 존재하지 않는 가전제품입니다.");
             return new ModelNotFoundException("내가 등록한 가전제품에 존재하지 않는 가전제품입니다.");
@@ -151,37 +154,18 @@ public class ModelServiceImpl implements ModelService {
         // 1. 에너지 효율 등급
         dto.setModelAGrade(model1.getGrade());
         dto.setModelBGrade(model2.getGrade());
-        //        if(model1.getGrade() > model2. getGrade()) {
-//            // 에너지 효율 등급이 높으면
-//
-//            // 에너지 효율 등급이 같으면
-//
-//            // 에너지 효율 등급이 낮으면
-//
-//        }else if(model1.getGrade() == model2.getGrade()) {
-//
-//
-//        }else {
-//
-//        }
         // 2. 연간 에너지 비용
         dto.setModelACost(model1.getCost());
         dto.setModelBCost(model2.getCost());
 
-        // 연간에너지 비용이 더 큰지
-        // 같은지
-        // 작은지
-
         // 3. co2 비용
         // 연 단위
         dto.setModelACo2((long) (model1.getCo2() * 24 * 365));
-
         dto.setModelBCo2((long) (model2.getCo2() * 24 * 365));
-        // 더 큰지
-        // 같은지
-        // 더 작은지
-
-
+        // 나무 그루 개수(올림)
+        float tree = 21.77f;
+        int cnt = (dto.getModelBCo2() - dto.getModelACo2() > 0) ? (int) ((dto.getModelBCo2() - dto.getModelACo2()) / tree) + 1 : -1;
+        dto.setTreeCnt(cnt);
         // 4. 각 항목(최대 3가지)
         //
         log.info("[가전제품 비교] 가전제품 비교 성공.");
