@@ -163,7 +163,7 @@ public class ModelServiceImpl implements ModelService {
         dto.setModelACo2((long) (model1.getCo2() * 24 * 365));
         dto.setModelBCo2((long) (model2.getCo2() * 24 * 365));
         // 나무 그루 개수(올림)
-        float tree = 21.77f;
+        float tree = 21770f;
         int cnt = (dto.getModelBCo2() - dto.getModelACo2() > 0) ? (int) ((dto.getModelBCo2() - dto.getModelACo2()) / tree) + 1 : -1;
         dto.setTreeCnt(cnt);
         // 4. 각 항목(최대 3가지)
