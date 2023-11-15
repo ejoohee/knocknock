@@ -85,6 +85,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             log.info("그냥 email ------------->{}", email);
             log.info("일치 여부 ------------->{}", email.equals(userDetails.getUsername()));
             equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), email);
+
             // 액세스 토큰의 유효성 검증
             validateAccessToken(accessToken, userDetails);
             // securityContextHolder에 인증된 회원의 정보를 저장
@@ -101,14 +102,11 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     private String getAccessToken(HttpServletRequest req) {
 
 //        Enumeration<String> headerNames = req.getHeaderNames();
-//
 //        log.info("headerNames 뽑아와요");
 //        while (headerNames.hasMoreElements()) {
-//
 //            String headerName = headerNames.nextElement();
 //            String headerValue = req.getHeader(headerName);
 //            log.info("{} : {}", headerName ,headerValue);
-//
 //        }
 //        log.info("headerNames 다뽑았어요");
 
@@ -140,7 +138,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     }
 
     private void equalsUsernameFromTokenAndUserDetails(String userDetailsUsername, String tokenUsername) {
-        if (!userDetailsUsername.contains(tokenUsername)) {
+        if (!userDetailsUsername.equals(tokenUsername)) {
             throw new IllegalArgumentException(SecurityExceptionMessage.MISMATCH_TOKEN_EMAIL.getMsg());
         }
     }
