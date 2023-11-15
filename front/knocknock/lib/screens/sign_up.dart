@@ -516,6 +516,7 @@ class _SignupState extends State<Signup> {
                               autovalidateMode:
                                   AutovalidateMode.onUserInteraction,
                               controller: addressController,
+                              readOnly: true,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return '주소를 입력하세요';

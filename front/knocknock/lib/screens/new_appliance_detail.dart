@@ -91,7 +91,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(title: '상세조회', page: NewApplianceCategoryEach()),
+      appBar: const AppBarBack(title: '상세조회'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 30),

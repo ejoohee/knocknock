@@ -130,7 +130,6 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
       // ),
       appBar: AppBarBack(
         title: selectedCategory,
-        page: const HomeScreen(),
       ),
       body: SafeArea(
         child: Padding(

@@ -35,28 +35,28 @@ class _AverageElectronicState extends State<AverageElectronic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: const AppBarBack(
-          title: '전력 소비량',
-          page: HomeScreen(),
-        ),
-        body: Column(
-          children: [
-            Flexible(
-              flex: 1,
-              child: Container(
-                alignment: Alignment.center,
-                child: Text(
-                  "$address1 $address2의\n가구 평균 전력 소비량",
-                  style: const TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
+      appBar: const AppBarBack(
+        title: '전력 소비량',
+      ),
+      body: Column(
+        children: [
+          Flexible(
+            flex: 1,
+            child: Container(
+              alignment: Alignment.center,
+              child: Text(
+                "$address1 $address2의\n가구 평균 전력 소비량",
+                style: const TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
             ),
-            Flexible(flex: 4, child: Container()),
-          ],
-        ));
+          ),
+          Flexible(flex: 4, child: Container()),
+        ],
+      ),
+    );
   }
 }
