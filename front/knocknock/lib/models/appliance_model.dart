@@ -132,23 +132,32 @@ class NewModelDetail {
 
 // 찜한 가전 목록
 class LikedModel {
+  int? likeModelId;
   int? modelId;
+  String? category;
   String? modelName;
   String? modelBrand;
 
-  LikedModel({this.modelId, this.modelName, this.modelBrand});
+  LikedModel(
+      {this.likeModelId,
+      this.modelId,
+      this.category,
+      this.modelName,
+      this.modelBrand});
 
   LikedModel.fromJson(Map<String, dynamic> json) {
+    likeModelId = json['likeModelId'];
     modelId = json['modelId'];
+    category = json['category'];
     modelName = json['modelName'];
     modelBrand = json['modelBrand'];
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = <String, dynamic>{};
-    data['modelId'] = modelId;
-    data['modelName'] = modelName;
-    data['modelBrand'] = modelBrand;
-    return data;
-  }
+  // Map<String, dynamic> toJson() {
+  //   final Map<String, dynamic> data = <String, dynamic>{};
+  //   data['modelId'] = modelId;
+  //   data['modelName'] = modelName;
+  //   data['modelBrand'] = modelBrand;
+  //   return data;
+  // }
 }

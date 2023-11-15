@@ -168,3 +168,59 @@ class MyModelDetail {
   //   return data;
   // }
 }
+
+// 비교 가전 정보(새 가전 : A, 내 가전 : B)
+class ModelsCompared {
+  String? modelAName;
+  String? modelBName;
+  String? modelAImg;
+  String? modelBImg;
+  int? modelAGrade;
+  int? modelBGrade;
+  int? modelACo2;
+  int? modelBCo2;
+  int? modelACost;
+  int? modelBCost;
+  int? treeCnt;
+
+  ModelsCompared({
+    this.modelAName,
+    this.modelBName,
+    this.modelAImg,
+    this.modelBImg,
+    this.modelAGrade,
+    this.modelBGrade,
+    this.modelACo2,
+    this.modelBCo2,
+    this.modelACost,
+    this.modelBCost,
+    this.treeCnt,
+  });
+
+  ModelsCompared.fromJson(Map<String, dynamic> json) {
+    modelAName = json['modelAName'];
+    modelBName = json['modelBName'];
+    modelAImg = json['modelAImg'];
+    modelBImg = json['modelBImg'];
+    modelAGrade = json['modelAGrade'];
+    modelBGrade = json['modelBGrade'];
+    modelACo2 = json['modelACo2'];
+    modelBCo2 = json['modelBCo2'];
+    modelACost = json['modelACost'];
+    modelBCost = json['modelBCost'];
+    treeCnt = json['treeCnt'];
+  }
+
+  // Map<String, dynamic> toJson() {
+  //   final Map<String, dynamic> data = new Map<String, dynamic>();
+  //   data['modelAName'] = this.modelAName;
+  //   data['modelBName'] = this.modelBName;
+  //   data['modelAGrade'] = this.modelAGrade;
+  //   data['modelBGrade'] = this.modelBGrade;
+  //   data['modelACo2'] = this.modelACo2;
+  //   data['modelBCo2'] = this.modelBCo2;
+  //   data['modelACost'] = this.modelACost;
+  //   data['modelBCost'] = this.modelBCost;
+  //   return data;
+  // }
+}

@@ -31,7 +31,7 @@ class Tile extends StatelessWidget {
           color: color,
           elevation: 8,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
+            // mainAxisAlignment: MainAxisAlignment.start,
             children: [
               if (isBookmarked)
                 Column(

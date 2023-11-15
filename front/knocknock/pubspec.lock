@@ -161,6 +161,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.6"
+  equatable:
+    dependency: transitive
+    description:
+      name: equatable
+      sha256: c2b87cb7756efdf69892005af546c56c0b5037f54d2a88269b4f347a505e3ca2
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.5"
   fake_async:
     dependency: transitive
     description:
@@ -257,6 +265,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.8.1"
+  fl_chart:
+    dependency: "direct main"
+    description:
+      name: fl_chart
+      sha256: "6b9eb2b3017241d05c482c01f668dd05cc909ec9a0114fdd49acd958ff2432fa"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.64.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -757,6 +773,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  text_divider:
+    dependency: "direct main"
+    description:
+      name: text_divider
+      sha256: b3e812231d7b38d99310cec63d71363efd6299950c59bfc3c1b0fedb7717264d
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   typed_data:
     dependency: transitive
     description:
@@ -861,6 +885,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
+  vertical_barchart:
+    dependency: "direct main"
+    description:
+      name: vertical_barchart
+      sha256: "60418bef71be7828a4d8300da4c1d8f355a0647c133dc9a0ebf27e2e0b7592ca"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0+2"
   video_player:
     dependency: "direct main"
     description:

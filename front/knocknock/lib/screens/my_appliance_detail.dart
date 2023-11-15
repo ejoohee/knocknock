@@ -4,8 +4,10 @@ import 'package:knocknock/common/custom_icon_icons.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
+import 'package:knocknock/screens/my_appliance_list.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:knocknock/widgets/app_bar_back.dart';
 
 class MyApplianceDetail extends StatefulWidget {
   final int myModelId;
@@ -26,7 +28,11 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
     ColorChart.fifth,
   ];
   late Future<MyModelDetail>? myModelDetail;
-
+  late String title;
+  late bool isPinned;
+  late int id;
+  bool isLoading = true;
+  Icon pinIcon = const Icon(CustomIcon.pin_outline);
   @override
   void initState() {
     // TODO: implement initState
@@ -35,15 +41,21 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
   }
 
   Future<MyModelDetail> loadMyModelDetail() async {
-    print('내가전 상세 들어는 왔냐');
     final detail = await modelService.findMyApplianceDetail(widget.myModelId);
+    title = detail.modelNickname!;
+    isPinned = detail.addAtPin != null;
+    id = detail.myModelId!;
+    isLoading = false;
+    setState(() {});
+
     return detail;
   }
 
   pin(int myModelId) async {
     int response = await modelService.pinMyAppliance(widget.myModelId);
     if (response == 200) {
-      myModelDetail = loadMyModelDetail();
+      // myModelDetail = loadMyModelDetail();
+      isPinned = !isPinned;
     }
     setState(() {});
   }
@@ -60,10 +72,53 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(isLoading ? '' : title),
+            IconButton(
+                onPressed: () {
+                  pin(id);
+                },
+                icon: isLoading || !isPinned
+                    ? Icon(
+                        CustomIcon.pin_outline,
+                        size: 25,
+                        color: Colors.blueGrey[200],
+                      )
+                    : Icon(
+                        CustomIcon.pin_1,
+                        size: 25,
+                        color: Colors.red[800],
+                      )),
+          ],
+        ),
+        centerTitle: true,
+        // actions: [
+        //   Padding(
+        //     padding: const EdgeInsets.symmetric(horizontal: 30.0),
+        //     child: IconButton(
+        //         onPressed: () {
+        //           pin(id);
+        //         },
+        //         icon: isLoading || !isPinned
+        //             ? const Icon(
+        //                 CustomIcon.pin_outline,
+        //                 size: 30,
+        //                 color: Colors.red,
+        //               )
+        //             : const Icon(
+        //                 CustomIcon.pin_1,
+        //                 size: 30,
+        //                 color: Colors.red,
+        //               )),
+        //   )
+        // ],
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            vertical: 30,
             horizontal: 30,
           ),
           child: FutureBuilder<MyModelDetail>(
@@ -100,55 +155,6 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
 
                 return Column(
                   children: [
-                    Stack(
-                      children: [
-                        Center(
-                          child: Column(
-                            children: [
-                              Text(
-                                model!.modelNickname!,
-                                style: const TextStyle(
-                                  fontSize: 25, // 아이콘은 약 1.5배하자
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                              Divider(
-                                indent: 120,
-                                endIndent: 120,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .outlineVariant,
-                                thickness: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconButton(
-                                onPressed: () {
-                                  pin(model.myModelId!);
-                                },
-                                icon: model.addAtPin == null
-                                    ? const Icon(
-                                        CustomIcon.pin_outline,
-                                        size: 36,
-                                        color: Colors.red,
-                                      )
-                                    : const Icon(
-                                        CustomIcon.pin_1,
-                                        size: 36,
-                                        color: Colors.red,
-                                      )),
-                            const SizedBox(
-                              width: 40,
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
                     InnerShadow(
                       shadows: [
                         Shadow(
@@ -159,12 +165,9 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                       child: TweenAnimationBuilder(
                         tween: Tween(begin: 0.0, end: 1.0),
                         curve: Curves.bounceInOut,
-                        duration: const Duration(milliseconds: 3000),
+                        duration: const Duration(milliseconds: 1800),
                         builder: (context, value, child) {
                           return Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 15,
-                            ),
                             margin: const EdgeInsets.symmetric(
                               vertical: 10,
                             ),
@@ -173,45 +176,60 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                             decoration: BoxDecoration(
                               borderRadius:
                                   const BorderRadius.all(Radius.circular(10)),
-                              color: colors[model.modelGrade! - 1]
+                              color: colors[model!.modelGrade! - 1]
                                   .withOpacity(value),
                             ),
-                            child: FutureBuilder(
+                            child: FutureBuilder<String>(
                                 future: loadImage(model.modelImg!),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
                                     return Container();
                                   }
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+
+                                  return Stack(
                                     children: [
-                                      Flexible(
-                                        flex: 1,
-                                        child: model.modelImg == null
-                                            ? Image.asset(
-                                                'assets/images/not_found.png')
-                                            : Image.network(
-                                                '${model.modelImg}',
-                                                errorBuilder: (context, error,
-                                                    stackTrace) {
-                                                  // 에러가 발생할 때 실행할 코드를 여기에 추가하세요.
-                                                  print(
-                                                      'Error loading image: $error');
-                                                  return Image.asset(
-                                                      'assets/images/not_found.png');
-                                                },
-                                              ),
-                                      ),
-                                      Flexible(
-                                        flex: 1,
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            30, 15, 30, 25),
                                         child: Image.asset(
                                           'assets/images/grade${model.modelGrade}.png',
-                                          width: MediaQuery.of(context)
-                                                  .size
-                                                  .width *
-                                              0.35,
                                         ),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          model.modelImg == null
+                                              ? Padding(
+                                                  padding: const EdgeInsets.all(
+                                                      20.0),
+                                                  child: Image.asset(
+                                                    'assets/images/not_found.png',
+                                                  ),
+                                                )
+                                              : Padding(
+                                                  padding:
+                                                      model.category == 'TV'
+                                                          ? const EdgeInsets
+                                                              .fromLTRB(
+                                                              0, 50, 20, 50)
+                                                          : const EdgeInsets
+                                                              .symmetric(
+                                                              vertical: 38,
+                                                            ),
+                                                  child: Image.network(
+                                                    '${model.modelImg}',
+                                                    errorBuilder: (context,
+                                                        error, stackTrace) {
+                                                      print(
+                                                          'Error loading image: $error');
+                                                      return Image.asset(
+                                                          'assets/images/not_found.png');
+                                                    },
+                                                  ),
+                                                ),
+                                        ],
                                       ),
                                     ],
                                   );
@@ -219,41 +237,6 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                           );
                         },
                       ),
-                      // Container(
-                      //   padding: const EdgeInsets.symmetric(
-                      //     horizontal: 15,
-                      //   ),
-                      //   margin: const EdgeInsets.symmetric(
-                      //     vertical: 10,
-                      //   ),
-                      //   height: 210,
-                      //   width: MediaQuery.of(context).size.width * 0.83,
-                      //   decoration: BoxDecoration(
-                      //     borderRadius:
-                      //         const BorderRadius.all(Radius.circular(10)),
-                      //     color: colors[model.modelGrade! - 1],
-                      //   ),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.center,
-                      //     children: [
-                      //       Flexible(
-                      //         flex: 1,
-                      //         child: model.modelImg == null
-                      //             ? Image.asset('assets/images/not_found.png')
-                      //             : Image.network(
-                      //                 '${model.modelImg}',
-                      //               ),
-                      //       ),
-                      //       Flexible(
-                      //         flex: 1,
-                      //         child: Image.asset(
-                      //           'assets/images/grade${model.modelGrade}.png',
-                      //           width: MediaQuery.of(context).size.width * 0.35,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
                     ),
                     Expanded(
                       child: Padding(
@@ -282,7 +265,7 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                                   "제품군",
                                 ),
                                 title: Text(
-                                  "${model.category}",
+                                  "${model!.category}",
                                   style: const TextStyle(
                                     fontWeight: FontWeight.w700,
                                   ),
@@ -432,10 +415,10 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                       width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
                       height:
                           MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
-                      label: "새로운 가전 구경하러 가기", // 버튼에 표시할 텍스트
+                      label: "새로운 가전 구경하러 가기 ▷▶", // 버튼에 표시할 텍스트
                     ),
                     const SizedBox(
-                      height: 10,
+                      height: 30,
                     ),
                   ],
                 );

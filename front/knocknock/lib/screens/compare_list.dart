@@ -62,10 +62,10 @@ class _CompareListState extends State<CompareList> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const Text(
-                "어떤 가전과 비교하시겠어요?",
+                "나의 가전과 비교할 수 있어요!",
                 style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w700,
+                  fontSize: 24,
+                  // fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.center,
               ),
@@ -137,6 +137,14 @@ class _CompareListState extends State<CompareList> {
                               Tile(
                                 isBookmarked: false,
                                 onTap: () {
+                                  context
+                                      .read<SelectedAppliance>()
+                                      .selectMyModel(model.myModelId!);
+
+                                  context
+                                      .read<SelectedAppliance>()
+                                      .selectNickname(model.modelNickname!);
+
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
