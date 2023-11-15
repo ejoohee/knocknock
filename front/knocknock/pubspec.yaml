@@ -37,7 +37,7 @@ dependencies:
   http: ^0.13.3
   flutter_secure_storage: ^9.0.0
   http_interceptor: ^1.0.2
-  url_launcher: ^6.1.14
+  url_launcher: ^6.2.1
   flutter_inner_shadow: ^0.0.1
   camera: ^0.10.5+5
   path_provider: ^2.1.1
@@ -58,6 +58,8 @@ dependencies:
   text_divider: ^1.0.0
   video_player: ^2.8.1
   google_maps_flutter: ^2.5.0
+  cube_transition_plus: ^2.0.1
+  page_transition: ^2.1.0
 
 dev_dependencies:
   flutter_test:
@@ -78,6 +80,10 @@ flutter:
   assets:
     #images
     - assets/images/google.png
+    - assets/images/emoji_thinking.png
+    - assets/images/question_marks.png
+    - assets/images/versus.png
+    - assets/images/face2.png
     - assets/images/label_example.png
     - assets/images/label_example_blur.png
     - assets/icons/TV.png
