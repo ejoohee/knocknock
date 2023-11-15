@@ -560,10 +560,19 @@ public class UserServiceImpl implements UserService {
         int tmpBill = 0;
         for (int i = 4; i >= 0; i--) {
             last = date.minusMonths(i);
-            dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
-            if(tmpBill == 0 && dto.getBill() != null) {
-                tmpPowerUsage = dto.getPowerUsage();
-                tmpBill = dto.getBill();
+            if(last.getYear() == 2023 && last.getMonthValue() >= 9) {
+                dto = FindPowerUsageHouseAvgResDto.builder()
+                        .year(last.getYear())
+                        .month(last.getMonthValue())
+                        .powerUsage(null)
+                        .bill(null)
+                        .build();
+            }else {
+                dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
+                if (tmpBill == 0 && dto.getBill() != null) {
+                    tmpPowerUsage = dto.getPowerUsage();
+                    tmpBill = dto.getBill();
+                }
             }
             dtoList.add(dto);
         }
