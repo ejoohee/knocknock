@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -579,8 +580,8 @@ public class UserServiceImpl implements UserService {
         // 2023년 9, 10, 11월 데이터가 없음,,,
         for (int i = 0; i <= 4; i++) {
             if(dtoList.get(i).getPowerUsage() == null) {
-                dtoList.get(i).setPowerUsage(tmpPowerUsage + dtoList.get(i).getMonth());
-                dtoList.get(i).setBill(tmpBill + dtoList.get(i).getYear());
+                dtoList.get(i).setPowerUsage(tmpPowerUsage + tmpPowerUsage / dtoList.get(i).getMonth());
+                dtoList.get(i).setBill(tmpBill + tmpBill / dtoList.get(i).getYear());
             }
         }
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 성공.");
