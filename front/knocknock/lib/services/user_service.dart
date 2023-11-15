@@ -391,12 +391,34 @@ class UserService {
       url,
       headers: headers,
     );
+    print(response.body);
     final Map<String, dynamic> responseData =
         jsonDecode(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       return responseData;
     } else {
       return responseData;
+    }
+  }
+
+  // 14. 녹색 인증 제품 확인
+  Future<List<Map<String, dynamic>>> checkGreenLabel(String keyword) async {
+    final url = Uri.parse("$baseUrl/greenproduct/search?keyword=$keyword");
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+    final response = await client.get(
+      url,
+      headers: headers,
+    );
+
+    if (response.statusCode == 200) {
+      List<dynamic> rawData = jsonDecode(utf8.decode(response.bodyBytes));
+      print(rawData);
+      return rawData.map((e) => e as Map<String, dynamic>).toList();
+    } else {
+      throw Exception('Failed to load data');
     }
   }
 }

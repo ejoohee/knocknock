@@ -56,6 +56,8 @@ dependencies:
   fl_chart: ^0.64.0
   vertical_barchart: ^2.0.0+2
   text_divider: ^1.0.0
+  video_player: ^2.8.1
+  google_maps_flutter: ^2.5.0
 
 dev_dependencies:
   flutter_test:
@@ -104,7 +106,16 @@ flutter:
     - assets/images/grade4.png
     - assets/images/grade5.png
     - assets/images/waving_tree.gif
-
+    - assets/images/green.png
+    - assets/images/good.png
+    - assets/images/soso.png
+    - assets/images/bad.png
+    - assets/images/verybad.png
+    - assets/videos/goodBackground.mp4
+    - assets/videos/sosoBackground.mp4
+    - assets/videos/badBackground.mp4
+    - assets/videos/verybadBackground.mp4
+    - assets/videos/goodBackground2.mp4
   fonts:
     - family: CustomIcon
       fonts:

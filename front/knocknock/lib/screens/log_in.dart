@@ -61,7 +61,13 @@ class _LoginState extends State<Login> {
   }
 
   googleLogin(String email, String nickname) async {
+    setState(() {
+      isLoading = true;
+    });
     final response = await userService.googleCheckEmail(email);
+    setState(() {
+      isLoading = false;
+    });
     if (response == 200) {
       final response2 =
           await userService.googleLogin(email, email, email, email);

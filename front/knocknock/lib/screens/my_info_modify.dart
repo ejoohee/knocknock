@@ -6,6 +6,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:knocknock/screens/my_page.dart';
 import 'package:knocknock/services/user_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
+import 'package:knocknock/widgets/app_bar_page.dart';
 import 'package:remedi_kopo/remedi_kopo.dart';
 
 class MyInfoModify extends StatefulWidget {
@@ -272,7 +273,10 @@ class _MyInfoModifyState extends State<MyInfoModify> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: const AppBarBack(title: "", page: HomeScreen()),
+      appBar: const AppBarPage(
+        title: "내 정보 수정",
+        page: HomeScreen(),
+      ),
       body: Stack(
         children: [
           SingleChildScrollView(
