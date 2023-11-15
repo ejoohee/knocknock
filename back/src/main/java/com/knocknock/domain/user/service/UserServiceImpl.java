@@ -17,7 +17,7 @@ import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
-import com.knocknock.global.common.kepco.KepcoAPIWebClient;
+import com.knocknock.global.common.external.kepco.KepcoAPIWebClient;
 import com.knocknock.global.common.openapi.airInfo.AirInfoService;
 import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
@@ -35,7 +35,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -561,10 +560,19 @@ public class UserServiceImpl implements UserService {
         int tmpBill = 0;
         for (int i = 4; i >= 0; i--) {
             last = date.minusMonths(i);
-            dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
-            if(tmpBill == 0 && dto.getBill() != null) {
-                tmpPowerUsage = dto.getPowerUsage();
-                tmpBill = dto.getBill();
+            if(last.getYear() == 2023 && last.getMonthValue() >= 9) {
+                dto = FindPowerUsageHouseAvgResDto.builder()
+                        .year(last.getYear())
+                        .month(last.getMonthValue())
+                        .powerUsage(null)
+                        .bill(null)
+                        .build();
+            }else {
+                dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
+                if (tmpBill == 0 && dto.getBill() != null) {
+                    tmpPowerUsage = dto.getPowerUsage();
+                    tmpBill = dto.getBill();
+                }
             }
             dtoList.add(dto);
         }

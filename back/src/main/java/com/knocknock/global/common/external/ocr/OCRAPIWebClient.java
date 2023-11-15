@@ -1,9 +1,11 @@
-package com.knocknock.global.common.ocr;
+package com.knocknock.global.common.external.ocr;
 
 
-import com.knocknock.global.common.ocr.dto.ImageInfoDto;
-import com.knocknock.global.common.ocr.dto.ImageRequestDto;
+import com.knocknock.global.common.external.constants.ExternalApiBaseUrl;
+import com.knocknock.global.common.external.ocr.dto.ImageInfoDto;
+import com.knocknock.global.common.external.ocr.dto.ImageRequestDto;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -22,11 +24,14 @@ public class OCRAPIWebClient {
 
     private WebClient ocrWebClient;
 
+    @Value("${spring.ocr.secret}")
+    private String ocrSecret;
+
     @PostConstruct
     public void init() {
         ocrWebClient = WebClient.builder()
-                .baseUrl("https://wjibbfej6w.apigw.ntruss.com/custom/v1/25714/ae22652173a41a47c1a7d8825811303a9a2c989203f7d8b3857aadefee96dcb8/general")
-                .defaultHeader("X-OCR-SECRET", "U21rWm1WZ3R3cVFKdnlVckVnaGhaY3BYbE1oemJZem8=")
+                .baseUrl(ExternalApiBaseUrl.OCR_TEXT.getUrl())
+                .defaultHeader("X-OCR-SECRET", ocrSecret)
                 .build();
     }
 
