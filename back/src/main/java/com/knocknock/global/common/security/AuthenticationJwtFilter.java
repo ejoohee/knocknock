@@ -50,7 +50,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain) throws ServletException, IOException {
         String accessToken = getAccessToken(req);
-        log.info("get해와서 accessToken : {}", accessToken);
+//        log.info("get해와서 accessToken : {}", accessToken);
 
         if (accessToken != null && !accessToken.equals("undefined")) {
 
@@ -61,7 +61,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             String email = null;
             try {
                 email = jwtUtil.getLoginEmail(accessToken);
-                log.info("[토큰 필터] email : {}", email);
+//                log.info("[토큰 필터] email : {}", email);
             } catch (ExpiredJwtException e) {
                 // 토큰 만료
                 log.info("[토큰 필터] 토큰 만료.");
@@ -71,7 +71,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
                 setResponse(res, HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다.");
             }
 
-            log.info("[토큰 필터] 토큰 검사 완료!");
+//            log.info("[토큰 필터] 토큰 검사 완료!");
 
             if (email == null) {
                 log.error("[토큰 필터] 유저 정보를 반환하지 못했습니다.");
@@ -81,9 +81,9 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             UserDetails userDetails = userDetailsService.loadUserByUsername(email);
 
             // 액세스 토큰 생성 시 사용된 이메일 아이디와 현재 이메일 아이디가 일치하는지 확인
-            log.info("userDetails 의 email ------------->{}", userDetails.getUsername());
-            log.info("그냥 email ------------->{}", email);
-            log.info("일치 여부 ------------->{}", email.equals(userDetails.getUsername()));
+//            log.info("userDetails 의 email ------------->{}", userDetails.getUsername());
+//            log.info("그냥 email ------------->{}", email);
+//            log.info("일치 여부 ------------->{}", email.equals(userDetails.getUsername()));
             equalsUsernameFromTokenAndUserDetails(userDetails.getUsername(), email);
 
             // 액세스 토큰의 유효성 검증
@@ -91,11 +91,11 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
             // securityContextHolder에 인증된 회원의 정보를 저장
             processSecurity(req, userDetails);
 
-            log.info("[토큰 유효성 검사 완전완전 완료~~] user : {}", userDetails.getUsername());
+//            log.info("[토큰 유효성 검사 완전완전 완료~~] user : {}", userDetails.getUsername());
         }
 
         // 다음 순서 필터로 넘어가기
-        log.info("[다음 순서 필터로 넘어가]");
+//        log.info("[다음 순서 필터로 넘어가]");
         filterChain.doFilter(req, res);
     }
 
@@ -113,7 +113,7 @@ public class AuthenticationJwtFilter extends OncePerRequestFilter {
         String headerAuth = req.getHeader(JwtHeaderUtilEnum.AUTHORIZATION.getValue()); // 포스트맨용
 //        String headerAuth = req.getHeader("accessToken"); // 스웨거용
 
-        log.info("[header] {}", headerAuth);
+//        log.info("[header] {}", headerAuth);
 
         if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(JwtHeaderUtilEnum.GRANT_TYPE.getValue())) {
             return headerAuth.substring(JwtHeaderUtilEnum.GRANT_TYPE.getValue().length());

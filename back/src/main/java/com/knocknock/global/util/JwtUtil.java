@@ -39,7 +39,7 @@ public class JwtUtil {
      * @return
      */
     public Claims extractClaims(String token) { // 여기서의 token은 Bearer 접두사가 사라진 토큰임
-        log.info("[extractClaims] 실행 토큰 : {}", token);
+//        log.info("[extractClaims] 실행 토큰 : {}", token);
 
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey(SECRET_KEY))
@@ -116,7 +116,7 @@ public class JwtUtil {
      * Claims에서 loginEmail 추출
      */
     public String getLoginEmail(String token) {
-        log.info("getLoginEmail 토큰 : {}", token);
+//        log.info("getLoginEmail 토큰 : {}", token);
 
         token = prefixToken(token); // 유저써비스용
 
