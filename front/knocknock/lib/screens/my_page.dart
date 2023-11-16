@@ -190,7 +190,8 @@ class _MyPageState extends State<MyPage> {
           horizontal: 30,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
           children: [
             const SizedBox(
               height: 40,
@@ -201,13 +202,11 @@ class _MyPageState extends State<MyPage> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.fromLTRB(15, 15, 10, 15),
                       child: Container(
-                        padding: const EdgeInsets.all(20),
-                        height: 100,
-                        width: 100,
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(15),
                           color: Theme.of(context).colorScheme.outlineVariant,
                           boxShadow: [
                             BoxShadow(
@@ -229,20 +228,23 @@ class _MyPageState extends State<MyPage> {
                           ],
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
                               '등록한 가전 수',
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
                               ),
                               textAlign: TextAlign.left,
                             ),
                             Text(
                               '${context.watch<RegisterAppliance>().qtt} 개',
-                              style: const TextStyle(fontSize: 15),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w300,
+                              ),
                               textAlign: TextAlign.left,
                             ),
                           ],
@@ -252,13 +254,11 @@ class _MyPageState extends State<MyPage> {
                   ),
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.fromLTRB(10, 15, 15, 15),
                       child: Container(
-                        padding: const EdgeInsets.all(20),
-                        height: 100,
-                        width: 100,
+                        padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(15),
                           color: Theme.of(context).colorScheme.outlineVariant,
                           boxShadow: [
                             BoxShadow(
@@ -280,21 +280,22 @@ class _MyPageState extends State<MyPage> {
                           ],
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text(
                               'Today is...',
                               style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w700,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w800,
                               ),
                               textAlign: TextAlign.left,
                             ),
                             Text(
                               today,
                               style: const TextStyle(
-                                fontSize: 15,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w300,
                               ),
                               textAlign: TextAlign.left,
                             ),
@@ -317,7 +318,8 @@ class _MyPageState extends State<MyPage> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -327,8 +329,10 @@ class _MyPageState extends State<MyPage> {
                     );
                   },
                   child: Container(
+                    // height: 100,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
                       boxShadow: [
                         BoxShadow(
@@ -364,12 +368,15 @@ class _MyPageState extends State<MyPage> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GestureDetector(
                   onTap: onAverageElectronTap,
                   child: Container(
+                    // height: 100,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
                       boxShadow: [
                         BoxShadow(
@@ -408,12 +415,15 @@ class _MyPageState extends State<MyPage> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GestureDetector(
                   onTap: onWasteInfoTap,
                   child: Container(
+                    // height: 100,
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
                       boxShadow: [
                         BoxShadow(
@@ -457,12 +467,13 @@ class _MyPageState extends State<MyPage> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GestureDetector(
                   onTap: onMyInfoModifyTextPressed,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
                       boxShadow: [
                         BoxShadow(
@@ -498,12 +509,13 @@ class _MyPageState extends State<MyPage> {
             Flexible(
               flex: 2,
               child: Padding(
-                padding: const EdgeInsets.all(15.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
                 child: GestureDetector(
                   onTap: onLogoutTextPressed,
                   child: Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
                       boxShadow: [
                         BoxShadow(
