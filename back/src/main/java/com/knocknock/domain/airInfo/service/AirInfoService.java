@@ -125,12 +125,14 @@ public class AirInfoService {
             }
         }
 
-        if(jsonObject.getJsonObject("response") == null) {
-            log.error("공공데이터를 불러오지 못했어여ㅠ");
+        try {
+            jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
+        } catch (NullPointerException e) {
+            log.error("공공데이터를 못받아와서 null이 되었음 ㅠㅠ");
             return AirInfoResDto.whenIsNull();
         }
 
-        jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
+//        jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
         JsonArray items = jsonObject.getJsonArray("items");
         log.info("items(ARRAY) : {}", items.get(0));
 
@@ -142,7 +144,6 @@ public class AirInfoService {
         // ConnectionException뜨면 다시 보낼수 있게 추가하기 !!!!!!!!!!!
 
         // 9. 전달받은 데이터 확인!
-
     }
 
 }
