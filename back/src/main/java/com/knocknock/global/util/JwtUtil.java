@@ -68,7 +68,8 @@ public class JwtUtil {
     }
     
     public String generateAccessToken(String email) {
-        return createToken(email, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_TIME.getValue()); // 확인해바야함
+//        return createToken(email, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_TIME.getValue()); // 확인해바야함
+        return createToken(email, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_INFINITE.getValue());
     }
 
     public String generateRefreshToken(String email) {
