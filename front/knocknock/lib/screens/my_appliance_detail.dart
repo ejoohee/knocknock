@@ -142,7 +142,12 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircularProgressIndicator(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
                       ],
                     ),
                   );
