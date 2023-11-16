@@ -1,5 +1,7 @@
 import 'dart:math';
-import 'package:knocknock/screens/trees.dart';
+import 'package:knocknock/widgets/no_tree.dart';
+import 'package:knocknock/widgets/trees.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:text_divider/text_divider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -95,7 +97,7 @@ class _CompareState extends State<Compare> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('비교비교')),
+      appBar: const AppBarBack(title: '비교하기'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -137,8 +139,8 @@ class _CompareState extends State<Compare> {
                       costN = models.modelACost!.toDouble();
                       costM = models.modelBCost!.toDouble();
                       treeCnt = models.treeCnt!;
-                      newImg = models.modelAImg!;
-                      oldImg = models.modelBImg!;
+                      newImg = models.modelAImg ?? '';
+                      oldImg = models.modelBImg ?? '';
 
                       List<VBarChartModel> gradeNew = [
                         VBarChartModel(
@@ -259,94 +261,142 @@ class _CompareState extends State<Compare> {
                           children: [
                             SizedBox(
                               height: 180,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
+                              child: Stack(
+                                alignment: Alignment.center,
                                 children: [
-                                  Expanded(
-                                    flex: newImageFlex(),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // 새 가전 탭
-                                        setState(() {
-                                          selectedIndex = 0;
-                                        });
-                                      },
-                                      onDoubleTap: () {
-                                        setState(() {
-                                          selectedIndex = -1;
-                                        });
-                                      },
-                                      child: Stack(
-                                        alignment: AlignmentDirectional.center,
-                                        children: [
-                                          Image.network(
-                                            newImg,
-                                            scale: selectedIndex == 0 ? 0.9 : 1,
-                                          ),
-                                          const Center(
-                                            child: Text(
-                                              "NEW",
-                                              style: TextStyle(
-                                                letterSpacing: 2,
-                                                color: Colors.white70,
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.w700,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.black,
-                                                    offset: Offset(2, 2),
-                                                    blurRadius: 4,
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      Expanded(
+                                        flex: newImageFlex(),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // 새 가전 탭
+                                            setState(() {
+                                              selectedIndex = 0;
+                                            });
+                                          },
+                                          onDoubleTap: () {
+                                            setState(() {
+                                              selectedIndex = -1;
+                                            });
+                                          },
+                                          child: Stack(
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            children: [
+                                              newImg == ''
+                                                  ? Image.asset(
+                                                      'assets/images/question_marks.png',
+                                                      width: MediaQuery.sizeOf(
+                                                                  context)
+                                                              .width /
+                                                          3,
+                                                    )
+                                                  : Image.network(
+                                                      newImg,
+                                                      scale: selectedIndex == 0
+                                                          ? 0.9
+                                                          : 1,
+                                                      errorBuilder: (context,
+                                                          error, stackTrace) {
+                                                        // print(
+                                                        //     'Error loading image: $error');
+                                                        return Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .only(
+                                                                  right: 30.0),
+                                                          child: Image.asset(
+                                                            'assets/images/question_marks.png',
+                                                            width: MediaQuery
+                                                                        .sizeOf(
+                                                                            context)
+                                                                    .width /
+                                                                3,
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                              const Center(
+                                                child: Text(
+                                                  "NEW",
+                                                  style: TextStyle(
+                                                    letterSpacing: 2,
+                                                    color: Colors.white70,
+                                                    fontSize: 30,
+                                                    fontWeight: FontWeight.w700,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black,
+                                                        offset: Offset(2, 2),
+                                                        blurRadius: 4,
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: myImageFlex(),
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        // 내 가전 탭
-                                        setState(() {
-                                          selectedIndex = 1;
-                                        });
-                                      },
-                                      onDoubleTap: () {
-                                        setState(() {
-                                          selectedIndex = -1;
-                                        });
-                                      },
-                                      child: Stack(
-                                        alignment: AlignmentDirectional.center,
-                                        children: [
-                                          Image.network(oldImg,
-                                              scale:
-                                                  selectedIndex == 1 ? 0.9 : 1),
-                                          Center(
-                                            child: Text(
-                                              nickname,
-                                              style: const TextStyle(
-                                                letterSpacing: 2,
-                                                color: Colors.white70,
-                                                fontSize: 30,
-                                                fontWeight: FontWeight.w700,
-                                                shadows: [
-                                                  Shadow(
-                                                    color: Colors.black,
-                                                    offset: Offset(2, 2),
-                                                    blurRadius: 4,
+                                      Expanded(
+                                        flex: myImageFlex(),
+                                        child: GestureDetector(
+                                          onTap: () {
+                                            // 내 가전 탭
+                                            setState(() {
+                                              selectedIndex = 1;
+                                            });
+                                          },
+                                          onDoubleTap: () {
+                                            setState(() {
+                                              selectedIndex = -1;
+                                            });
+                                          },
+                                          child: Stack(
+                                            alignment:
+                                                AlignmentDirectional.center,
+                                            children: [
+                                              oldImg == ''
+                                                  ? Image.asset(
+                                                      'assets/images/question_marks.png')
+                                                  : Image.network(oldImg,
+                                                      scale: selectedIndex == 1
+                                                          ? 0.9
+                                                          : 1),
+                                              Center(
+                                                child: Text(
+                                                  nickname,
+                                                  style: const TextStyle(
+                                                    letterSpacing: 2,
+                                                    color: Colors.white70,
+                                                    fontSize: 30,
+                                                    fontWeight: FontWeight.w700,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black,
+                                                        offset: Offset(2, 2),
+                                                        blurRadius: 4,
+                                                      ),
+                                                    ],
                                                   ),
-                                                ],
+                                                ),
                                               ),
-                                            ),
+                                            ],
                                           ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
+                                  Center(
+                                    child: Image.asset(
+                                      'assets/images/versus.png',
+                                      width:
+                                          MediaQuery.sizeOf(context).width / 6,
+                                    ),
+                                  )
                                 ],
                               ),
                             ),
@@ -515,9 +565,11 @@ class _CompareState extends State<Compare> {
             builder: (BuildContext dialogContext) {
               return StatefulBuilder(
                   builder: (BuildContext context, StateSetter setState) {
-                return Trees(
-                  treeCnt: treeCnt,
-                );
+                return treeCnt > 0
+                    ? Trees(
+                        treeCnt: treeCnt,
+                      )
+                    : const NoTree();
               });
             },
           );

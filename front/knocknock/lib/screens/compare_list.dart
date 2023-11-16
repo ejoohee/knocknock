@@ -52,7 +52,9 @@ class _CompareListState extends State<CompareList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(title: '비교하기'),
+      appBar: const AppBarBack(
+        title: '비교하기',
+      ),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(
@@ -64,10 +66,17 @@ class _CompareListState extends State<CompareList> {
               const Text(
                 "나의 가전과 비교할 수 있어요!",
                 style: TextStyle(
-                  fontSize: 24,
+                  fontSize: 22,
                   // fontWeight: FontWeight.w700,
                 ),
                 textAlign: TextAlign.center,
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+              const Divider(
+                indent: 20,
+                endIndent: 20,
               ),
               FutureBuilder(
                 future: modelListFuture,
@@ -152,7 +161,10 @@ class _CompareListState extends State<CompareList> {
                                   );
                                 },
                                 onLongPress: () {},
-                                color: Colors.grey.shade300,
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .shadow
+                                    .withAlpha(20),
                                 child: ListTile(
                                   titleAlignment: ListTileTitleAlignment.center,
                                   leading: ExcludeSemantics(
@@ -169,7 +181,10 @@ class _CompareListState extends State<CompareList> {
                                       ),
                                     ),
                                   ),
-                                  title: Text(model.modelNickname!),
+                                  title: Text(
+                                    model.modelNickname!,
+                                    style: const TextStyle(color: Colors.amber),
+                                  ),
                                   subtitle: Text(
                                       '${model.modelBrand!}\n${model.category!}'),
                                 ),

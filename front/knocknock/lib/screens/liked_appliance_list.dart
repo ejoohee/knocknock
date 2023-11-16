@@ -232,6 +232,9 @@ class _LikedApplianceListState extends State<LikedApplianceList> {
                                     context
                                         .read<SelectedAppliance>()
                                         .selectModel(model.modelId!);
+                                    context
+                                        .read<SelectedAppliance>()
+                                        .select(model.category!);
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

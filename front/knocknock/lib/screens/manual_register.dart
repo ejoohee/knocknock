@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/display_info_screen.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
@@ -35,10 +36,64 @@ class _ManualRegisterState extends State<ManualRegister> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           // Retrieve the text the that user has entered by using the
           // TextEditingController.
-          content: Text('모델명을 조회할 수 없습니다.'),
+          content: const Text(
+            '모델명을 조회할 수 없습니다.',
+            style: TextStyle(
+              fontSize: 16,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.justify,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  dup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          // Retrieve the text the that user has entered by using the
+          // TextEditingController.
+          content: const Text(
+            '이미 내 가전으로 등록되어있습니다.\n내 가전 목록으로 이동하시겠어요?',
+            style: TextStyle(
+              fontSize: 13,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.justify,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<CurrentPageIndex>().move(3);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+              child: const Text('확인'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('취소'),
+            ),
+          ],
         );
       },
     );
@@ -119,6 +174,8 @@ class _ManualRegisterState extends State<ManualRegister> {
                         await getModelInfo();
                         if (info == null) {
                           failLoad();
+                        } else if (info!.category! == '중복') {
+                          dup();
                         } else {
                           await Navigator.of(context).push(
                             MaterialPageRoute(

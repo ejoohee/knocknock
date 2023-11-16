@@ -184,7 +184,11 @@ class _WasteInfoState extends State<WasteInfo> {
                             height: 400,
                             child: GoogleMap(
                               onMapCreated: (controller) {
-                                mapController = controller;
+                                if (mounted) {
+                                  setState(() {
+                                    mapController = controller;
+                                  });
+                                }
                               },
                               initialCameraPosition: CameraPosition(
                                 target: LatLng(locationY, locationX),
