@@ -24,7 +24,7 @@ public class AirInfoController {
     )
     @GetMapping
     public ResponseEntity<AirInfoResDto> getAirInfoByRegion(@RequestHeader(ACCESS_TOKEN) String token) throws IOException {
-        return ResponseEntity.ok(airInfoService.getAirInfoByRegion(token));
+        return ResponseEntity.ok(airInfoService.getAirInfoByRegion(token, 5));
     }
 
 }
