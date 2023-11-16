@@ -40,9 +40,8 @@ public class AirInfoService {
 
     private final String API_KEY = "XymYPoqUHNl0U%2Fuo0Tbs6LJ5VZQfWjXVfWjMBAfEnBFI8fSenYRRca0X%2B%2FRrmACkJYcS4WlJvNyf1NA4adMJvA%3D%3D";
 
-    private int timeOut = 5;
 
-    public AirInfoResDto getAirInfoByRegion(String token) throws IOException {
+    public AirInfoResDto getAirInfoByRegion(String token, int timeOut) throws IOException {
         log.info("[실시간 대기정보 조회] 메서드에 진입했어요. ----------------------------------------------------");
 
         // 로그인 사용자의 측정소 뽑아오기
@@ -114,22 +113,21 @@ public class AirInfoService {
                 timeOut = 0;
             } catch (JsonParsingException e) {
                 log.error("JSON 파싱 실패. 재시도 GO");
-                timeOut--;
-                log.error("5번 기회 중 {}번 기회 남음.", timeOut);
+                log.error("5번 기회 중 {}번 기회 남음.", timeOut-1);
 
                 try {
                     Thread.sleep(3000);
 
-                    return getAirInfoByRegion(token);
+                    return getAirInfoByRegion(token, timeOut-1);
                 } catch (InterruptedException ex) {
                     throw new RuntimeException(ex);
                 }
             }
         }
 
-        if(timeOut == 0) {
-            log.error("결국 파싱을 실패했어.... ");
-            return null;
+        if(jsonObject.getJsonObject("response") == null) {
+            log.error("공공데이터를 불러오지 못했어여ㅠ");
+            return AirInfoResDto.whenIsNull();
         }
 
         jsonObject = jsonObject.getJsonObject("response").getJsonObject("body");
