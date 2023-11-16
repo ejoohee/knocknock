@@ -41,11 +41,14 @@ class _WasteInfoState extends State<WasteInfo> {
       locationY = double.parse(result['documents'][0]['address']['y']);
     });
 
-    mapController!.animateCamera(
-      CameraUpdate.newLatLng(
-        LatLng(locationY, locationX),
-      ),
-    );
+    if (mapController != null) {
+      mapController!.animateCamera(
+        CameraUpdate.newLatLng(
+          LatLng(locationY, locationX),
+        ),
+      );
+    }
+
     // ExpansionTile이 열린 상태를 업데이트
     setState(() {
       expansionTileOpenState[index] = true;
@@ -203,10 +206,13 @@ class _WasteInfoState extends State<WasteInfo> {
                   ),
           ),
           const Divider(),
-          Text(
-            '거주지에 폐기물 수거 업체가 없다면 가장 가까운 업체를 추천합니다.',
-            style: TextStyle(
-              color: Colors.green[900],
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              '거주지에 폐기물 수거 업체가 없다면 가장 가까운 업체를 추천합니다.',
+              style: TextStyle(
+                color: Colors.green[900],
+              ),
             ),
           ),
           const SizedBox(

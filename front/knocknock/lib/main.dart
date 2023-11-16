@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:knocknock/color_schemes.g.dart';
 import 'package:knocknock/providers/my_appliance.dart';
 import 'package:knocknock/providers/page_index.dart';
@@ -44,6 +45,7 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   static FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  final storage = const FlutterSecureStorage();
   const MyApp({super.key});
 
   @override
@@ -80,7 +82,19 @@ class MyApp extends StatelessWidget {
           //   useMaterial3: true,
           //   colorScheme: darkColorScheme,
           // ),
-          home: const Login(),
+          // home: const StartPage(),
+          home: FutureBuilder<String?>(
+            future: storage.read(key: "accessToken"),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasData && snapshot.data != null) {
+                  return const HomeScreen();
+                }
+                return const StartPage();
+              }
+              return const CircularProgressIndicator();
+            },
+          ),
         );
       },
     );

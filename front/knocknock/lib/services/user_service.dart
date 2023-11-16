@@ -378,29 +378,6 @@ class UserService {
     return 500; // 서버 연결 오류
   }
 
-  // 13. 가구 평균 전력 사용량 조회
-  Future<Map<String, dynamic>> averageElectronic(
-      String metro, String city, int year, int month) async {
-    final url = Uri.parse(
-        "$baseUrl/user/powerUsage/houseAvg?metro=$metro&city=$city&year=$year&month=$month");
-    final token = await storage.read(key: "accessToken");
-    final headers = {
-      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
-    };
-    final response = await client.get(
-      url,
-      headers: headers,
-    );
-    print(response.body);
-    final Map<String, dynamic> responseData =
-        jsonDecode(utf8.decode(response.bodyBytes));
-    if (response.statusCode == 200) {
-      return responseData;
-    } else {
-      return responseData;
-    }
-  }
-
   // 14. 녹색 인증 제품 확인
   Future<List<Map<String, dynamic>>> checkGreenLabel(String keyword) async {
     final url = Uri.parse("$baseUrl/greenproduct/search?keyword=$keyword");
