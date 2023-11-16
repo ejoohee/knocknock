@@ -19,7 +19,7 @@ class HttpInterceptor implements InterceptorContract {
 
   @override
   Future<ResponseData> interceptResponse({required ResponseData data}) async {
-    if (data.statusCode == 403) {
+    if (data.statusCode == 403 || data.statusCode == 401) {
       // String? accessToken = await storage.read(key: "accessToken");
       String? refreshToken = await storage.read(key: "refreshToken");
 

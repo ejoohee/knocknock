@@ -1,10 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knocknock/common/custom_icon_icons.dart';
+import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/interceptors/interceptor.dart';
 import 'package:knocknock/screens/manage_appliances.dart';
 import 'package:knocknock/screens/view_greenproducts.dart';
 import 'package:knocknock/services/outer_service.dart' hide storage;
 import 'package:knocknock/services/user_service.dart' hide storage;
+// import 'package:knocknock/widgets/cai_info.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -108,11 +110,12 @@ class _MainPageState extends State<MainPage> {
   Future onSerchButtonTap() async {
     final response = await userService.checkGreenLabel(keywordController.text);
     if (!mounted) return;
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => ViewGreenProducts(
-                info: response, keyword: keywordController.text)));
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) =>
+            ViewGreenProducts(info: response, keyword: keywordController.text),
+      ),
+    );
   }
 
   @override
@@ -132,6 +135,10 @@ class _MainPageState extends State<MainPage> {
                   ),
                 )
               : Container(),
+          Positioned.fill(
+              child: Container(
+            color: Theme.of(context).colorScheme.background.withOpacity(0.35),
+          )),
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -143,27 +150,60 @@ class _MainPageState extends State<MainPage> {
                       alignment: Alignment.bottomCenter,
                       child: Text(
                         '$address2의 공기질',
-                        style: const TextStyle(
-                            fontSize: 35, fontWeight: FontWeight.w600),
+                        style: TextStyle(
+                          fontSize: 27,
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onBackground
+                              .withOpacity(0.95),
+                        ),
                       ),
                     ),
                     Container(
                       // height: MediaQuery.of(context).size.height * 0.2,
                       alignment: Alignment.topCenter,
-                      child: const Text(
-                        '통합대기환경지수(CAI, Comprehensive air-quality index)',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.grey,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            '통합대기환경지수(CAI, Comprehensive air-quality index)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.outline,
+                            ),
+                          ),
+                          IconButton(
+                              onPressed: () {
+                                // showDialog(
+                                //   context: context,
+                                //   builder: (BuildContext dialogContext) {
+                                //     return StatefulBuilder(builder:
+                                //         (BuildContext context,
+                                //             StateSetter setState) {
+                                //       return const CAI();
+                                //     });
+                                //   },
+                                // );
+                              },
+                              icon: Icon(
+                                CustomIcon.info,
+                                color: Theme.of(context).colorScheme.outline,
+                                size: 15,
+                              )),
+                        ],
                       ),
                     ),
                     Container(
-                      margin: const EdgeInsets.symmetric(vertical: 20),
+                      margin: const EdgeInsets.symmetric(vertical: 10),
                       width: 150,
                       height: 150,
                       decoration: BoxDecoration(
-                          image: DecorationImage(image: AssetImage(imagePath))),
+                        image: DecorationImage(
+                          image: AssetImage(imagePath),
+                        ),
+                      ),
                     )
                   ],
                 ),
@@ -174,9 +214,16 @@ class _MainPageState extends State<MainPage> {
                 Container(
                   padding: const EdgeInsets.all(40),
                   alignment: Alignment.center,
-                  child: const Text(
+                  child: Text(
                     '녹색 제품 검색',
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w600),
+                    style: TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.w600,
+                      color: Theme.of(context)
+                          .colorScheme
+                          .onBackground
+                          .withOpacity(0.95),
+                    ),
                   ),
                 ),
                 Container(
@@ -198,6 +245,7 @@ class _MainPageState extends State<MainPage> {
                         icon: const Icon(Icons.search),
                       ),
                       filled: true,
+                      fillColor: Theme.of(context).colorScheme.surfaceVariant,
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(
                             color: Theme.of(context).colorScheme.primary),
@@ -214,36 +262,20 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ),
                 const Divider(
-                  height: 200,
+                  height: 150,
                   indent: 50,
                   endIndent: 50,
                 ),
-                GestureDetector(
-                  onTap: onManagementButtonTap,
-                  child: Container(
-                    padding: const EdgeInsets.all(20),
-                    width: 250,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: Colors.green[900],
-                      borderRadius: BorderRadius.circular(15),
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black26,
-                          offset: Offset(0, 4),
-                          blurRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: const Text(
-                      '내 가전 관리하기',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
+                KnockButton(
+                  onPressed: () {
+                    // final Uri url = Uri.parse(model.modelURL!);
+                    // await launchUrl(url);
+                  },
+                  bColor: Theme.of(context).colorScheme.secondaryContainer,
+                  fColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                  width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
+                  height: MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
+                  label: "내 가전 관리하기", // 버튼에 표시할 텍스트
                 ),
               ],
             ),
@@ -253,9 +285,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    _controller?.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   super.dispose();
+  //   _controller?.dispose();
+  // }
 }

@@ -111,11 +111,14 @@ flutter:
     - assets/images/soso.png
     - assets/images/bad.png
     - assets/images/verybad.png
+    - assets/images/my_recycle.png
+    - assets/images/recycleIcon.png
     - assets/videos/goodBackground.mp4
     - assets/videos/sosoBackground.mp4
     - assets/videos/badBackground.mp4
     - assets/videos/verybadBackground.mp4
     - assets/videos/goodBackground2.mp4
+    - assets/videos/main.mp4
   fonts:
     - family: CustomIcon
       fonts:
