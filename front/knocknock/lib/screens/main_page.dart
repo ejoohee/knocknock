@@ -6,9 +6,10 @@ import 'package:knocknock/screens/manage_appliances.dart';
 import 'package:knocknock/screens/view_greenproducts.dart';
 import 'package:knocknock/services/outer_service.dart' hide storage;
 import 'package:knocknock/services/user_service.dart' hide storage;
-// import 'package:knocknock/widgets/cai_info.dart';
+import 'package:knocknock/widgets/cai_info.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -54,40 +55,80 @@ class _MainPageState extends State<MainPage> {
   }
 
   void initialAirInfo() async {
-    airInfo = await outerService.airInfo();
-    print(airInfo);
-    // airInfo['통합대기환경지수'] = '1';
-    setState(() {
-      airInfo = airInfo;
-      print(airInfo['통합대기환경지수']);
-      switch (airInfo['통합대기환경지수']) {
-        case '1':
-          setState(() {
-            imagePath = 'assets/images/good.png';
-            updateVideo('assets/videos/goodBackground.mp4');
-          });
-          break;
-        case '2':
-          setState(() {
-            imagePath = 'assets/images/soso.png';
-            updateVideo('assets/videos/sosoBackground.mp4');
-          });
+    try {
+      airInfo = await outerService.airInfo();
+      if (mounted) {
+        setState(
+          () {
+            airInfo = airInfo;
+            print(airInfo['통합대기환경지수']);
+            switch (airInfo['통합대기환경지수']) {
+              case '1':
+                setState(() {
+                  imagePath = 'assets/images/good.png';
+                  updateVideo('assets/videos/goodBackground.mp4');
+                });
+                break;
+              case '2':
+                setState(() {
+                  imagePath = 'assets/images/soso.png';
+                  updateVideo('assets/videos/sosoBackground.mp4');
+                });
 
-          break;
-        case '3':
-          setState(() {
-            imagePath = 'assets/images/bad.png';
-            updateVideo('assets/videos/badBackground.mp4');
-          });
-          break;
-        case '4':
-          setState(() {
-            imagePath = 'assets/images/verybad.png';
-            updateVideo('assets/videos/verybadBackground.mp4');
-          });
-          break;
+                break;
+              case '3':
+                setState(() {
+                  imagePath = 'assets/images/bad.png';
+                  updateVideo('assets/videos/badBackground.mp4');
+                });
+                break;
+              case '4':
+                setState(() {
+                  imagePath = 'assets/images/verybad.png';
+                  updateVideo('assets/videos/verybadBackground.mp4');
+                });
+                break;
+            }
+          },
+        );
       }
-    });
+    } catch (e) {
+      print("에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.");
+    }
+    // airInfo = await outerService.airInfo();
+    // print(airInfo);
+    // // airInfo['통합대기환경지수'] = '1';
+    // setState(() {
+    //   airInfo = airInfo;
+    //   print(airInfo['통합대기환경지수']);
+    //   switch (airInfo['통합대기환경지수']) {
+    //     case '1':
+    //       setState(() {
+    //         imagePath = 'assets/images/good.png';
+    //         updateVideo('assets/videos/goodBackground.mp4');
+    //       });
+    //       break;
+    //     case '2':
+    //       setState(() {
+    //         imagePath = 'assets/images/soso.png';
+    //         updateVideo('assets/videos/sosoBackground.mp4');
+    //       });
+
+    //       break;
+    //     case '3':
+    //       setState(() {
+    //         imagePath = 'assets/images/bad.png';
+    //         updateVideo('assets/videos/badBackground.mp4');
+    //       });
+    //       break;
+    //     case '4':
+    //       setState(() {
+    //         imagePath = 'assets/images/verybad.png';
+    //         updateVideo('assets/videos/verybadBackground.mp4');
+    //       });
+    //       break;
+    //   }
+    // });
   }
 
   void initializeAddresses() async {
@@ -139,11 +180,13 @@ class _MainPageState extends State<MainPage> {
               child: Container(
             color: Theme.of(context).colorScheme.background.withOpacity(0.35),
           )),
-          SingleChildScrollView(
-            scrollDirection: Axis.vertical,
-            child: Column(
-              children: [
-                Column(
+          Column(
+            mainAxisSize: MainAxisSize.min, // 이 부분을 추가해주세요.
+
+            children: [
+              Flexible(
+                flex: 2,
+                child: Column(
                   children: [
                     Container(
                       height: MediaQuery.of(context).size.height * 0.15,
@@ -176,16 +219,16 @@ class _MainPageState extends State<MainPage> {
                           ),
                           IconButton(
                               onPressed: () {
-                                // showDialog(
-                                //   context: context,
-                                //   builder: (BuildContext dialogContext) {
-                                //     return StatefulBuilder(builder:
-                                //         (BuildContext context,
-                                //             StateSetter setState) {
-                                //       return const CAI();
-                                //     });
-                                //   },
-                                // );
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext dialogContext) {
+                                    return StatefulBuilder(builder:
+                                        (BuildContext context,
+                                            StateSetter setState) {
+                                      return const CAI();
+                                    });
+                                  },
+                                );
                               },
                               icon: Icon(
                                 CustomIcon.info,
@@ -195,6 +238,7 @@ class _MainPageState extends State<MainPage> {
                         ],
                       ),
                     ),
+                    // Image.asset(imagePath),
                     Container(
                       margin: const EdgeInsets.symmetric(vertical: 10),
                       width: 150,
@@ -204,81 +248,97 @@ class _MainPageState extends State<MainPage> {
                           image: AssetImage(imagePath),
                         ),
                       ),
-                    )
+                    ),
+                    const Divider(
+                      thickness: 1.2,
+                      indent: 50,
+                      endIndent: 50,
+                    ),
                   ],
                 ),
-                const Divider(
-                  indent: 50,
-                  endIndent: 50,
-                ),
-                Container(
-                  padding: const EdgeInsets.all(40),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '녹색 제품 검색',
-                    style: TextStyle(
-                      fontSize: 27,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context)
-                          .colorScheme
-                          .onBackground
-                          .withOpacity(0.95),
+              ),
+              Flexible(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Text(
+                      '녹색 제품 검색',
+                      style: TextStyle(
+                        fontSize: 27,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onBackground
+                            .withOpacity(0.95),
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 60,
-                  ),
-                  child: TextFormField(
-                    controller: keywordController,
-                    decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 20),
-                      isDense: true,
-                      hintText: '검색어를 입력하세요',
-                      hintStyle: const TextStyle(
-                        fontWeight: FontWeight.w300,
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 60,
                       ),
-                      suffixIcon: IconButton(
-                        onPressed: onSerchButtonTap,
-                        icon: const Icon(Icons.search),
-                      ),
-                      filled: true,
-                      fillColor: Theme.of(context).colorScheme.surfaceVariant,
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Theme.of(context).colorScheme.primary),
-                        borderRadius: BorderRadius.circular(30),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.transparent),
-                        borderRadius: BorderRadius.circular(30),
+                      child: TextFormField(
+                        controller: keywordController,
+                        decoration: InputDecoration(
+                          contentPadding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 20),
+                          isDense: true,
+                          hintText: '검색어를 입력하세요',
+                          hintStyle: const TextStyle(
+                            fontWeight: FontWeight.w300,
+                          ),
+                          suffixIcon: IconButton(
+                            onPressed: onSerchButtonTap,
+                            icon: const Icon(Icons.search),
+                          ),
+                          filled: true,
+                          fillColor:
+                              Theme.of(context).colorScheme.surfaceVariant,
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(
+                                color: Theme.of(context).colorScheme.primary),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide:
+                                const BorderSide(color: Colors.transparent),
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                        ),
+                        validator: (String? value) {
+                          return (value == null) ? '값을 입력하세요' : null;
+                        },
                       ),
                     ),
-                    validator: (String? value) {
-                      return (value == null) ? '값을 입력하세요' : null;
+                    const Divider(
+                      thickness: 1.2,
+                      indent: 50,
+                      endIndent: 50,
+                    ),
+                  ],
+                ),
+              ),
+              Flexible(
+                flex: 1,
+                child: Center(
+                  child: KnockButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ManageAppliances()),
+                      );
                     },
+                    bColor: Theme.of(context).colorScheme.secondaryContainer,
+                    fColor: Theme.of(context).colorScheme.onSecondaryContainer,
+                    width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
+                    height: MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
+                    label: "내 가전 관리하기", // 버튼에 표시할 텍스트
                   ),
                 ),
-                const Divider(
-                  height: 150,
-                  indent: 50,
-                  endIndent: 50,
-                ),
-                KnockButton(
-                  onPressed: () {
-                    // final Uri url = Uri.parse(model.modelURL!);
-                    // await launchUrl(url);
-                  },
-                  bColor: Theme.of(context).colorScheme.secondaryContainer,
-                  fColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                  width: MediaQuery.of(context).size.width * 0.8, // 버튼의 너비
-                  height: MediaQuery.of(context).size.width * 0.16, // 버튼의 높이
-                  label: "내 가전 관리하기", // 버튼에 표시할 텍스트
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
         ],
       ),

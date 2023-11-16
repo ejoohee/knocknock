@@ -1,13 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:knocknock/providers/my_appliance.dart';
 import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/average_electronic.dart';
 import 'package:knocknock/screens/log_in.dart';
+import 'package:knocknock/screens/manage_appliances.dart';
 import 'package:knocknock/screens/my_info_modify.dart';
 import 'package:knocknock/screens/waste_info.dart';
 import 'package:knocknock/services/user_service.dart';
 import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
+import 'package:text_divider/text_divider.dart';
+import 'package:intl/intl.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({super.key});
@@ -19,6 +23,20 @@ class MyPage extends StatefulWidget {
 class _MyPageState extends State<MyPage> {
   UserService userService = UserService();
   TextEditingController passwordController = TextEditingController();
+  String today = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    today = getToday();
+  }
+
+  String getToday() {
+    DateTime now = DateTime.now();
+    DateFormat formatter = DateFormat('yyyy-MM-dd');
+    today = formatter.format(now);
+    return today;
+  }
 
   onWasteInfoTap() async {
     if (!mounted) return;
@@ -166,236 +184,357 @@ class _MyPageState extends State<MyPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(
+          vertical: 20.0,
+          horizontal: 30,
+        ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             const SizedBox(
-              height: 50,
+              height: 40,
             ),
-            Container(
-              height: 80,
-              alignment: Alignment.center,
-              child: const Text(
-                '서비스',
-                style: TextStyle(
-                  fontSize: 40,
-                ),
+            Flexible(
+              flex: 3,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .shadow
+                                  .withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: const Offset(-2, 2),
+                            ),
+                            BoxShadow(
+                              color:
+                                  Theme.of(context).colorScheme.surfaceVariant,
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: const Offset(2, -2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              '등록한 가전 수',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            Text(
+                              '${context.watch<RegisterAppliance>().qtt} 개',
+                              style: const TextStyle(fontSize: 15),
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(15),
+                      child: Container(
+                        padding: const EdgeInsets.all(20),
+                        height: 100,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).colorScheme.outlineVariant,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .shadow
+                                  .withOpacity(0.5),
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: const Offset(-2, 2),
+                            ),
+                            BoxShadow(
+                              color:
+                                  Theme.of(context).colorScheme.surfaceVariant,
+                              spreadRadius: 1,
+                              blurRadius: 1,
+                              offset: const Offset(2, -2),
+                            ),
+                          ],
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Today is...',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w700,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                            Text(
+                              today,
+                              style: const TextStyle(
+                                fontSize: 15,
+                              ),
+                              textAlign: TextAlign.left,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             const SizedBox(
-              height: 50,
+              height: 20,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 35,
-                  ),
-                  decoration: BoxDecoration(
-                    border: BorderDirectional(
-                      end: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
+            const TextDivider(
+              text: Text('Services'),
+              indent: 20,
+              endIndent: 20,
+            ),
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const ManageAppliances(),
                       ),
-                      bottom: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/appliance.png'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        '가전',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
-                  ),
-                ),
-                GestureDetector(
-                  onTap: onAverageElectronTap,
+                    );
+                  },
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 35,
-                    ),
                     decoration: BoxDecoration(
-                      border: BorderDirectional(
-                        start: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 0.8,
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(-2, 2),
                         ),
-                        bottom: BorderSide(
-                          color: Colors.grey.shade300,
-                          width: 0.8,
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(2, -2),
                         ),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/electric.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                        const Text(
-                          '전력 소비량',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        )
                       ],
                     ),
+                    child: ListTile(
+                      leading: Image.asset(
+                        'assets/images/appliance.png',
+                        width: 40,
+                      ),
+                      title: const Text('가전 서비스'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      titleAlignment: ListTileTitleAlignment.center,
+                    ),
                   ),
                 ),
-              ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 35,
-                  ),
-                  decoration: BoxDecoration(
-                    border: BorderDirectional(
-                      end: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GestureDetector(
+                  onTap: onAverageElectronTap,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: const Offset(-2, 2),
+                        ),
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(2, -2),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      leading: Padding(
+                        padding: const EdgeInsets.all(5.0),
+                        child: Image.asset(
+                          'assets/images/electric.png',
+                          width: 30,
+                        ),
                       ),
-                      top: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
-                      ),
+                      title: const Text('우리 동네 전력 소비'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      titleAlignment: ListTileTitleAlignment.center,
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Container(
-                        width: 150,
-                        height: 150,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/neighborhood.png'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        '우리 동네 정보',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
-                  ),
                 ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20,
-                    vertical: 35,
-                  ),
-                  decoration: BoxDecoration(
-                    border: BorderDirectional(
-                      start: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
+              ),
+            ),
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GestureDetector(
+                  onTap: onWasteInfoTap,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: const Offset(-2, 2),
+                        ),
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(2, -2),
+                        ),
+                      ],
+                    ),
+                    child: ListTile(
+                      leading: Image.asset(
+                        'assets/images/recycle.png',
+                        width: 40,
                       ),
-                      top: BorderSide(
-                        color: Colors.grey.shade300,
-                        width: 0.8,
-                      ),
+                      title: const Text('폐가전 수거 정보'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      titleAlignment: ListTileTitleAlignment.center,
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      GestureDetector(
-                        onTap: onWasteInfoTap,
-                        child: Container(
-                          width: 150,
-                          height: 150,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/recycle.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const Text(
-                        '폐 가전 수거 정보',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )
-                    ],
-                  ),
                 ),
-              ],
+              ),
             ),
             const SizedBox(
-              height: 50,
+              height: 20,
             ),
-            TextButton(
-              onPressed: () {
-                onMyInfoModifyTextPressed();
-              },
-              child: const Text(
-                '내 정보 수정',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey,
+            const TextDivider(
+              text: Text('My'),
+              indent: 20,
+              endIndent: 20,
+            ),
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GestureDetector(
+                  onTap: onMyInfoModifyTextPressed,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: const Offset(-2, 2),
+                        ),
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(2, -2),
+                        ),
+                      ],
+                    ),
+                    child: const ListTile(
+                      leading: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(Icons.person),
+                      ),
+                      title: Text('내 정보 수정'),
+                      trailing: Icon(Icons.chevron_right_rounded),
+                      titleAlignment: ListTileTitleAlignment.center,
+                    ),
+                  ),
                 ),
               ),
             ),
-            const Divider(
-              indent: 70,
-              endIndent: 70,
-            ),
-            TextButton(
-              onPressed: () {
-                onLogoutTextPressed();
-              },
-              child: const Text(
-                '로그아웃',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey,
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: GestureDetector(
+                  onTap: onLogoutTextPressed,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      color: Theme.of(context).colorScheme.outlineVariant,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .shadow
+                              .withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: const Offset(-2, 2),
+                        ),
+                        BoxShadow(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          spreadRadius: 1,
+                          blurRadius: 1,
+                          offset: const Offset(2, -2),
+                        ),
+                      ],
+                    ),
+                    child: const ListTile(
+                      leading: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(Icons.logout),
+                      ),
+                      title: Text('로그아웃'),
+                      trailing: Icon(Icons.chevron_right_rounded),
+                      titleAlignment: ListTileTitleAlignment.center,
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const Divider(
-              indent: 70,
-              endIndent: 70,
             ),
           ],
         ),
