@@ -19,7 +19,8 @@ class _AverageElectronicState extends State<AverageElectronic> {
   String address2 = '';
   List<Map<String, dynamic>> averageElectronic = [];
   List<bool> isSelected = [true, false]; // 토글 상태를 저장하는 리스트
-
+  double maxPowerUsage = 0;
+  double maxVill = 0;
   @override
   void initState() {
     super.initState();
@@ -43,7 +44,19 @@ class _AverageElectronicState extends State<AverageElectronic> {
         address1, address2, year, month - 1);
     setState(() {
       averageElectronic = response;
+      for (int i = 0; i < averageElectronic.length; i++) {
+        if (maxPowerUsage < averageElectronic[i]['powerUsage']) {
+          maxPowerUsage = averageElectronic[i]['powerUsage'];
+        }
+        if (maxVill < averageElectronic[i]['bill']) {
+          maxVill = averageElectronic[i]['bill'].toDouble();
+        }
+      }
     });
+  }
+
+  double roundUp(double value, double roundTo) {
+    return (value / roundTo).ceil() * roundTo;
   }
 
   initializeAddresses() async {
@@ -132,7 +145,10 @@ class _AverageElectronicState extends State<AverageElectronic> {
                       swapAnimationCurve: Curves.fastOutSlowIn,
                       BarChartData(
                         minY: 0,
-                        maxY: isSelected[0] ? 300 : 50000, // 선택된 버튼에 따라 최대 값 조정
+                        maxY: isSelected[0]
+                            ? roundUp(maxPowerUsage, 100)
+                            : roundUp(maxVill, 10000)
+                                .toDouble(), // 선택된 버튼에 따라 최대 값 조정
                         gridData: const FlGridData(show: true),
                         borderData: FlBorderData(
                           show: true,

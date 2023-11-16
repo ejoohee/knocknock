@@ -95,40 +95,45 @@ class _MainPageState extends State<MainPage> {
     } catch (e) {
       print("에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.");
     }
-    // airInfo = await outerService.airInfo();
-    // print(airInfo);
-    // // airInfo['통합대기환경지수'] = '1';
-    // setState(() {
-    //   airInfo = airInfo;
-    //   print(airInfo['통합대기환경지수']);
-    //   switch (airInfo['통합대기환경지수']) {
-    //     case '1':
-    //       setState(() {
-    //         imagePath = 'assets/images/good.png';
-    //         updateVideo('assets/videos/goodBackground.mp4');
-    //       });
-    //       break;
-    //     case '2':
-    //       setState(() {
-    //         imagePath = 'assets/images/soso.png';
-    //         updateVideo('assets/videos/sosoBackground.mp4');
-    //       });
+    airInfo = await outerService.airInfo();
+    print(airInfo);
+    // airInfo['통합대기환경지수'] = '1';
+    setState(() {
+      airInfo = airInfo;
+      print(airInfo['통합대기환경지수']);
+      switch (airInfo['통합대기환경지수']) {
+        case '0':
+          setState(() {
+            imagePath = 'assets/images/soso.png';
+            updateVideo('assets/videos/sosoBackground.mp4');
+          });
+        case '1':
+          setState(() {
+            imagePath = 'assets/images/good.png';
+            updateVideo('assets/videos/goodBackground.mp4');
+          });
+          break;
+        case '2':
+          setState(() {
+            imagePath = 'assets/images/soso.png';
+            updateVideo('assets/videos/sosoBackground.mp4');
+          });
 
-    //       break;
-    //     case '3':
-    //       setState(() {
-    //         imagePath = 'assets/images/bad.png';
-    //         updateVideo('assets/videos/badBackground.mp4');
-    //       });
-    //       break;
-    //     case '4':
-    //       setState(() {
-    //         imagePath = 'assets/images/verybad.png';
-    //         updateVideo('assets/videos/verybadBackground.mp4');
-    //       });
-    //       break;
-    //   }
-    // });
+          break;
+        case '3':
+          setState(() {
+            imagePath = 'assets/images/bad.png';
+            updateVideo('assets/videos/badBackground.mp4');
+          });
+          break;
+        case '4':
+          setState(() {
+            imagePath = 'assets/images/verybad.png';
+            updateVideo('assets/videos/verybadBackground.mp4');
+          });
+          break;
+      }
+    });
   }
 
   void initializeAddresses() async {
