@@ -73,7 +73,7 @@
 
 ## 🗃️ ERD
 
-![Untitled](./assets/erd.png)
+![Untitled](./exec/assets/erd.png)
 
 <br>
 
@@ -81,7 +81,7 @@
 
 ## 🎨 Figma
 
-![Untitled](./assets/figma.png)
+![Untitled](./exec/assets/figma.png)
 
 <br>
 
