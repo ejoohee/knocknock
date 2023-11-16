@@ -16,6 +16,7 @@ public class UserResDto {
     private String email;
     private String giroCode;
     private String address;
+    private String stationName;
 
     public static UserResDto entityToDto(Users user) {
         return UserResDto.builder()
@@ -23,6 +24,7 @@ public class UserResDto {
                 .email(user.getEmail())
                 .giroCode(user.getGiroCode())
                 .address(user.getAddress())
+                .stationName(user.getAirStation())
                 .build();
     }
 }

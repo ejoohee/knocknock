@@ -1,5 +1,6 @@
 package com.knocknock.global.util;
 
+import com.knocknock.global.common.jwt.JwtExpirationEnum;
 import com.knocknock.global.common.security.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -25,14 +26,11 @@ public class JwtUtil {
     @Value("${jwt.secret_key}")
     private String SECRET_KEY;
 
-    @Value("${jwt.access_expiration_ms}")
-    private long accessExpirationMs;
+//    @Value("${jwt.access_expiration_ms}")
+//    private long accessExpirationMs;
 
-    @Value("${jwt.refresh_expiration_ms}")
-    private long refreshExpirationMs;
-
-//    @Value("${jwt.issuer}")
-//    private String issuer;
+//    @Value("${jwt.refresh_expiration_ms}")
+//    private long refreshExpirationMs;
 
 
     /**
@@ -70,11 +68,12 @@ public class JwtUtil {
     }
     
     public String generateAccessToken(String email) {
-        return createToken(email, accessExpirationMs); // 확인해바야함
+//        return createToken(email, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_TIME.getValue()); // 확인해바야함
+        return createToken(email, JwtExpirationEnum.ACCESS_TOKEN_EXPIRATION_INFINITE.getValue());
     }
 
     public String generateRefreshToken(String email) {
-        return createToken(email, refreshExpirationMs);
+        return createToken(email, JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue());
     }
 
     /**
@@ -84,6 +83,9 @@ public class JwtUtil {
      */
     public Boolean isTokenExpired(String token) {
         Date expiredDate = extractClaims(token).getExpiration();
+
+        log.info("[토큰 만료 검사] 현재시간 : {}", new Date());
+        log.info("[토큰 만료 검사] 토큰 만료 시간 : {}", expiredDate);
 
         // 토큰의 만료 날짜가 현재보다 이전인지 체크
         return expiredDate.before(new Date());
