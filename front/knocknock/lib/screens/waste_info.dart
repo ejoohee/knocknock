@@ -36,6 +36,7 @@ class _WasteInfoState extends State<WasteInfo> {
 
   getLocationInfo(String address, int index) async {
     final result = await outerService.kakaoLocation(address);
+    print(result);
     setState(() {
       locationX = double.parse(result['documents'][0]['address']['x']);
       locationY = double.parse(result['documents'][0]['address']['y']);

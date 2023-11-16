@@ -46,8 +46,7 @@ class NoTree extends StatelessWidget {
                   onTap: () {
                     print("Tap Event");
                   },
-                  onFinished: () async {
-                    await Future.delayed(const Duration(seconds: 1));
+                  onFinished: () {
                     Navigator.of(context).pop(); // 다이얼로그 닫기
                   },
                 ),

@@ -50,16 +50,18 @@ class OuterService {
         'Authorization': 'Bearer $token',
       },
     );
-    print('공기질 !! : ${response.body}');
+    print(response);
+    print('공기질 !! : .${response.body}....');
     print('공기질 상태코드 : ${response.statusCode}');
     if (response.statusCode == 200) {
       final Map<String, dynamic> data =
           jsonDecode(utf8.decode(response.bodyBytes));
+
       print(data);
       return data;
     } else {
       // throw Exception('Failed to load data');
-      return {'통합대기환경지수': 3};
+      return {'통합대기환경지수': '3'};
     }
   }
 
@@ -95,7 +97,8 @@ class OuterService {
       url,
       headers: headers,
     );
-
+    print(metro);
+    print(city);
     print(utf8.decode(response.bodyBytes));
     print(response.statusCode);
     if (response.statusCode == 200) {
