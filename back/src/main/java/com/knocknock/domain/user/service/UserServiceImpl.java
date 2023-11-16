@@ -33,8 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -558,9 +557,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(String metro, String city, Integer year, Integer month) {
+    public List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(Integer year, Integer month) {
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 요청.");
-        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(MetroName.getConverted(metro), city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
+        long userId = jwtUtil.getUserNo();
+        String address = userRepository.findById(userId).get().getAddress();
+        StringTokenizer st = new StringTokenizer(address);
+        String metro = st.nextToken();
+        String city = st.nextToken();
+        String city2 = st.nextToken();
+        log.info("metro----> {}", metro);
+        log.info("city----> {}", city);
+        if(city.charAt(city.length()-1) == '시') {
+            city = city + " " + city2;
+        }
+        Optional<CityCode> cityCode = cityCodeRepository.findByMetroNameAndCityName(MetroName.getConverted(metro), city);
+        if(!cityCode.isPresent()) throw new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage());
         List<FindPowerUsageHouseAvgResDto> dtoList = new ArrayList<>();
         // 전 달 계산
         LocalDate last = null;
@@ -579,7 +590,7 @@ public class UserServiceImpl implements UserService {
                         .bill(null)
                         .build();
             }else {
-                dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
+                dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.get().getMetroCode().getMetroCode(), cityCode.get().getCityCode());
                 if (tmpBill == 0 && dto.getBill() != null) {
                     tmpPowerUsage = dto.getPowerUsage();
                     tmpBill = dto.getBill();
