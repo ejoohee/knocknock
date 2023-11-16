@@ -42,7 +42,7 @@ public class GreenProductServiceImpl implements GreenProductService {
     @Override
     @Transactional(readOnly = true)
     public void fetchAndStoreProductData() {
-        int i = 370000; // 초기 인덱스 설정
+        int i = 360000; // 초기 인덱스 설정
         while (true) {
             String prodIxid = "KR" + i;
             Map<String, String> uriVariables = new HashMap<>();

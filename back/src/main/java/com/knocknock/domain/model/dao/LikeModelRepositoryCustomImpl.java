@@ -29,7 +29,7 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         // 어떤 카테고리 인지 (null 이면 전체 조회)
         if(category != null && !category.equals("")){
             categoryOption.and(
-                    qModel.category.id.in(
+                    qLikeModel.model.category.id.in(
                             queryFactory.select(qCategory.id)
                                     .from(qCategory)
                                     .where(qCategory.name.eq(category))
@@ -38,7 +38,11 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         List<LikeModel> likeModelList = queryFactory
                 .select(qLikeModel)
                 .from(qLikeModel)
-                .join(qLikeModel.model)
+                // a.b, b
+                .join(qLikeModel.model, qModel)
+                .fetchJoin()
+                // b.c, c
+                .join(qModel.category, qCategory)
                 .fetchJoin()
                 .where(
                         qLikeModel.user.userId.eq(userId),
@@ -47,6 +51,7 @@ public class LikeModelRepositoryCustomImpl implements LikeModelRepositoryCustom 
         return likeModelList.stream().map((likeModel) -> FindLikeModelListResDto.builder()
                         .likeModelId(likeModel.getId())
                         .modelId(likeModel.getModel().getId())
+                        .category(likeModel.getModel().getCategory().getName())
                         .modelName(likeModel.getModel().getName())
                         .modelBrand(likeModel.getModel().getBrand())
                         .build()

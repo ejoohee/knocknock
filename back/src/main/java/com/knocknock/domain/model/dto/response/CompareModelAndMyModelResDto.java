@@ -11,6 +11,10 @@ public class CompareModelAndMyModelResDto {
 
     private String modelBName;
 
+    private String modelAImg;
+
+    private String modelBImg;
+
     private Integer modelAGrade;
 
     private Integer modelBGrade;
@@ -22,5 +26,7 @@ public class CompareModelAndMyModelResDto {
     private Integer modelACost;
 
     private Integer modelBCost;
+    // co2 비용 차이로 아낄 수 있는 나무 그루 개수
+    private Integer treeCnt;
 
 }

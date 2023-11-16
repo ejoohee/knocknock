@@ -1,5 +1,6 @@
 package com.knocknock.domain.user.service;
 
+import com.knocknock.domain.user.constants.MetroName;
 import com.knocknock.domain.airInfo.dao.AirInfoRepository;
 import com.knocknock.domain.airInfo.domain.AirStation;
 import com.knocknock.domain.user.dao.*;
@@ -18,7 +19,7 @@ import com.knocknock.domain.user.exception.UserException;
 import com.knocknock.domain.user.exception.UserNotFoundException;
 import com.knocknock.domain.user.exception.UserUnAuthorizedException;
 import com.knocknock.global.common.jwt.JwtExpirationEnum;
-import com.knocknock.global.common.kepco.KepcoAPIWebClient;
+import com.knocknock.global.common.external.kepco.KepcoAPIWebClient;
 import com.knocknock.global.exception.exception.NotFoundException;
 import com.knocknock.global.exception.exception.TokenException;
 import com.knocknock.global.util.JwtUtil;
@@ -66,7 +67,6 @@ public class UserServiceImpl implements UserService {
 
         return true;
     }
-
 
     /**
      * 프론트에서 이메일 인증번호 받기 버튼 클릭
@@ -496,60 +496,6 @@ public class UserServiceImpl implements UserService {
                 .build();
     }
 
-//    @Transactional
-//    @Override
-//    public ReissueTokenResDto reissueToken(String accessToken, String refreshToken) {
-//        log.info("[토큰 재발급] 토큰 재발급 요청. accessToken : {}", accessToken);
-////        accessToken = noPrefixToken(accessToken);
-//        refreshToken = noPrefixToken(refreshToken);
-//
-//        // refreshToken에서 email 가져오기
-//        String email = null;
-//
-//        try {
-//            email = jwtUtil.getLoginEmail(refreshToken);
-//        } catch (Exception e) {
-//            // 리프레시 토큰 만료
-//            log.error("[토큰 재발급] 리프레시 토큰이 만료되었습니다. 재로그인 해주세요.");
-//            throw new TokenException("리프레시 토큰 만료. 재로그인 필수.");
-//        }
-//
-//        // refreshToken을 redis 레포에서 가져와서 일치 검사
-//        String originRefreshToken = refreshTokenRepository.findById(email)
-//                .orElseThrow(() -> {
-//                    log.error("[토큰 재발급] 해당 이메일에 대한 토큰이 존재하지 않습니다.");
-//                    return new NotFoundException("해당 이메일에 대한 토큰 미존재.");
-//                }).getRefreshToken();
-//
-//        if(!originRefreshToken.equals(refreshToken)) {
-//            log.error("[토큰 재발급] 토큰이 일치하지 않아 재발급 불가.");
-//            log.error("[토큰 재발급] 기존 리프레시 : {}, 현재 리프레시 : {}", refreshToken, originRefreshToken);
-//
-//            throw new TokenException("토큰 불일치.");
-//        }
-//
-//        // access & refresh Token 재발급
-//        accessToken = jwtUtil.generateAccessToken(email);
-//        refreshToken = jwtUtil.generateRefreshToken(email);
-//
-//        // redis에 refreshToken 저장 필요
-//        // 회원의 이메일 아이디를 키로 저장
-//
-//        // 기존에 저장된 리프레시 토큰 삭제
-//        refreshTokenRepository.deleteById(email);
-//
-//        refreshTokenRepository.save(RefreshToken.builder()
-//                .email(email)
-//                .refreshToken(refreshToken)
-//                .expiration(JwtExpirationEnum.REFRESH_TOKEN_EXPIRATION_TIME.getValue() / 1000)
-//                .build());
-//
-//        return ReissueTokenResDto.builder()
-//                .accessToken(accessToken)
-//                .refreshToken(refreshToken)
-//                .build();
-//    }
-
     @Transactional
     @Override
     public void deleteUser(Long userId, String token) {
@@ -614,16 +560,39 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(String metro, String city, Integer year, Integer month) {
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 요청.");
-        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(metro, city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
+        CityCode cityCode = cityCodeRepository.findByMetroNameAndCityName(MetroName.getConverted(metro), city).orElseThrow(() -> new UserNotFoundException(UserExceptionMessage.ADDRESS_NOT_FOUND.getMessage()));
         List<FindPowerUsageHouseAvgResDto> dtoList = new ArrayList<>();
         // 전 달 계산
         LocalDate last = null;
         // 년월으로 date
         LocalDate date = LocalDate.of(year, month, 1);
+        FindPowerUsageHouseAvgResDto dto;
+        float tmpPowerUsage = 0F;
+        int tmpBill = 0;
         for (int i = 4; i >= 0; i--) {
             last = date.minusMonths(i);
-            dtoList.add(kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode()));
-
+            if(last.getYear() == 2023 && last.getMonthValue() >= 9) {
+                dto = FindPowerUsageHouseAvgResDto.builder()
+                        .year(last.getYear())
+                        .month(last.getMonthValue())
+                        .powerUsage(null)
+                        .bill(null)
+                        .build();
+            }else {
+                dto = kepcoAPIWebClient.findPowerUsageHouseAvg(last.getYear(), last.getMonthValue(), cityCode.getMetroCode().getMetroCode(), cityCode.getCityCode());
+                if (tmpBill == 0 && dto.getBill() != null) {
+                    tmpPowerUsage = dto.getPowerUsage();
+                    tmpBill = dto.getBill();
+                }
+            }
+            dtoList.add(dto);
+        }
+        // 2023년 9, 10, 11월 데이터가 없음,,,
+        for (int i = 0; i <= 4; i++) {
+            if(dtoList.get(i).getPowerUsage() == null) {
+                dtoList.get(i).setPowerUsage(tmpPowerUsage + tmpPowerUsage / dtoList.get(i).getMonth());
+                dtoList.get(i).setBill(tmpBill + tmpBill / dtoList.get(i).getYear());
+            }
         }
         log.info("[회원의 주소 기반 가구평균 전력 사용량 조회] 조회 성공.");
         return dtoList;
@@ -663,14 +632,5 @@ public class UserServiceImpl implements UserService {
 
         log.info("[지로 코드 등록] 지로 코드 등록 완료. 메서드 종료!");
     }
-
-
-//    /**
-//     * 로그인 유저가 관리자 회원인지 확인합니다.
-//     * @param token
-//     */
-//    private Boolean checkAdmin(String token) {
-//
-//    }
 
 }

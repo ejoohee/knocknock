@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface WasteService {
 
-    List<WasteResDto> SearchByAddress(WasteReqDto wasteReqDto);
+    List<WasteResDto> searchByAddress(WasteReqDto wasteReqDto);
 
+    void saveWasteEntity();
 }

@@ -57,13 +57,10 @@ public class MyModelServiceImpl implements MyModelService {
     }
 
     @Override
-    public void deleteMyModel(long modelId) {
+    public void deleteMyModel(long myModelId) {
         log.info("[내 가전제품 삭제] 내 가전제품 삭제 요청.");
-        // 현재 로그인한 회원의 user 기본키 가져오기
-        Long userId = jwtUtil.getUserNo();
-        log.info("[내 가전제품 삭제] 현재 로그인한 회원의 userId -----> {}", userId);
-        log.info("[내 가전제품 삭제] 삭제하려는 modelId -----> {}", modelId);
-        myModelRepository.deleteByUserAndModel(userId, modelId);
+        log.info("[내 가전제품 삭제] 삭제하려는 myModelId -----> {}", myModelId);
+        myModelRepository.deleteById(myModelId);
 
         log.info("[내 가전제품 삭제] 내 가전제품 삭제 성공.");
 
