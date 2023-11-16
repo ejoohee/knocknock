@@ -24,7 +24,6 @@ class _MyListsState extends State<MyLists> {
     return Scaffold(
       appBar: const AppBarBack(
         title: '내 가전 모아보기',
-        page: MainPage(),
       ),
       body: SafeArea(
         child: Center(

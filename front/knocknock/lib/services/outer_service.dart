@@ -50,6 +50,7 @@ class OuterService {
         'Authorization': 'Bearer $token',
       },
     );
+    print("----------------------------------------------------------");
     print(response.body);
     print(response.statusCode);
     if (response.statusCode == 200) {
@@ -58,7 +59,7 @@ class OuterService {
       print(data);
       return data;
     } else {
-      throw Exception('Failed to load data');
+      return {'통합대기환경지수': 1};
     }
   }
 
@@ -76,6 +77,30 @@ class OuterService {
           jsonDecode(utf8.decode(response.bodyBytes));
       print(data);
       return data;
+    } else {
+      throw Exception('Failed to load data');
+    }
+  }
+
+  // 3. 가구 평균 전력 사용량 조회
+  Future<List<Map<String, dynamic>>> averageElectronic(
+      String metro, String city, int year, int month) async {
+    final url = Uri.parse(
+        "$baseUrl/user/powerUsage/houseAvg?metro=$metro&city=$city&year=$year&month=$month");
+    final token = await storage.read(key: "accessToken");
+    final headers = {
+      'Authorization': 'Bearer $token', // accessToken을 헤더에 추가
+    };
+    final response = await client.get(
+      url,
+      headers: headers,
+    );
+
+    print(utf8.decode(response.bodyBytes));
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes));
+      return data.map((e) => e as Map<String, dynamic>).toList();
     } else {
       throw Exception('Failed to load data');
     }
