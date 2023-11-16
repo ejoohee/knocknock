@@ -199,6 +199,7 @@ class _AverageElectronicState extends State<AverageElectronic> {
                             x: DateTime.now().month - 5,
                             barRods: [
                               BarChartRodData(
+                                fromY: 0,
                                 toY: isSelected[0]
                                     ? averageElectronic[0]['powerUsage']
                                     : averageElectronic[0]['bill'].toDouble(),
