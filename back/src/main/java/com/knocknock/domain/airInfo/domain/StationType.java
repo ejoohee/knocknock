@@ -1,4 +1,4 @@
-package com.knocknock.global.common.openapi.airInfo;
+package com.knocknock.domain.airInfo.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
