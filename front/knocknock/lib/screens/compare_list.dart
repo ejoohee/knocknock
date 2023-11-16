@@ -161,10 +161,6 @@ class _CompareListState extends State<CompareList> {
                                   );
                                 },
                                 onLongPress: () {},
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .shadow
-                                    .withAlpha(20),
                                 child: ListTile(
                                   titleAlignment: ListTileTitleAlignment.center,
                                   leading: ExcludeSemantics(
@@ -183,10 +179,18 @@ class _CompareListState extends State<CompareList> {
                                   ),
                                   title: Text(
                                     model.modelNickname!,
-                                    style: const TextStyle(color: Colors.amber),
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.scrim,
+                                    ),
                                   ),
                                   subtitle: Text(
-                                      '${model.modelBrand!}\n${model.category!}'),
+                                    '${model.modelBrand!}\n${model.category!}',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.scrim,
+                                    ),
+                                  ),
                                 ),
                               ),
                               const SizedBox(

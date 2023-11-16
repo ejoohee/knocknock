@@ -5,6 +5,7 @@ import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/appliance.dart';
+import 'package:knocknock/providers/my_appliance.dart';
 import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/main_page.dart';
@@ -36,7 +37,7 @@ class _MyApplianceListState extends State<MyApplianceList> {
   ];
   final ModelService modelService = ModelService();
   late Future<List<MyModelTile>> modelListFuture; // Future to load modelList
-
+  // int qtt = 0;
   bool isEditing = false;
   // @override
   // void initState() {
@@ -49,6 +50,11 @@ class _MyApplianceListState extends State<MyApplianceList> {
   Future<List<MyModelTile>> loadCompareModelData() async {
     try {
       final loadedModelList = await modelService.findMyApplianceList('');
+      final qtt = loadedModelList.length;
+      print('등록 $qtt');
+      if (mounted) {
+        context.read<RegisterAppliance>().setQtt(qtt);
+      }
       return loadedModelList;
     } catch (e) {
       // 에러 처리
@@ -61,6 +67,7 @@ class _MyApplianceListState extends State<MyApplianceList> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     modelListFuture = loadCompareModelData();
+    // context.read<RegisterAppliance>().setQtt(qtt);
     // updateCategoryEntries();
   }
 

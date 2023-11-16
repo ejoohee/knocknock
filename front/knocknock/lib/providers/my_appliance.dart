@@ -8,6 +8,9 @@ class RegisterAppliance with ChangeNotifier {
   String _nickname = '';
   String get nickname => _nickname;
 
+  int _qtt = 0;
+  int get qtt => _qtt;
+
   void register(MyModelRegistering? myModel) {
     _myModel = myModel;
     notifyListeners();
@@ -21,5 +24,9 @@ class RegisterAppliance with ChangeNotifier {
   void registerNickname(String nickname) {
     _nickname = nickname;
     notifyListeners();
+  }
+
+  void setQtt(int qtt) {
+    _qtt = qtt;
   }
 }
