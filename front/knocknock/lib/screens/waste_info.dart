@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -36,11 +38,18 @@ class _WasteInfoState extends State<WasteInfo> {
 
   getLocationInfo(String address, int index) async {
     final result = await outerService.kakaoLocation(address);
-    print(result);
-    setState(() {
-      locationX = double.parse(result['documents'][0]['address']['x']);
-      locationY = double.parse(result['documents'][0]['address']['y']);
-    });
+    print("여기는 페이지 여기는 페이지 여기는 페이지 여기는 페이지$result");
+    if (result['documents'].isNotEmpty) {
+      setState(() {
+        locationX = double.parse(result['documents'][0]['address']['x']);
+        locationY = double.parse(result['documents'][0]['address']['y']);
+      });
+    } else {
+      setState(() {
+        locationX = 131.8652101810755;
+        locationY = 37.246239419054476;
+      });
+    }
 
     if (mapController != null) {
       mapController!.animateCamera(
@@ -130,76 +139,86 @@ class _WasteInfoState extends State<WasteInfo> {
                 : ListView.builder(
                     itemCount: wasteCompanyList.length,
                     itemBuilder: (BuildContext context, int index) {
-                      return ExpansionTile(
-                        title: Text(
-                          "ㆍ${wasteCompanyList[index]['ENTRPS_NM']}",
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(
-                          "    ${wasteCompanyList[index]['ADRES']}",
-                          style: const TextStyle(
-                            fontSize: 15,
-                          ),
-                        ),
-                        onExpansionChanged: (expand) async {
-                          // ExpansionTile이 처음 열릴 때만 위치 정보를 불러옴
-                          if (expand &&
-                              !expansionTileOpenState.containsKey(index)) {
-                            await getLocationInfo(
-                                wasteCompanyList[index]['ADRES'], index);
-                            await addMarker(
-                                locationY,
-                                locationX,
-                                wasteCompanyList[index]['ENTRPS_NM'],
-                                wasteCompanyList[index]['WSTE']);
-                          }
-                        },
-                        children: <Widget>[
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
+                      return Column(
+                        children: [
+                          const Divider(),
+                          ExpansionTile(
+                            tilePadding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 5,
                             ),
-                            child: GestureDetector(
-                              onTap: () {
-                                onCallTap(
-                                  wasteCompanyList[index]['TELNO'],
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  const Icon(Icons.phone),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    wasteCompanyList[index]['TELNO'],
-                                    style: const TextStyle(
-                                      fontSize: 15,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            title: Text(
+                              "${wasteCompanyList[index]['ENTRPS_NM']}",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              "${wasteCompanyList[index]['ADRES']}",
+                              style: const TextStyle(
+                                fontSize: 15,
+                              ),
+                            ),
+                            onExpansionChanged: (expand) async {
+                              // ExpansionTile이 처음 열릴 때만 위치 정보를 불러옴
+                              if (expand &&
+                                  !expansionTileOpenState.containsKey(index)) {
+                                print(wasteCompanyList[index]['ADRES']);
+                                await getLocationInfo(
+                                    wasteCompanyList[index]['ADRES'], index);
+                                await addMarker(
+                                    locationY,
+                                    locationX,
+                                    wasteCompanyList[index]['ENTRPS_NM'],
+                                    wasteCompanyList[index]['WSTE']);
+                              }
+                            },
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    onCallTap(
+                                      wasteCompanyList[index]['TELNO'],
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      const Icon(Icons.phone),
+                                      const SizedBox(width: 5),
+                                      Text(
+                                        wasteCompanyList[index]['TELNO'],
+                                        style: const TextStyle(
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ],
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 400,
-                            child: GoogleMap(
-                              onMapCreated: (controller) {
-                                if (mounted) {
-                                  setState(() {
-                                    mapController = controller;
-                                  });
-                                }
-                              },
-                              initialCameraPosition: CameraPosition(
-                                target: LatLng(locationY, locationX),
-                                zoom: 15.0,
+                              SizedBox(
+                                height: 400,
+                                child: GoogleMap(
+                                  onMapCreated: (controller) {
+                                    if (mounted) {
+                                      setState(() {
+                                        mapController = controller;
+                                      });
+                                    }
+                                  },
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(locationY, locationX),
+                                    zoom: 15.0,
+                                  ),
+                                  markers: markers,
+                                ),
                               ),
-                              markers: markers,
-                            ),
+                            ],
                           ),
                         ],
                       );
