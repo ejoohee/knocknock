@@ -17,7 +17,18 @@ spring:
       url: https://www.greenproduct.go.kr/open-api/open-api/rest/GreenProductInformationInquiryService2.do
     cert:
       key: b7c7f3a73086bec7f2f39445f24e478cfbc8068389d38f66a1848c5c062f128f
-
+  adobe:
+    auth: 'Bearer eyJhbGciOiJSUzI1NiIsIng1dSI6Imltc19uYTEta2V5LWF0LTEuY2VyIiwia2lkIjoiaW1zX25hMS1rZXktYXQtMSIsIml0dCI6ImF0In0.eyJpZCI6IjE2OTk0MjU4MzEwOTZfYjExNzI0OGQtYTIzMC00ODJjLWFjNDYtOTQ1YjM1M2NjNjVmX3VlMSIsIm9yZyI6IjBFRTkxRTFBNjU0QjJFMDIwQTQ5NUVEMUBBZG9iZU9yZyIsInR5cGUiOiJhY2Nlc3NfdG9rZW4iLCJjbGllbnRfaWQiOiIzMDA3MzEwZDRhYWE0MGQ4YTRhZjc2MjIzMzFkMDEzNCIsInVzZXJfaWQiOiIwRUM0MUUwQTY1NEIyRTE5MEE0OTVGQTNAdGVjaGFjY3QuYWRvYmUuY29tIiwiYXMiOiJpbXMtbmExIiwiYWFfaWQiOiIwRUM0MUUwQTY1NEIyRTE5MEE0OTVGQTNAdGVjaGFjY3QuYWRvYmUuY29tIiwiY3RwIjozLCJtb2kiOiJmZGNkMjFjMCIsImV4cGlyZXNfaW4iOiI4NjQwMDAwMCIsInNjb3BlIjoib3BlbmlkLEFkb2JlSUQscmVhZF9vcmdhbml6YXRpb25zIiwiY3JlYXRlZF9hdCI6IjE2OTk0MjU4MzEwOTYifQ.YeqSSfccB5wPgIplW-JZs8oq0D3q1kEm9G8hCEibV75gNtYisnTTfesxpHBL1dtnj56b53PfJBDyffD0moJwHOwG4kkfGh8K-DoR_mZAK3frn_yRc1m0XkkstHA_2XpbFxCxyFdJiqRupUF0CbcVERpj6wV-VkJ5U5rKPhWhb6ulECoH-ushKEXIQdQgzyTYkkI1YbxZfiNVJINqz3HxvmfGdjIEGxjP4NzzLEmG02523uthxyRB8V7yKgbeWYTk1sHpxG1XSiluPRiyJwglRVd4aQ3bI2oa_1rtdpE_XqxsgqBekCcJ-QZFQ8t1qZijXzqc9jr4ZbAaJiZ9C1tpdA'
+    x-api-key: '3007310d4aaa40d8a4af7622331d0134'
+  dropbox:
+    auth: 'Bearer uat.ABTuVc0NXQ5XEETDNOu_4Jp2XR9ipQC3BHgSbbD32QHI2R8Tn5k2TONOHFnglAhGMddHHmvhlb8lHPCDFLFuegsRk8VRl3n1RA2krjDU47RChya0BWcdORYvUwgywxyA1xtF3FGbgc4ky9wec_1lAwe-u1Ab2YnQSsmb09SK_g8oE9ORrVEaeR_wGn-afUnbRbilrvyo2zF2JalqIXA53aBY37MRJdwVJllR2CrBIXfOQ1Yft9DJLITu3biY6szkFDiyUqh9wkltW-Qz7aeZZbhSasvtDxpkvTWDw01jXozWvOSEC5UqHpThkIj9WGwKQNlLMOxpvFvqm9awUKmkqXIFckmnOseg0Newc9x0Tu72r6jQWrlzA9L84qLqYmuFybu19TBTeE2mxLM83nCyp7ySzh90GA6xZ5gV0cMC1FdAARpnqrRhqKKxAAdxRoD7XRcTK01cGE8Sr8h-xG6wUKUVKq7LX4DOFuVzRt_kQ2Dhzyjgfiy9M-Zg2E1xqEQoV1SG7ScXrZj3oRi8ibUWpE9l6d3o25GvmEcSANQ83AtG5z_pN-vCRbmlSLNfhtrs2XX38UeSyArrCNhceA10dcfvqAZdkO_78-IcNCc1bZmIEqPvpolR--4LDlAFBtcPZQFT5mDNEHR8JHer38fitYYHB6LuXU7ZLnMHWxDpyeHH07bgfrAjAlidU0eWJnGMqiqcRJ3stSVPsUzbUrbG6yAGNHctIBp7SWgHlUlJ6h5iF_MneDHCcDYH0fDUYFTn9ZXU7BTwlpl94s8pWScLIpSQf7q_3KRB0_ghbh8RgZOWntWDYdD5yTYyfWjTIjonfO7wsYPhfGwsVFMLQnYQUxlhBZzZG1tkO2HY0hXHKl8CjIvjDmOhSCJr3AkGXtdlnSS8mrPOaHElOgLKqkYgre02VIWIn1Xgyfa9FlwjziHQRzdENBOYltlb6Y8HzOLnTkqez8Td_bQ91BeoEl8N1DrYeRap9mhNlI8uBeTPmC7K1gtZ5rA0h_4bXz4rtTDNr0g0mjJX7ciGydRhNB7_U8R2j6IVfmSDDuIzI072L1mGXV0XsLz8udQkoJm-F95l0bmp3Ink95Bj4kN6NnaYhXTuE03vxDJkgd73BHBIEwhIa1tdZHKKNiNpO7X9rReBFPvW1rkOSHHPlBQgpQQ0PTr4We_S6sq5FKg9CIfK2eltvlCEKMpiHzT1UVKX_u6pMPEH7Sk91SIJTN6vjI-JT4dq7xKbBWYFvgiURJDWH-UQZf7cPO0xQMccVFJ9YDXI1nfoAtjpchLICmdeMq9WB7eM8xKPp2xrvZemAljiFWYWlDT4M6404P8HuKh2RuVhQJPjAeossutmYQoaNu5J88HICVEknUgkpDjNCDWg-nQQBy34RgkOZL3TNHTJ_5vPhY8'
+  kepco:
+    api-key: '2c6Tz02F144P97y0F9JuX495Zo8E7J14jYoCiAq5'
+  ocr:
+    secret: 'U21rWm1WZ3R3cVFKdnlVckVnaGhaY3BYbE1oemJZem8='
+  energy:
+    auth: 'Infuser yB6pw3v/aprz92U8l42QpEk0LDn7RQF8i0VTp+VjfJ8TbUGnfHD/y53/qlG22MQd/NDKJGKATwxGRWPJjTujIQ=='
+    serviceKey: 'yB6pw3v%2Faprz92U8l42QpEk0LDn7RQF8i0VTp%2BVjfJ8TbUGnfHD%2Fy53%2FqlG22MQd%2FNDKJGKATwxGRWPJjTujIQ%3D%3D'
   jpa:
     properties:
       hibernate:
@@ -34,8 +45,10 @@ spring:
       path: /h2-console
       enabled: true
 
-  # 유녕용
   datasource:
+    #    url: -------------------------------develop 용
+    #    hikari:
+    #      jdbc-url: jdbc:h2:tcp://localhost/~/knocknock
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
     username: sa
@@ -94,3 +107,6 @@ api:
   waste:
     secret-key: L9671BZMB8IUF5EKCMCPWQ4PU8XHWJ1HSYPLJRH6TWCG4
     url: https://www.recycling-info.or.kr/sds/JsonApi.do?PID=REA06&YEAR=2021&USRID=qocksdlf123&KEY=%s
+  kakao:
+    secret-key: c426176f98b75e0b35993994c273ef01
+    url: https://dapi.kakao.com/v2/local/search/address.json?query=%s

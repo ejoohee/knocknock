@@ -1,4 +1,4 @@
-package com.knocknock.global.common.openapi.airInfo.dto;
+package com.knocknock.domain.airInfo.dto;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,6 +1,7 @@
-package com.knocknock.global.common.openapi.airInfo;
+package com.knocknock.domain.airInfo.api;
 
-import com.knocknock.global.common.openapi.airInfo.dto.AirInfoResDto;
+import com.knocknock.domain.airInfo.dto.AirInfoResDto;
+import com.knocknock.domain.airInfo.service.AirInfoService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
