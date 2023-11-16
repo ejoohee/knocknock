@@ -42,5 +42,5 @@ public interface UserService {
     List<AdminUserResDto> findUserList(String token); // 회원 목록 조회
     AdminUserResDto findUser(Long userId, String token); // 회원 조회
     List<AdminUserResDto> findUserByCondition(UserSearchCondition condition, String token); // 회원 검색
-    List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(String metro, String city, Integer year, Integer month);
+    List<FindPowerUsageHouseAvgResDto> findPowerUsageHouseAvgList(Integer year, Integer month);
 }

@@ -189,8 +189,8 @@ public class UserController {
             description = "내 주소 기반 가구평균 전력사용량을 해당 년월 기준으로 ~ 전 5달 까지 조회합니다."
     )
     @GetMapping("/powerUsage/houseAvg")
-    public ResponseEntity<List<FindPowerUsageHouseAvgResDto>> findPowerUsageHouseAvgList(@RequestParam("metro")String metro, @RequestParam("city")String city, @RequestParam("year")Integer year, @RequestParam("month")Integer month) {
-        return ResponseEntity.ok(userService.findPowerUsageHouseAvgList(metro, city, year, month));
+    public ResponseEntity<List<FindPowerUsageHouseAvgResDto>> findPowerUsageHouseAvgList(@RequestParam("year")Integer year, @RequestParam("month")Integer month) {
+        return ResponseEntity.ok(userService.findPowerUsageHouseAvgList(year, month));
     }
 
 }
