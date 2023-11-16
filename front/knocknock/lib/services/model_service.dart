@@ -99,6 +99,7 @@ class ModelService {
       url,
       headers: headers,
     );
+    print('상세 : ${utf8.decode(response.bodyBytes)}');
     if (response.statusCode == 200) {
       final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       newModel = NewModelDetail.fromJson(model);
@@ -135,6 +136,8 @@ class ModelService {
     if (response.statusCode == 200) {
       final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       registeringModel = MyModelRegistering.fromJson(model);
+    } else if (response.statusCode == 400) {
+      registeringModel = MyModelRegistering(category: '중복');
     } else if (response.statusCode == 404) {
       return null;
     } else if (response.statusCode == 401) {
@@ -161,6 +164,8 @@ class ModelService {
     if (response.statusCode == 200) {
       final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       registeringModel = MyModelRegistering.fromJson(model);
+    } else if (response.statusCode == 400) {
+      registeringModel = MyModelRegistering(category: '중복');
     } else if (response.statusCode == 404) {
       return null;
     } else if (response.statusCode == 401) {

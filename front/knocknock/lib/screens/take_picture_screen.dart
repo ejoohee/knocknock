@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:camera/camera.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
 import 'package:knocknock/providers/my_appliance.dart';
+import 'package:knocknock/providers/page_index.dart';
 
 // A screen that allows users to take a picture using a given camera.
 import 'package:knocknock/screens/display_info_screen.dart';
 import 'package:knocknock/screens/grid_paint.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/manual_register.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:provider/provider.dart';
@@ -83,14 +87,70 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     showDialog(
       context: context,
       builder: (context) {
-        return const AlertDialog(
+        return AlertDialog(
           // Retrieve the text the that user has entered by using the
           // TextEditingController.
-          content: Text('모델명을 조회할 수 없습니다.\n다시 찍어주세요!'),
+          title: const Text(
+            '모델명을 조회할 수 없습니다.\n다시 찍어주세요!',
+            style: TextStyle(
+              fontSize: 16,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.justify,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('확인'),
+            ),
+          ],
         );
       },
     );
   }
+
+  dup() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          // Retrieve the text the that user has entered by using the
+          // TextEditingController.
+          content: const Text(
+            '이미 내 가전으로 등록되어있습니다.\n내 가전 목록으로 이동하시겠어요?',
+            style: TextStyle(
+              fontSize: 13,
+              letterSpacing: 1,
+            ),
+            textAlign: TextAlign.justify,
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<CurrentPageIndex>().move(3);
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const HomeScreen(),
+                  ),
+                );
+              },
+              child: const Text('확인'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('취소'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  late String imagePath;
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +162,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: 30,
-                vertical: 30,
+                vertical: 15,
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -117,7 +177,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                       ),
                     ),
                   ),
-                  Expanded(
+                  SizedBox(
+                    height:
+                        (MediaQuery.sizeOf(context).width - 60) * 1000 / 667,
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
@@ -127,14 +189,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                             if (snapshot.connectionState ==
                                 ConnectionState.done) {
                               // If the Future is complete, display the preview.
-                              // return CameraPreview(_controller);
-                              return Center(
-                                  child: ClipRRect(
-                                      child: SizedOverflowBox(
-                                size: const Size(400, 450), // aspect
-                                alignment: Alignment.center,
-                                child: CameraPreview(_controller),
-                              )));
+
+                              return CameraPreview(_controller);
                             } else {
                               // Otherwise, display a loading indicator.
                               return const Center(
@@ -144,13 +200,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                         ),
                         CustomPaint(
                           painter: GridPainter(),
-                          child: const SizedBox(
-                            width: 400,
-                            height: 550,
+                          child: SizedBox(
+                            width: MediaQuery.sizeOf(context).width - 60,
+                            height: (MediaQuery.sizeOf(context).width - 60) *
+                                1000 /
+                                667,
                           ),
                         ),
                         Padding(
-                          padding: const EdgeInsets.all(10.0),
+                          padding: const EdgeInsets.all(5.0),
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
@@ -162,9 +220,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                               IconButton(
                                 splashColor: Colors.transparent,
                                 onPressed: () async {
-                                  setState(() {
-                                    isLoading = true;
-                                  });
                                   print('찍는다잉');
                                   // Take the Picture in a try / catch block. If anything goes wrong,
                                   // catch the error.
@@ -175,21 +230,26 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                                     // where the image file is saved.
                                     final image =
                                         await _controller.takePicture();
-                                    String imagePath = image.path;
+                                    imagePath = image.path;
+                                    setState(() {
+                                      isLoading = true;
+                                    });
                                     // 모델 정보 받아오기.
                                     await getModelInfo(imagePath);
                                     if (info == null) {
                                       failLoad();
-                                      return;
+                                    } else if (info!.category! == '중복') {
+                                      dup();
+                                    } else {
+                                      // If the picture was taken, display it on a new screen.
+                                      if (!mounted) return;
+                                      await Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DisplayInfoScreen(),
+                                        ),
+                                      );
                                     }
-                                    // If the picture was taken, display it on a new screen.
-                                    if (!mounted) return;
-                                    await Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const DisplayInfoScreen(),
-                                      ),
-                                    );
                                   } catch (e) {
                                     // If an error occurs, log the error to the console.
                                     print('찍었는데 문제가 생겨따$e');
@@ -198,9 +258,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                                 icon: Icon(
                                   Icons.radio_button_checked_sharp,
                                   size: 80,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .surfaceVariant,
+                                  color: Colors.blueGrey[50],
                                 ),
                               ),
                             ],
@@ -209,14 +267,15 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                       ],
                     ),
                   ),
-                  const Text(
-                    '※ 흔들리지 않게 찍어주세요!',
-                    style: TextStyle(
-                      color: Colors.red,
+                  const Padding(
+                    padding: EdgeInsets.all(4.0),
+                    child: Text(
+                      '※ 흔들리지 않게 찍어주세요!',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 12,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
                   ),
                   KnockButton(
                     onPressed: () {
@@ -224,8 +283,8 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                const ManualRegister()), // 옷장 페이지로 이동
+                          builder: (context) => const ManualRegister(),
+                        ),
                       );
                     },
                     width: MediaQuery.of(context).size.width * 0.8,
@@ -241,7 +300,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           if (isLoading)
             Positioned.fill(
               child: Container(
-                color: Colors.black.withOpacity(0.5),
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: FileImage(File(imagePath)),
+                        fit: BoxFit.fill,
+                        colorFilter: const ColorFilter.mode(
+                            Colors.black54, BlendMode.multiply))),
+                // color: Colors.black.withOpacity(0.5),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -274,9 +339,6 @@ class TakePictureScreenState extends State<TakePictureScreen> {
                           ),
                         ],
                         isRepeatingAnimation: true,
-                        // onTap: () {
-                        //   print("Tap Event");
-                        // },
                       ),
                     ],
                   ),

@@ -48,7 +48,8 @@ class Trees extends StatelessWidget {
                                 fontWeight: FontWeight.w700,
                               ),
                             ),
-                            ...List.generate(treeCnt, (index) {
+                            ...List.generate(treeCnt <= 10 ? treeCnt : 10,
+                                (index) {
                               return RotateAnimatedText(
                                 '${index + 1}',
                                 textStyle: TextStyle(
@@ -56,7 +57,7 @@ class Trees extends StatelessWidget {
                                   fontWeight: FontWeight.w700,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
-                                duration: const Duration(milliseconds: 200),
+                                duration: const Duration(milliseconds: 100),
                                 transitionHeight: 47,
                                 rotateOut: false,
                               );
@@ -92,12 +93,12 @@ class Trees extends StatelessWidget {
               ),
             ),
             Flexible(
-              flex: 2,
+              flex: treeCnt > 5 ? 3 : 2,
               fit: FlexFit.tight,
               child: Stack(
                 alignment: Alignment.center,
                 children: List.generate(
-                  treeCnt,
+                  treeCnt <= 10 ? treeCnt : 10,
                   (index) {
                     double x, y;
                     double wholeX = MediaQuery.sizeOf(context).width;
@@ -123,7 +124,25 @@ class Trees extends StatelessWidget {
                   },
                 ),
               ),
-            )
+            ),
+            treeCnt > 10
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 15.0),
+                    child: AnimatedTextKit(
+                      repeatForever: true,
+                      animatedTexts: [
+                        TyperAnimatedText(
+                          '· · ·',
+                          textStyle: const TextStyle(
+                            fontSize: 30,
+                            fontWeight: FontWeight.w700,
+                          ),
+                          speed: const Duration(milliseconds: 300),
+                        )
+                      ],
+                    ),
+                  )
+                : Container(),
           ],
         ),
       ),

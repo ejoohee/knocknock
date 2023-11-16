@@ -1,3 +1,4 @@
+import 'package:cube_transition_plus/cube_transition_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:knocknock/components/tile.dart';
 import 'package:knocknock/constants/color_chart.dart';
@@ -236,6 +237,9 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                             },
                           ),
                         ),
+                        const SizedBox(
+                          width: 10,
+                        ),
                       ],
                     ),
                   ),
@@ -345,10 +349,49 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                               }
                                             },
                                             icon: modelList[index].isLiked!
-                                                ? Icon(Icons.favorite_rounded,
-                                                    color: Colors.grey[600])
-                                                : Icon(Icons.favorite_rounded,
-                                                    color: Colors.grey[600]),
+                                                ? Icon(
+                                                    Icons.favorite_rounded,
+                                                    color: Colors
+                                                        .blueGrey.shade100,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black
+                                                            .withOpacity(
+                                                                0.4), // 그림자 색상과 투명도
+                                                        offset: const Offset(0,
+                                                            1), // 그림자 offset (가로, 세로)
+                                                        blurRadius:
+                                                            4, // 그림자의 흐림 정도
+                                                      ),
+                                                      const Shadow(
+                                                        color: Colors.white,
+                                                        offset: Offset(0, -1),
+                                                        blurRadius: 2,
+                                                      ),
+                                                    ],
+                                                  )
+                                                : Icon(
+                                                    Icons
+                                                        .favorite_outline_rounded,
+                                                    color: Colors
+                                                        .blueGrey.shade100,
+                                                    shadows: [
+                                                      Shadow(
+                                                        color: Colors.black
+                                                            .withOpacity(
+                                                                0.4), // 그림자 색상과 투명도
+                                                        offset: const Offset(0,
+                                                            1), // 그림자 offset (가로, 세로)
+                                                        blurRadius:
+                                                            4, // 그림자의 흐림 정도
+                                                      ),
+                                                      const Shadow(
+                                                        color: Colors.white,
+                                                        offset: Offset(0, -1),
+                                                        blurRadius: 2,
+                                                      ),
+                                                    ],
+                                                  ),
                                           ),
                                           onTap: () {},
                                           onLongPress: () {},
@@ -361,27 +404,31 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                       .modelId!);
                                               Navigator.push(
                                                 context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                                                CubePageRoute(
+                                                  enterPage:
+                                                      const NewApplianceDetail(),
+                                                  exitPage: widget,
+                                                  duration: const Duration(
+                                                      milliseconds: 400),
+                                                ),
                                               );
                                             },
                                             leading: Image.asset(
                                                 'assets/icons/$selectedCategory.png'),
                                             title: Text(
                                               modelList[index].modelName!,
-                                              style: TextStyle(
-                                                  color: Colors.grey[800]),
+                                              style: const TextStyle(
+                                                  color: Colors.black87),
                                             ),
                                             subtitle: Text(
                                               modelList[index].modelBrand!,
-                                              style: TextStyle(
-                                                  color: Colors.grey[600]),
+                                              style: const TextStyle(
+                                                  color: Colors.black54),
                                             ),
-                                            trailing: Icon(
+                                            trailing: const Icon(
                                                 Icons.chevron_right_rounded,
                                                 size: 35,
-                                                color: Colors.grey[700]),
+                                                color: Colors.white70),
                                           ),
                                         ),
                                         const SizedBox(
@@ -419,10 +466,49 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                             }
                                           },
                                           icon: modelList[index].isLiked!
-                                              ? Icon(Icons.favorite_rounded,
-                                                  color: Colors.grey[600])
-                                              : Icon(Icons.favorite_rounded,
-                                                  color: Colors.grey[600]),
+                                              ? Icon(
+                                                  Icons.favorite_rounded,
+                                                  color:
+                                                      Colors.blueGrey.shade100,
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: Colors.black
+                                                          .withOpacity(
+                                                              0.4), // 그림자 색상과 투명도
+                                                      offset: const Offset(0,
+                                                          1), // 그림자 offset (가로, 세로)
+                                                      blurRadius:
+                                                          4, // 그림자의 흐림 정도
+                                                    ),
+                                                    const Shadow(
+                                                      color: Colors.white,
+                                                      offset: Offset(0, -1),
+                                                      blurRadius: 2,
+                                                    ),
+                                                  ],
+                                                )
+                                              : Icon(
+                                                  Icons
+                                                      .favorite_outline_rounded,
+                                                  color:
+                                                      Colors.blueGrey.shade100,
+                                                  shadows: [
+                                                    Shadow(
+                                                      color: Colors.black
+                                                          .withOpacity(
+                                                              0.4), // 그림자 색상과 투명도
+                                                      offset: const Offset(0,
+                                                          1), // 그림자 offset (가로, 세로)
+                                                      blurRadius:
+                                                          4, // 그림자의 흐림 정도
+                                                    ),
+                                                    const Shadow(
+                                                      color: Colors.white,
+                                                      offset: Offset(0, -1),
+                                                      blurRadius: 2,
+                                                    ),
+                                                  ],
+                                                ),
                                         ),
                                         onTap: () {},
                                         onLongPress: () {},
@@ -443,18 +529,18 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                               'assets/icons/$selectedCategory.png'),
                                           title: Text(
                                             modelList[index].modelName!,
-                                            style: TextStyle(
-                                                color: Colors.grey[800]),
+                                            style: const TextStyle(
+                                                color: Colors.black87),
                                           ),
                                           subtitle: Text(
                                             modelList[index].modelBrand!,
-                                            style: TextStyle(
-                                                color: Colors.grey[600]),
+                                            style: const TextStyle(
+                                                color: Colors.black54),
                                           ),
-                                          trailing: Icon(
+                                          trailing: const Icon(
                                             Icons.chevron_right_rounded,
                                             size: 35,
-                                            color: Colors.grey[700],
+                                            color: Colors.white70,
                                           ),
                                         ),
                                       ),

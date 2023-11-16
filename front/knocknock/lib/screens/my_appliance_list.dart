@@ -116,6 +116,9 @@ class _MyApplianceListState extends State<MyApplianceList> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch, // 자식이 가로폭을 채우도록 함
           children: [
+            const SizedBox(
+              height: 10,
+            ),
             // DropdownMenu<String>(
             //   dropdownMenuEntries: categoryEntries,
             //   enableFilter: true,

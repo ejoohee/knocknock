@@ -4,10 +4,13 @@ import 'package:knocknock/common/custom_icon_icons.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/constants/color_chart.dart';
 import 'package:knocknock/models/my_appliance_model.dart';
+import 'package:knocknock/providers/page_index.dart';
+import 'package:knocknock/screens/home_screen.dart';
 import 'package:knocknock/screens/my_appliance_list.dart';
 import 'package:knocknock/services/model_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:knocknock/widgets/app_bar_back.dart';
+import 'package:provider/provider.dart';
 
 class MyApplianceDetail extends StatefulWidget {
   final int myModelId;
@@ -60,12 +63,15 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
     setState(() {});
   }
 
-  Future<String> loadImage(String imageUrl) async {
+  Future<String?> loadImage(String? imageUrl) async {
+    if (imageUrl == null) {
+      return null;
+    }
     final response = await http.get(Uri.parse(imageUrl));
     if (response.statusCode == 200) {
       return imageUrl;
     } else {
-      throw Exception('Failed to load image');
+      return '';
     }
   }
 
@@ -78,43 +84,48 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
           children: [
             Text(isLoading ? '' : title),
             IconButton(
-                onPressed: () {
-                  pin(id);
-                },
-                icon: isLoading || !isPinned
-                    ? Icon(
-                        CustomIcon.pin_outline,
-                        size: 25,
-                        color: Colors.blueGrey[200],
-                      )
-                    : Icon(
-                        CustomIcon.pin_1,
-                        size: 25,
-                        color: Colors.red[800],
-                      )),
+              onPressed: () {
+                pin(id);
+              },
+              icon: isLoading || !isPinned
+                  ? Icon(
+                      CustomIcon.pin_outline,
+                      size: 25,
+                      color: Colors.blueGrey[200],
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.4), // 그림자 색상과 투명도
+                          offset: const Offset(0, 1), // 그림자 offset (가로, 세로)
+                          blurRadius: 4, // 그림자의 흐림 정도
+                        ),
+                        const Shadow(
+                          color: Colors.white,
+                          offset: Offset(0, -1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    )
+                  : Icon(
+                      CustomIcon.pin_1,
+                      size: 25,
+                      color: Colors.red[700],
+                      shadows: [
+                        Shadow(
+                          color: Colors.black.withOpacity(0.4), // 그림자 색상과 투명도
+                          offset: const Offset(0, 1), // 그림자 offset (가로, 세로)
+                          blurRadius: 5, // 그림자의 흐림 정도
+                        ),
+                        const Shadow(
+                          color: Colors.white,
+                          offset: Offset(0, -1),
+                          blurRadius: 2,
+                        ),
+                      ],
+                    ),
+            ),
           ],
         ),
         centerTitle: true,
-        // actions: [
-        //   Padding(
-        //     padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        //     child: IconButton(
-        //         onPressed: () {
-        //           pin(id);
-        //         },
-        //         icon: isLoading || !isPinned
-        //             ? const Icon(
-        //                 CustomIcon.pin_outline,
-        //                 size: 30,
-        //                 color: Colors.red,
-        //               )
-        //             : const Icon(
-        //                 CustomIcon.pin_1,
-        //                 size: 30,
-        //                 color: Colors.red,
-        //               )),
-        //   )
-        // ],
       ),
       body: SafeArea(
         child: Padding(
@@ -179,8 +190,8 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                               color: colors[model!.modelGrade! - 1]
                                   .withOpacity(value),
                             ),
-                            child: FutureBuilder<String>(
-                                future: loadImage(model.modelImg!),
+                            child: FutureBuilder<String?>(
+                                future: loadImage(model.modelImg),
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -200,32 +211,49 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
                                         children: [
-                                          model.modelImg == null
+                                          model.modelImg == ''
                                               ? Padding(
-                                                  padding: const EdgeInsets.all(
-                                                      20.0),
+                                                  padding: const EdgeInsets
+                                                      .symmetric(
+                                                    horizontal: 30,
+                                                    vertical: 40,
+                                                  ),
                                                   child: Image.asset(
                                                     'assets/images/not_found.png',
                                                   ),
                                                 )
                                               : Padding(
-                                                  padding:
-                                                      model.category == 'TV'
-                                                          ? const EdgeInsets
-                                                              .fromLTRB(
-                                                              0, 50, 20, 50)
-                                                          : const EdgeInsets
-                                                              .symmetric(
-                                                              vertical: 38,
-                                                            ),
+                                                  padding: () {
+                                                    if (model.category ==
+                                                        'TV') {
+                                                      return const EdgeInsets
+                                                          .fromLTRB(
+                                                          0, 50, 20, 40);
+                                                    } else if (model.category ==
+                                                        '진공청소기') {
+                                                      return const EdgeInsets
+                                                          .fromLTRB(
+                                                          0, 50, 40, 40);
+                                                    } else {
+                                                      return const EdgeInsets
+                                                          .symmetric(
+                                                          vertical: 38);
+                                                    }
+                                                  }(),
                                                   child: Image.network(
                                                     '${model.modelImg}',
                                                     errorBuilder: (context,
                                                         error, stackTrace) {
                                                       print(
                                                           'Error loading image: $error');
-                                                      return Image.asset(
-                                                          'assets/images/not_found.png');
+                                                      return Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .only(
+                                                                right: 30.0),
+                                                        child: Image.asset(
+                                                            'assets/images/not_found.png'),
+                                                      );
                                                     },
                                                   ),
                                                 ),
@@ -407,7 +435,14 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                     ),
                     KnockButton(
                       onPressed: () {
-                        // 버튼 클릭 시 실행할 동작
+                        context.read<CurrentPageIndex>().move(1);
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const HomeScreen()), // SignUpPage는 회원가입 페이지 위젯입니다.
+                        );
                       },
                       bColor: Theme.of(context).colorScheme.secondaryContainer,
                       fColor:

@@ -78,16 +78,17 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
   }
 
   // 네트워크 이미지 기다리기
-  Future<String> loadImage(String imageUrl) async {
+  Future<String?> loadImage(String? imageUrl) async {
+    if (imageUrl == null) {
+      return null;
+    }
     final response = await http.get(Uri.parse(imageUrl));
     if (response.statusCode == 200) {
       return imageUrl;
     } else {
-      throw Exception('Failed to load image');
+      return '';
     }
   }
-
-  final double _imageSize = 0.0; // 이미지의 크기를 제어할 변수
 
   @override
   Widget build(BuildContext context) {
@@ -156,8 +157,8 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                   color: colors[model!.modelGrade! - 1]
                                       .withOpacity(value),
                                 ),
-                                child: FutureBuilder<String>(
-                                    future: loadImage(model.modelImg!),
+                                child: FutureBuilder<String?>(
+                                    future: loadImage(model.modelImg),
                                     builder: (context, snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
@@ -177,14 +178,15 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                             mainAxisAlignment:
                                                 MainAxisAlignment.end,
                                             children: [
-                                              model.modelImg == null
+                                              model.modelImg == ''
                                                   ? Padding(
-                                                      padding:
-                                                          const EdgeInsets.all(
-                                                              20.0),
+                                                      padding: const EdgeInsets
+                                                          .symmetric(
+                                                        horizontal: 30,
+                                                        vertical: 40,
+                                                      ),
                                                       child: Image.asset(
                                                         'assets/images/not_found.png',
-                                                        width: _imageSize,
                                                       ),
                                                     )
                                                   : Padding(
@@ -210,10 +212,17 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                                         '${model.modelImg}',
                                                         errorBuilder: (context,
                                                             error, stackTrace) {
-                                                          print(
-                                                              'Error loading image: $error');
-                                                          return Image.asset(
-                                                              'assets/images/not_found.png');
+                                                          // print(
+                                                          //     'Error loading image: $error');
+                                                          return Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                    .only(
+                                                                    right:
+                                                                        30.0),
+                                                            child: Image.asset(
+                                                                'assets/images/not_found.png'),
+                                                          );
                                                         },
                                                       ),
                                                     ),
@@ -231,33 +240,62 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                               vertical: 12,
                             ),
                             child: IconButton(
-                                onPressed: () async {
-                                  // 찜
-                                  if (!model.isLiked!) {
-                                    if (await addLike(model.modelId!)) {
-                                      setState(() {
-                                        model.isLiked = true;
-                                      });
-                                    }
-                                  } else {
-                                    if (await deleteLike(model.modelId!)) {
-                                      setState(() {
-                                        model.isLiked = false;
-                                      });
-                                    }
+                              onPressed: () async {
+                                // 찜
+                                if (!model.isLiked!) {
+                                  if (await addLike(model.modelId!)) {
+                                    setState(() {
+                                      model.isLiked = true;
+                                    });
                                   }
-                                },
-                                icon: !model!.isLiked!
-                                    ? const Icon(
-                                        Icons.favorite_border_rounded,
-                                        size: 30,
-                                        color: Colors.white,
-                                      )
-                                    : Icon(
-                                        Icons.favorite_rounded,
-                                        size: 30,
-                                        color: Colors.red[100],
-                                      )),
+                                } else {
+                                  if (await deleteLike(model.modelId!)) {
+                                    setState(() {
+                                      model.isLiked = false;
+                                    });
+                                  }
+                                }
+                              },
+                              icon: !model!.isLiked!
+                                  ? Icon(
+                                      Icons.favorite_border_rounded,
+                                      size: 30,
+                                      color: Colors.blueGrey.shade50,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black
+                                              .withOpacity(0.4), // 그림자 색상과 투명도
+                                          offset: const Offset(
+                                              0, 1), // 그림자 offset (가로, 세로)
+                                          blurRadius: 4, // 그림자의 흐림 정도
+                                        ),
+                                        const Shadow(
+                                          color: Colors.white,
+                                          offset: Offset(0, -1),
+                                          blurRadius: 2,
+                                        ),
+                                      ],
+                                    )
+                                  : Icon(
+                                      Icons.favorite_rounded,
+                                      size: 30,
+                                      color: Colors.blueGrey.shade50,
+                                      shadows: [
+                                        Shadow(
+                                          color: Colors.black
+                                              .withOpacity(0.4), // 그림자 색상과 투명도
+                                          offset: const Offset(
+                                              0, 1), // 그림자 offset (가로, 세로)
+                                          blurRadius: 5, // 그림자의 흐림 정도
+                                        ),
+                                        const Shadow(
+                                          color: Colors.white,
+                                          offset: Offset(0, -1),
+                                          blurRadius: 2,
+                                        ),
+                                      ],
+                                    ),
+                            ),
                           ),
                         ],
                       ),
@@ -450,10 +488,9 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                       height: 10,
                     ),
                     KnockButton(
-                      onPressed: () {
-                        print(model.modelURL);
-                        // final Uri url = Uri.parse(model.modelURL!);
-                        // await launchUrl(url);
+                      onPressed: () async {
+                        final Uri url = Uri.parse(model.modelURL!);
+                        await launchUrl(url);
                       },
                       bColor: Theme.of(context).colorScheme.secondaryContainer,
                       fColor:

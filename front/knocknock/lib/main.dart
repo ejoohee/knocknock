@@ -72,6 +72,7 @@ class MyApp extends StatelessWidget {
           theme: themeProvider.isDarkModeProvider
               ? ThemeData(useMaterial3: true, colorScheme: darkColorScheme)
               : ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+          themeMode: ThemeMode.system,
           // 기존에 정의된 테마 설정을 사용합니다. 여기서는 lightColorScheme과 darkColorScheme을 사용합니다.
           // theme: ThemeData(
           //   useMaterial3: true,
