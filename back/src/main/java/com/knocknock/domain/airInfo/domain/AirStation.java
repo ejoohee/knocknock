@@ -24,7 +24,7 @@ public class AirStation {
     private String stationRegion;
 
     // 지역상세
-    @Column(name = "region_detail", unique = true)
+    @Column(name = "region_detail")
     private String regionDetail;
 
     // 측정소명
