@@ -363,7 +363,90 @@
 <br>
 
 ## 🖥 서비스 화면
+### 1. 서비스를 처음 시작하는 화면
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/672a4eb9-f7b5-4bc2-93b7-91f7a54a8317" width="200" height="400"/>
 
+1. 시작하기: 로그인 화면으로 이동합니다.
+
+### 2. 로그인 화면 
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/37dc4fe9-b560-4158-953d-583162ca1daf" width="200" height="400"/>
+
+1. 로그인: 로그인 성공 시 서비스를 이용할 수 있습니다.
+
+2. 구글 로그인: 로그인 성공 시 서비스를 이용할 수 있습니다.
+
+3. 회원가입: 회원가입 화면으로 이동합니다.
+
+4. 비밀번호 재발급: 비밀번호 재발급 모달을 생성합니다.
+
+### 3. 회원가입 화면
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/5c213901-a219-42e4-94e8-639558848a7a" width="200" height="400"/>
+
+1. 이메일 인증: 이메일 발송 후 인증번호를 확인합니다.
+
+2. 도로명 검색: 도로명 검색창을 생성합니다.
+
+3. 회원가입: 회원가입 성공 시 로그인 화면으로 이동합니다.
+
+### 4. 비밀번호 재발급 모달
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/1a260942-eeba-4f42-ab90-3f1c57697b75" width="200" height="400"/>
+
+1. 비밀번호 재발급: 닉네임, 이메일 일치 시 해당 이메일로 비밀번호를 재발급 합니다.
+
+### 5. 새 가전 찾기 화면(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/3a6cd114-dd96-43a3-a78c-f75440c04ac0" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/8efd3491-8683-4634-b991-f723f1fd2c3d" width="200" height="400"/>
+
+1. 카테고리 선택 시 해당 가전 리스트 화면으로 이동합니다.
+
+### 5. 가전 리스트(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/bb455c4e-64bc-45ba-99cc-0a40889c4e73" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/6d00e8b9-f7b6-4f81-9e72-1886070482df" width="200" height="400"/>
+
+1. 검색: 모델명, 업체명으로 가전을 검색할 수 있습니다.
+
+2. 가전 선택 시 상세보기 화면으로 이동합니다.
+
+3. 가전을 찜할 수 있습니다. 
+
+### 6. 가전 상세조회 화면(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/bb455c4e-64bc-45ba-99cc-0a40889c4e73" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/6d00e8b9-f7b6-4f81-9e72-1886070482df" width="200" height="400"/>
+
+1. 비교할 가전 선택 화면으로 이동합니다.
+
+2. 쿠팡 구매 링크로 이동합니다.
+
+3. 가전을 찜할 수 있습니다.
+
+### 7. 비교할 가전 선택 화면(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/62d9d961-e4c4-4eeb-93f5-351db204a53c" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/fe72af10-93c9-44f9-b672-dd905f749565" width="200" height="400"/>
+
+1. 가전 비교 화면으로 이동합니다.
+
+### 8. 비교하기 화면(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/4e58e8e0-b61a-46b3-8f68-82e51af18de5" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/52654f9d-bf2c-4550-8eda-1256d56a0bf2" width="200" height="400"/>
+
+1. 가전을 터치하면 해당 가전의 그래프가 커집니다.
+
+2. 교체하면 어떤 것이 좋은지 보여주는 모달을 생성합니다.
+
+### 9. 교체 시 이점 모달(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/04f570e0-2f00-4a93-8479-5b25029868fc" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/340c0006-d4fc-4700-b035-f1cd11e679a7" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/5d972d57-beda-4d9c-90ef-644b406bc885" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/37853500-c147-4ee8-a125-0db2efc25854" width="200" height="400"/>
+
+1. 환경오염정도를 비교하여 나오는 모달을 다르게 생성합니다.
+
+
+
+
+
+
+3.
 ## 📌 시연 시나리오
 
 <br>
