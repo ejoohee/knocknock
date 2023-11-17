@@ -483,12 +483,18 @@
 <img src="https://github.com/yoonoi/algorithm-study/assets/104899234/5e965d9e-bcb8-439d-a3b0-35991db2a81c" width="200" height="400"/>
 <img src="https://github.com/yoonoi/algorithm-study/assets/104899234/6c8adf83-625a-405a-bb1c-32198ccedd59" width="200" height="400"/>
 
+1. 그래프를 클릭하면 자세한 수치를 볼 수 있습니다.
+
 ### 12. 폐가전 수거 정보 화면
 <img src="https://github.com/yoonoi/algorithm-study/assets/104899234/58f0c222-4402-4cb8-8eb9-37544ed8e09e" width="200" height="400"/>
 <img src="https://github.com/yoonoi/algorithm-study/assets/104899234/7c54f2cf-cbd6-4bf3-b750-ce2499761605" width="200" height="400"/>
 
+1. GoogleMap을 통해 위치를 업체의 위치를 확인할 수 있습니다. 
+
 ### 13. 정보 수정 화면
 <img src="https://github.com/yoonoi/algorithm-study/assets/104899234/8d3b9e80-c30a-4c0d-a8de-786490912124" width="200" height="400"/>
+
+1. 정보 수정 전 비밀번호 확인 모달을 생성합니다.
 
 
 3.
