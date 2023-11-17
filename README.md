@@ -126,7 +126,7 @@
 
 - FE 폴더 구조
 
-  ```
+```
 knocknock
 ├─ .gitignore
 ├─ .metadata
@@ -1281,7 +1281,6 @@ knocknock
       ├─ win32_window.cpp
       └─ win32_window.h
 
- 
 ```
 
 - BE 폴더 구조
