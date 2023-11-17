@@ -3,6 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:flutter_inner_shadow/flutter_inner_shadow.dart';
 import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/home_screen.dart';
+import 'package:knocknock/screens/manual_register.dart';
 import 'package:knocknock/screens/new_appliance_categories.dart';
 import 'package:knocknock/screens/take_picture_screen.dart';
 import 'package:provider/provider.dart';
@@ -16,22 +17,17 @@ class ManageAppliances extends StatefulWidget {
 
 class _ManageAppliancesState extends State<ManageAppliances> {
   Future<void> toRegisterMine() async {
-    context.read<CurrentPageIndex>().move(2);
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const HomeScreen()), // SignUpPage는 회원가입 페이지 위젯입니다.
+      MaterialPageRoute(builder: (context) => const ManualRegister()),
     );
   }
 
   void toNewApplianceCategories() {
-    context.read<CurrentPageIndex>().move(2);
+    context.read<CurrentPageIndex>().move(1);
     Navigator.push(
       context,
-      MaterialPageRoute(
-          builder: (context) =>
-              const HomeScreen()), // SignUpPage는 회원가입 페이지 위젯입니다.
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
     );
   }
 

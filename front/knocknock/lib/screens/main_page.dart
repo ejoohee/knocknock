@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/common/custom_icon_icons.dart';
 import 'package:knocknock/components/buttons.dart';
 import 'package:knocknock/interceptors/interceptor.dart';
+import 'package:knocknock/providers/airInfo.dart';
 import 'package:knocknock/screens/manage_appliances.dart';
 import 'package:knocknock/screens/view_greenproducts.dart';
 import 'package:knocknock/services/outer_service.dart' hide storage;
@@ -33,107 +34,78 @@ class _MainPageState extends State<MainPage> {
   void initState() {
     super.initState();
     initializeAddresses();
-    initialAirInfo();
-    _controller = VideoPlayerController.asset(videoPath)
-      ..initialize().then((_) {
-        setState(() {
-          _controller!.play();
-          _controller!.setLooping(true);
-        });
-      });
+    // 프레임이 렌더링된 후에 Provider의 상태를 검사
+
+    final airInfoProvider =
+        Provider.of<AirInfoProvider>(context, listen: false);
+    if (airInfoProvider.airInfoProvider == 5) {
+      initialAirInfo();
+    } else {
+      updateImagePathAndVideo(airInfoProvider.airInfoProvider);
+    }
+    // _controller = VideoPlayerController.asset(videoPath)
+    //   ..initialize().then((_) {
+    //     setState(() {
+    //       _controller!.play();
+    //       _controller!.setLooping(true);
+    //     });
+    //   });
+  }
+
+  void updateImagePathAndVideo(int airQualityIndex) {
+    String newImagePath, newVideoPath;
+    switch (airQualityIndex) {
+      case 1:
+        newImagePath = 'assets/images/good.png';
+        newVideoPath = 'assets/videos/goodBackground.mp4';
+        break;
+      case 2:
+        newImagePath = 'assets/images/soso.png';
+        newVideoPath = 'assets/videos/sosoBackground.mp4';
+        break;
+      case 3:
+        newImagePath = 'assets/images/bad.png';
+        newVideoPath = 'assets/videos/badBackground.mp4';
+        break;
+      case 4:
+        newImagePath = 'assets/images/verybad.png';
+        newVideoPath = 'assets/videos/verybadBackground.mp4';
+        break;
+      default:
+        return; // 기본값이 없는 경우, 아무 작업도 수행하지 않음
+    }
+    setState(() {
+      imagePath = newImagePath;
+      updateVideo(newVideoPath);
+    });
   }
 
   void updateVideo(String newVideoPath) {
-    _controller?.dispose(); // 기존 컨트롤러 해제
-    _controller = VideoPlayerController.asset(newVideoPath)
-      ..initialize().then((_) {
-        setState(() {
-          _controller!.play();
-          _controller!.setLooping(true);
+    if (mounted) {
+      _controller?.dispose(); // 기존 컨트롤러 해제
+      _controller = VideoPlayerController.asset(newVideoPath)
+        ..initialize().then((_) {
+          setState(() {
+            _controller!.play();
+            _controller!.setLooping(true);
+          });
         });
-      });
+    }
   }
 
   void initialAirInfo() async {
     try {
       airInfo = await outerService.airInfo();
-      if (mounted) {
-        setState(
-          () {
-            airInfo = airInfo;
-            print(airInfo['통합대기환경지수']);
-            switch (airInfo['통합대기환경지수']) {
-              case '1':
-                setState(() {
-                  imagePath = 'assets/images/good.png';
-                  updateVideo('assets/videos/goodBackground.mp4');
-                });
-                break;
-              case '2':
-                setState(() {
-                  imagePath = 'assets/images/soso.png';
-                  updateVideo('assets/videos/sosoBackground.mp4');
-                });
+      if (!mounted) return; // 위젯이 위젯 트리에 없으면 함수 실행 중지
 
-                break;
-              case '3':
-                setState(() {
-                  imagePath = 'assets/images/bad.png';
-                  updateVideo('assets/videos/badBackground.mp4');
-                });
-                break;
-              case '4':
-                setState(() {
-                  imagePath = 'assets/images/verybad.png';
-                  updateVideo('assets/videos/verybadBackground.mp4');
-                });
-                break;
-            }
-          },
-        );
-      }
+      final infoNum = airInfo['통합대기환경지수'];
+
+      context.read<AirInfoProvider>().setAirInfo(int.parse(infoNum));
+
+      updateImagePathAndVideo(int.parse(infoNum)); // 여기에 함수 호출 추가
     } catch (e) {
-      print("에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.에러 입니다.");
+      print("에러 입니다.에러 입니다.$e");
     }
-    airInfo = await outerService.airInfo();
-    print(airInfo);
-    // airInfo['통합대기환경지수'] = '1';
-    setState(() {
-      airInfo = airInfo;
-      print(airInfo['통합대기환경지수']);
-      switch (airInfo['통합대기환경지수']) {
-        case '0':
-          setState(() {
-            imagePath = 'assets/images/soso.png';
-            updateVideo('assets/videos/sosoBackground.mp4');
-          });
-        case '1':
-          setState(() {
-            imagePath = 'assets/images/good.png';
-            updateVideo('assets/videos/goodBackground.mp4');
-          });
-          break;
-        case '2':
-          setState(() {
-            imagePath = 'assets/images/soso.png';
-            updateVideo('assets/videos/sosoBackground.mp4');
-          });
-
-          break;
-        case '3':
-          setState(() {
-            imagePath = 'assets/images/bad.png';
-            updateVideo('assets/videos/badBackground.mp4');
-          });
-          break;
-        case '4':
-          setState(() {
-            imagePath = 'assets/images/verybad.png';
-            updateVideo('assets/videos/verybadBackground.mp4');
-          });
-          break;
-      }
-    });
   }
 
   void initializeAddresses() async {
@@ -350,9 +322,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  //   _controller?.dispose();
-  // }
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
 }

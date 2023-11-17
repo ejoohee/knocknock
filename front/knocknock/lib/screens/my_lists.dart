@@ -22,8 +22,9 @@ class _MyListsState extends State<MyLists> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '내 가전 모아보기',
+        isLeadingNeeded: false,
       ),
       body: SafeArea(
         child: Center(

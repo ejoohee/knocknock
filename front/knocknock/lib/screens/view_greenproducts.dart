@@ -50,7 +50,7 @@ class _ViewGreenProductsState extends State<ViewGreenProducts> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '녹색 제품 정보',
       ),
       body: Column(

@@ -93,7 +93,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(title: '상세조회'),
+      appBar: AppBarBack(title: '상세조회'),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 0),
@@ -464,7 +464,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                                       ),
                                     )
                                   : Container(),
-                              model.usage2 != null
+                              model.usage3 != null
                                   ? const Divider()
                                   : Container(),
                             ],
@@ -506,7 +506,7 @@ class _NewApplianceDetailState extends State<NewApplianceDetail>
                       label: "구매하러 가기 🔗", // 버튼에 표시할 텍스트
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 40,
                     ),
                   ],
                 );
