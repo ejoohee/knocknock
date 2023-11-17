@@ -499,7 +499,8 @@
 <br>
 
 ## 📌 시연 시나리오
-https://drive.google.com/file/d/1AF__JZwbvndev6I8G7pN5Au6hXg8kzqL/view?usp=sharing
+[시연 보러가기](https://drive.google.com/file/d/1AF__JZwbvndev6I8G7pN5Au6hXg8kzqL/view?usp=sharing)
+
 <br>
 <br>
 
