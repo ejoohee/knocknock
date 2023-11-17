@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:knocknock/color_schemes.g.dart';
+import 'package:knocknock/providers/airInfo.dart';
+import 'package:knocknock/providers/camera_controller.dart';
 import 'package:knocknock/providers/my_appliance.dart';
 import 'package:knocknock/providers/page_index.dart';
 import 'package:knocknock/screens/google.dart';
@@ -19,6 +21,7 @@ import 'package:knocknock/screens/nickname_assign.dart';
 import 'package:knocknock/screens/sign_up_google.dart';
 import 'package:knocknock/screens/start_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:knocknock/services/outer_service.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -37,6 +40,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => RegisterAppliance()),
         ChangeNotifierProvider(create: (_) => CurrentPageIndex()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AirInfoProvider()..setAirInfo(5)),
+        ChangeNotifierProvider(create: (_) => CameraControllerProvider()),
       ],
       child: const MyApp(),
     ),

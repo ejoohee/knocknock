@@ -166,7 +166,9 @@ class _DisplayInfoScreenState extends State<DisplayInfoScreen> {
               Expanded(
                 child: Column(
                   children: [
-                    Image.network(modelInfo.modelImg!),
+                    modelInfo.modelImg != null
+                        ? Image.network(modelInfo.modelImg!)
+                        : Image.asset('assets/images/not_found.png'),
                     const SizedBox(
                       height: 10,
                     ),

@@ -430,7 +430,7 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                                       ),
                                     )
                                   : Container(),
-                              model.usage2 != null
+                              model.usage3 != null
                                   ? const Divider()
                                   : Container(),
                             ],
@@ -458,7 +458,7 @@ class _MyApplianceDetailState extends State<MyApplianceDetail> {
                       label: "새로운 가전 구경하러 가기 ▷▶", // 버튼에 표시할 텍스트
                     ),
                     const SizedBox(
-                      height: 30,
+                      height: 40,
                     ),
                   ],
                 );

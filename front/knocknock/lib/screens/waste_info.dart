@@ -60,9 +60,11 @@ class _WasteInfoState extends State<WasteInfo> {
     }
 
     // ExpansionTile이 열린 상태를 업데이트
-    setState(() {
-      expansionTileOpenState[index] = true;
-    });
+    if (mounted) {
+      setState(() {
+        expansionTileOpenState[index] = true;
+      });
+    }
   }
 
   addMarker(double latitude, double longitude, String markerId,
@@ -114,9 +116,15 @@ class _WasteInfoState extends State<WasteInfo> {
   }
 
   @override
+  void dispose() {
+    mapController?.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '폐기물 수거 업체',
       ),
       body: Column(

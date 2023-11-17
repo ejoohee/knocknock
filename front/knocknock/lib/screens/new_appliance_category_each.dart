@@ -404,13 +404,9 @@ class _NewApplianceCategoryEachState extends State<NewApplianceCategoryEach> {
                                                       .modelId!);
                                               Navigator.push(
                                                 context,
-                                                CubePageRoute(
-                                                  enterPage:
-                                                      const NewApplianceDetail(),
-                                                  exitPage: widget,
-                                                  duration: const Duration(
-                                                      milliseconds: 400),
-                                                ),
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const NewApplianceDetail()), // SignUpPage는 회원가입 페이지 위젯입니다.
                                               );
                                             },
                                             leading: Image.asset(

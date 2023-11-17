@@ -52,7 +52,7 @@ class _CompareListState extends State<CompareList> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '비교하기',
       ),
       body: SafeArea(

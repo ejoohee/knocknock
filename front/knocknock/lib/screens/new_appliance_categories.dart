@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:knocknock/providers/appliance.dart';
 import 'package:knocknock/screens/new_appliance_category_each.dart';
 import 'package:knocknock/services/model_service.dart';
+import 'package:knocknock/widgets/app_bar_back.dart';
 import 'package:provider/provider.dart';
 
 class NewApplianceCategories extends StatefulWidget {
@@ -40,6 +41,10 @@ class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarBack(
+        title: '',
+        isLeadingNeeded: false,
+      ),
       body: Column(
         children: [
           const SizedBox(
@@ -69,40 +74,31 @@ class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
                 // vertical: 10,
                 horizontal: 40,
               ),
-              child: ShaderMask(
-                shaderCallback: (Rect bounds) {
-                  return LinearGradient(
-                    //아래 속성들을 조절하여 원하는 값을 얻을 수 있다.
-                    begin: Alignment.center,
-                    end: Alignment.topCenter,
-                    colors: [Colors.white, Colors.white.withOpacity(0.02)],
-                    stops: const [0.9, 1],
-                    tileMode: TileMode.mirror,
-                  ).createShader(bounds);
-                },
-                child: FutureBuilder(
-                  future: categories,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      // 데이터가 아직 준비되지 않은 경우에 대한 UI
-                      return const Expanded(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                          ],
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      // 에러 발생 시에 대한 UI
-                      return Text('Error: ${snapshot.error}');
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      // 데이터가 비어 있는 경우에 대한 UI
-                      return const Text('No data available.');
-                    } else {
-                      // 데이터를 사용하여 ListView.builder 생성
-                      List<String> categories = snapshot.data!;
-                      return GridView.count(
+              child: FutureBuilder(
+                future: categories,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    // 데이터가 아직 준비되지 않은 경우에 대한 UI
+                    return const Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                        ],
+                      ),
+                    );
+                  } else if (snapshot.hasError) {
+                    // 에러 발생 시에 대한 UI
+                    return Text('Error: ${snapshot.error}');
+                  } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                    // 데이터가 비어 있는 경우에 대한 UI
+                    return const Text('No data available.');
+                  } else {
+                    // 데이터를 사용하여 ListView.builder 생성
+                    List<String> categories = snapshot.data!;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: GridView.count(
                         childAspectRatio: 0.75,
                         crossAxisCount: 3,
                         children: List.generate(categories.length, (index) {
@@ -150,10 +146,10 @@ class _NewApplianceCategoriesState extends State<NewApplianceCategories> {
                             ],
                           );
                         }),
-                      );
-                    }
-                  },
-                ),
+                      ),
+                    );
+                  }
+                },
               ),
             ),
           ),

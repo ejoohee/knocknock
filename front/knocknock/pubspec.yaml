@@ -65,13 +65,19 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
+  flutter_launcher_icons: ^0.13.1
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icons/appIcon.png"
+  min_sdk_android: 21
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -124,7 +130,6 @@ flutter:
     - assets/videos/sosoBackground.mp4
     - assets/videos/badBackground.mp4
     - assets/videos/verybadBackground.mp4
-    - assets/videos/goodBackground2.mp4
     - assets/videos/main.mp4
   fonts:
     - family: CustomIcon

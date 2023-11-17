@@ -22,7 +22,7 @@ class _GreenDetailInfoState extends State<GreenDetailInfo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '녹색 제품 상세 정보',
       ),
       body: Column(

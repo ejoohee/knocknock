@@ -28,6 +28,7 @@ class _ManualRegisterState extends State<ManualRegister> {
   getModelInfo() async {
     final modelName = myController.text.trim();
     info = await modelService.findRegistering(modelName);
+    print('넣었니? $info');
     if (!mounted) return;
     context.read<RegisterAppliance>().register(info);
   }
@@ -109,7 +110,7 @@ class _ManualRegisterState extends State<ManualRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: '직접 입력하기',
       ),
       body: Padding(

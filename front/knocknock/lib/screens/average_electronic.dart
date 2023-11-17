@@ -74,7 +74,7 @@ class _AverageElectronicState extends State<AverageElectronic> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const AppBarBack(
+      appBar: AppBarBack(
         title: "전력 소비량",
       ),
       body: Column(

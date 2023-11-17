@@ -182,8 +182,19 @@ class _MyPageState extends State<MyPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    context.watch<RegisterAppliance>().qtt;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBarBack(
+        title: '',
+        isLeadingNeeded: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(
           vertical: 20.0,
@@ -193,9 +204,6 @@ class _MyPageState extends State<MyPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.max,
           children: [
-            const SizedBox(
-              height: 40,
-            ),
             Flexible(
               flex: 3,
               child: Row(
@@ -319,7 +327,7 @@ class _MyPageState extends State<MyPage> {
               flex: 2,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.of(context).push(
@@ -369,7 +377,7 @@ class _MyPageState extends State<MyPage> {
               flex: 2,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: GestureDetector(
                   onTap: onAverageElectronTap,
                   child: Container(
@@ -416,7 +424,7 @@ class _MyPageState extends State<MyPage> {
               flex: 2,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: GestureDetector(
                   onTap: onWasteInfoTap,
                   child: Container(
@@ -468,10 +476,11 @@ class _MyPageState extends State<MyPage> {
               flex: 2,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: GestureDetector(
                   onTap: onMyInfoModifyTextPressed,
                   child: Container(
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
@@ -510,10 +519,11 @@ class _MyPageState extends State<MyPage> {
               flex: 2,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 8),
+                    const EdgeInsets.symmetric(horizontal: 15.0, vertical: 15),
                 child: GestureDetector(
                   onTap: onLogoutTextPressed,
                   child: Container(
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Theme.of(context).colorScheme.outlineVariant,
@@ -537,7 +547,8 @@ class _MyPageState extends State<MyPage> {
                     ),
                     child: const ListTile(
                       leading: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 5.0),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 5.0, vertical: 13),
                         child: Icon(Icons.logout),
                       ),
                       title: Text('로그아웃'),

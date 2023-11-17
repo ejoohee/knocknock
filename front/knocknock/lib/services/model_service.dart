@@ -161,18 +161,21 @@ class ModelService {
       url,
       headers: headers,
     );
+    print(response.statusCode);
+    print(utf8.decode(response.bodyBytes));
     if (response.statusCode == 200) {
       final dynamic model = jsonDecode(utf8.decode(response.bodyBytes));
       registeringModel = MyModelRegistering.fromJson(model);
     } else if (response.statusCode == 400) {
       registeringModel = MyModelRegistering(category: '중복');
-    } else if (response.statusCode == 404) {
+    } else if (response.statusCode == 404 || response.statusCode == 500) {
       return null;
     } else if (response.statusCode == 401) {
       findRegistering(modelName);
     }
-
     return registeringModel;
+
+    // return registeringModel;
   }
 
   // 내 가전 등록
