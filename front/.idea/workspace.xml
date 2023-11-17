@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="NONE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d3d65dc5-3f92-46e2-aad0-094654bae301" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/knocknock/android/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/android/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/android/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/android/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/main.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/average_electronic.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/average_electronic.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/compare_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/compare_list.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/green_detail_info.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/green_detail_info.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/manual_register.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/manual_register.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/my_info_modify.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/my_info_modify.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/my_page.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/my_page.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/new_appliance_category_each.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/new_appliance_category_each.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/new_appliance_detail.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/new_appliance_detail.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/view_greenproducts.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/view_greenproducts.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/screens/waste_info.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/screens/waste_info.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/services/outer_service.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/services/outer_service.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/lib/widgets/app_bar_back.dart" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/lib/widgets/app_bar_back.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/knocknock/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/knocknock/pubspec.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectId" id="2Y9dQylcaR3iLKa9t9e8vIStsrs" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "cidr.known.project.marker": "true",
+    "com.android.tools.idea.devicemanager.tab": "Physical",
+    "dart.analysis.tool.window.visible": "false",
+    "last_opened_file_path": "C:/tools",
+    "settings.editor.selected.configurable": "dart.settings",
+    "show.migrate.to.gradle.popup": "false"
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="main.dart" type="DartCommandLineRunConfigurationType" factoryName="Dart Command Line Application" temporary="true" nameIsGenerated="true">
+      <option name="filePath" value="$PROJECT_DIR$/knocknock/lib/main.dart" />
+      <option name="workingDirectory" value="$PROJECT_DIR$/knocknock" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Dart Command Line App.main.dart" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d3d65dc5-3f92-46e2-aad0-094654bae301" name="Changes" comment="" />
+      <created>1699941716816</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1699941716816</updated>
+    </task>
+    <servers />
+  </component>
+</project>

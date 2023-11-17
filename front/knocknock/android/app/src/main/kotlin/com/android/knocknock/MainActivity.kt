@@ -1,4 +1,4 @@
-package com.example.knocknock
+package com.android.knocknock
 
 import io.flutter.embedding.android.FlutterActivity
 
