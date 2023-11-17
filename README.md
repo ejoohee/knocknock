@@ -465,9 +465,30 @@
 
 1. 환경오염정도를 비교하여 나오는 모달을 다르게 생성합니다.
 
+### 10. 서비스 페이지(라이트 모드, 다크 모드)
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/665559fa-524d-4b34-bd98-63820fe3a889" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/6deb8ecc-14be-4e63-a7a6-530ae7775e04" width="200" height="400"/>
 
+1. 가전 서비스: 가전 서비스 화면으로 이동합니다.
 
+2. 우리 동네 전력 소비: 우리 동네 평균 전력 소비량을 확인할 수 있습니다.
 
+3. 폐가전 수거 정보: 근처에 있는 폐가전 수거 업체를 추천해줍니다.
+
+4. 내 정보 수정: 내 정보를 수정할 수 있는 화면으로 이동합니다.
+
+5. 로그아웃: 로그아웃할 수 있습니다.
+
+### 11. 우리 동네 전력 소비 화면
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/5e965d9e-bcb8-439d-a3b0-35991db2a81c" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/6c8adf83-625a-405a-bb1c-32198ccedd59" width="200" height="400"/>
+
+### 12. 폐가전 수거 정보 화면
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/58f0c222-4402-4cb8-8eb9-37544ed8e09e" width="200" height="400"/>
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/7c54f2cf-cbd6-4bf3-b750-ce2499761605" width="200" height="400"/>
+
+### 13. 정보 수정 화면
+<img src="https://github.com/yoonoi/algorithm-study/assets/104899234/8d3b9e80-c30a-4c0d-a8de-786490912124" width="200" height="400"/>
 
 
 3.
