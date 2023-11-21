@@ -1,49 +1,5 @@
 spring:
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: create
-    defer-datasource-initialization: true
-    open-in-view: false
-
-  h2:
-    console:
-      enabled: true
-
-  datasource:
-    url: jdbc:h2:mem:testdb
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
-  logging.level:
-    org.hibernate:
-      sql: debug
-      type.descriptor.sql: trace # sql의 데이터까지 다 보이게
-
-server:
-  error:
-    include-exception: false     # Response 에 Exception 을 표시할지
-    include-message: always      # Response 에 Exception Message 를 표시할지 (never | always | on_param)
-    include-stacktrace: on_param # Response 에 Stack Trace 를 표시할지 (never | always | on_param) on_trace_params 은 deprecated
-  port: 8080
-  forward-headers-strategy: native
-
-jwt:
-  issuer: knocknockservice
-  secret_key: ${JWT_SECRET}
-  access_expiration_ms: 10000000
-  refresh_expiration_ms: 2592000000
-
-cors:
-  front_url: "*"
-
-springdoc:
-  api-docs:
-    path: /spring/api-docs/json
-  swagger-ui:
-    path: /spring/api-docs
+  profiles:
+    active: develop
+#    active: yy
+#    active: back-develop
